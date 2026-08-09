@@ -48,10 +48,10 @@ confirmed or labelled illustrative.
 
 ### Things still open
 
-1. **A photograph.** The brief says "show one face — Graham's", and there isn't one yet.
-   A real photo in the "Who you'd be dealing with" section — shop or warehouse, not a
-   headshot against a wall — plus a surname is the single cheapest credibility gain left
-   on the page. Add it above the `<dl>` in the operator card when you have one.
+1. **A better photograph, someday.** The operator card now carries a real photo of
+   Graham (`graham.jpg` — seafront, arms folded). The brief's ideal is still a shot at
+   the shop or the warehouse; when one exists, process it the same way (crop 4:3,
+   ~960px wide, metadata stripped) and replace the file. Nothing else needs touching.
 
 ---
 
