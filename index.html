@@ -13,8 +13,8 @@
 
   The site's contact details are four strings, used throughout:
 
-    domain     workings.co.uk
-    email      graham@workings.co.uk
+    domain     theworkings.uk
+    email      graham@theworkings.uk
     calendar   https://cal.com/workings/look-45min
     legal      [SOLE TRADER / COMPANY DETAILS]   (footer - edit by hand)
 
@@ -25,16 +25,16 @@
   ============================================================
 -->
 
-<link rel="canonical" href="https://workings.co.uk/">
+<link rel="canonical" href="https://theworkings.uk/">
 <meta name="theme-color" content="#E6E4DA">
 <meta name="robots" content="index,follow">
 
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Workings">
-<meta property="og:url" content="https://workings.co.uk/">
+<meta property="og:url" content="https://theworkings.uk/">
 <meta property="og:title" content="The most expensive person in your business is the one doing it by hand.">
 <meta property="og:description" content="Work out what your manual admin actually costs, in three minutes. No call, no email needed to see the number.">
-<meta property="og:image" content="https://workings.co.uk/og.png">
+<meta property="og:image" content="https://theworkings.uk/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="A ledger showing a typical firm's admin hours costed out in red.">
@@ -42,7 +42,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="The most expensive person in your business is the one doing it by hand.">
 <meta name="twitter:description" content="Work out what your manual admin actually costs, in three minutes. No call, no email needed to see the number.">
-<meta name="twitter:image" content="https://workings.co.uk/og.png">
+<meta name="twitter:image" content="https://theworkings.uk/og.png">
 <meta name="twitter:image:alt" content="A ledger showing a typical firm's admin hours costed out in red.">
 
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -433,7 +433,7 @@ footer nav a{display:inline-block;padding:4px 0}
       <div class="tool-body" id="questions">
         <noscript>
           <p style="margin:0">The audit needs JavaScript to do the arithmetic. If you'd rather not turn it on, email me at
-          <a href="mailto:graham@workings.co.uk">graham@workings.co.uk</a> with a rough idea of the hours and I'll work it out by hand.</p>
+          <a href="mailto:graham@theworkings.uk">graham@theworkings.uk</a> with a rough idea of the hours and I'll work it out by hand.</p>
         </noscript>
       </div>
       <div class="tool-foot">
@@ -622,7 +622,7 @@ footer nav a{display:inline-block;padding:4px 0}
   <div class="wrap">
     <span>Workings · [SOLE TRADER / COMPANY DETAILS] · Barry, South Wales</span>
     <nav aria-label="Legal">
-      <a href="mailto:graham@workings.co.uk">graham@workings.co.uk</a>
+      <a href="mailto:graham@theworkings.uk">graham@theworkings.uk</a>
       <a href="/privacy">Privacy</a>
       <a href="/terms">Terms</a>
     </nav>
@@ -634,9 +634,9 @@ footer nav a{display:inline-block;padding:4px 0}
   "@context": "https://schema.org",
   "@type": "ProfessionalService",
   "name": "Workings",
-  "url": "https://workings.co.uk/",
-  "image": "https://workings.co.uk/og.png",
-  "email": "graham@workings.co.uk",
+  "url": "https://theworkings.uk/",
+  "image": "https://theworkings.uk/og.png",
+  "email": "graham@theworkings.uk",
   "description": "AI and automation for UK owner-managed businesses with 5 to 20 staff. Fixed-price audits and build sprints.",
   "areaServed": { "@type": "Country", "name": "United Kingdom" },
   "address": { "@type": "PostalAddress", "addressLocality": "Barry", "addressRegion": "South Wales", "addressCountry": "GB" },
@@ -968,13 +968,13 @@ el('gate').addEventListener('submit', function(ev){
     msg.classList.add('bad');
     var why = e && e.message;
     if (why === 'rate'){
-      msg.textContent = "That's a few goes now. Email me directly at graham@workings.co.uk.";
+      msg.textContent = "That's a few goes now. Email me directly at graham@theworkings.uk.";
     } else if (why === 'email'){
-      msg.textContent = "That address didn't get past the checks — a work email usually does. Or just email me: graham@workings.co.uk.";
+      msg.textContent = "That address didn't get past the checks — a work email usually does. Or just email me: graham@theworkings.uk.";
       emailEl.setAttribute('aria-invalid','true');
       emailEl.focus();
     } else {
-      msg.textContent = "That didn't send. Email me directly at graham@workings.co.uk and I'll do it by hand.";
+      msg.textContent = "That didn't send. Email me directly at graham@theworkings.uk and I'll do it by hand.";
     }
   });
 });

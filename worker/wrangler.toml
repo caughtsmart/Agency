@@ -9,16 +9,16 @@ workers_dev = false
 # browser's fetch('/api/lead') a same-origin request, so CORS never gets a vote
 # and there is no preflight round trip to pay for.
 #
-# Swap workings.co.uk for the real domain, then `wrangler deploy`.
+# Swap theworkings.uk for the real domain, then `wrangler deploy`.
 # ---------------------------------------------------------------------------
 routes = [
-  { pattern = "workings.co.uk/api/*", zone_name = "workings.co.uk" },
-  { pattern = "www.workings.co.uk/api/*", zone_name = "workings.co.uk" }
+  { pattern = "theworkings.uk/api/*", zone_name = "theworkings.uk" },
+  { pattern = "www.theworkings.uk/api/*", zone_name = "theworkings.uk" }
 ]
 
 [vars]
 # The only origin CORS is opened to. Not a secret, so it lives here.
-ALLOWED_ORIGIN = "https://workings.co.uk"
+ALLOWED_ORIGIN = "https://theworkings.uk"
 
 # ---------------------------------------------------------------------------
 # D1. Create it once, then paste the id it prints in here:
@@ -29,7 +29,7 @@ ALLOWED_ORIGIN = "https://workings.co.uk"
 [[d1_databases]]
 binding = "DB"
 database_name = "workings-leads"
-database_id = "PASTE_DATABASE_ID_HERE"
+database_id = "b1454ca0-d945-46ec-9599-42b31cd9eb54"
 
 [observability]
 enabled = true

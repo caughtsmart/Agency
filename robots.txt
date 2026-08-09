@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /api/
 
-Sitemap: https://workings.co.uk/sitemap.xml
+Sitemap: https://theworkings.uk/sitemap.xml

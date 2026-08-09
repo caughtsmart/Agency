@@ -35,13 +35,13 @@ keeps the privacy notice's "your browser talks to nobody else" claim literally t
 | # | Decision | Answer |
 |---|---|---|
 | D1 | Trading name | **Workings** |
-| D2 | Domain | Not bought yet — placeholder `workings.co.uk` throughout, swapped by `setup.sh` |
-| D3 | Business email | Not set yet — placeholder `graham@workings.co.uk`, same |
+| D2 | Domain | **theworkings.uk** — bought, zone live in Cloudflare |
+| D3 | Business email | `graham@theworkings.uk` — needs Cloudflare Email Routing to receive (see launch steps) |
 | D4 | Limited company | Default: launch as sole trader, register later. Footer reads `[SOLE TRADER / COMPANY DETAILS]` until you fill it in |
 | D5 | Prices | As placeholdered — free call / £1,200 audit / from £3,500 build / £750pm |
 | D6 | Audit refund guarantee | **Cut.** Not published anywhere |
 | D7 | Claim register | C1, C2, C3 confirmed and published. C7 cut |
-| D8 | Calendar | Cal.com. Placeholder link `https://cal.com/workings/look-45min` |
+| D8 | Calendar | Cal.com. **Link still a placeholder** — swap when the account exists |
 
 There are **no `CHECK` comments left in the source**. Everything on the page is either
 confirmed or labelled illustrative.
