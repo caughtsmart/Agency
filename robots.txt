@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /admin.html
+
+Sitemap: https://workings.co.uk/sitemap.xml

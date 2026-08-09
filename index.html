@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Workings — AI and automation for owner-managed businesses</title>
+<meta name="description" content="I run a retail and e-commerce business and automated the repetitive half of it. Fixed-price audits and build sprints for UK firms with 5–20 staff. Start with the free three-minute waste audit.">
+
+<!--
+  ============================================================
+  WORKINGS — landing page
+  Single self-contained file. No build step. No dependencies.
+
+  THE ONLY THINGS YOU NEED TO EDIT ARE THESE FOUR STRINGS.
+  Run ./setup.sh to swap them all in one go, or find-and-replace:
+
+    workings.co.uk               -> your real domain
+    graham@workings.co.uk        -> your real business email
+    https://cal.com/workings/look-45min   -> your real Cal.com link
+    [SOLE TRADER / COMPANY DETAILS]       -> your legal footer line
+
+  Everything else is copy. Edit it in any text editor and re-upload.
+  ============================================================
+-->
+
+<link rel="canonical" href="https://workings.co.uk/">
+<meta name="theme-color" content="#E6E4DA">
+<meta name="robots" content="index,follow">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Workings">
+<meta property="og:url" content="https://workings.co.uk/">
+<meta property="og:title" content="The most expensive person in your business is the one doing it by hand.">
+<meta property="og:description" content="Work out what your manual admin actually costs, in three minutes. No call, no email needed to see the number.">
+<meta property="og:image" content="https://workings.co.uk/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="A ledger showing a typical firm's admin hours costed out in red.">
+<meta property="og:locale" content="en_GB">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="The most expensive person in your business is the one doing it by hand.">
+<meta name="twitter:description" content="Work out what your manual admin actually costs, in three minutes. No call, no email needed to see the number.">
+<meta name="twitter:image" content="https://workings.co.uk/og.png">
+
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/favicon.svg">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Public+Sans:ital,wght@0,400;0,600;1,400&family=Courier+Prime:wght@400;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Public+Sans:ital,wght@0,400;0,600;1,400&family=Courier+Prime:wght@400;700&display=swap">
+
+<style>
+:root{
+  --pad:#E6E4DA;
+  --pad-2:#DEDCD0;
+  --rule:#C0C4B6;
+  --rule-soft:#D2D5C9;
+  --ink:#14170F;
+  --ink-soft:#4E5347;
+  --red:#A32E22;
+  --green:#1F5C3D;
+  --shadow:rgba(20,23,15,.10);
+  --mono:"Courier Prime",ui-monospace,"Cascadia Mono","Segoe UI Mono",Menlo,monospace;
+  --display:"Bricolage Grotesque",Georgia,"Times New Roman",serif;
+  --body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background:var(--pad);
+  color:var(--ink);
+  font-family:var(--body);
+  font-size:17px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  overflow-wrap:break-word;
+}
+/* faint columnar-pad ruling across the whole page */
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:repeating-linear-gradient(to bottom,transparent 0 31px,var(--rule-soft) 31px 32px);
+  opacity:.45;
+}
+.wrap{position:relative;z-index:1;max-width:1080px;margin:0 auto;padding:0 24px}
+
+h1,h2,h3{font-family:var(--display);font-weight:800;letter-spacing:-.02em;line-height:1.04;margin:0}
+p{margin:0 0 1em}
+a{color:var(--ink)}
+img{max-width:100%;height:auto}
+
+.mono{font-family:var(--mono)}
+.eyebrow{
+  font-family:var(--mono);font-size:12px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-soft);margin:0 0 14px;
+}
+.red{color:var(--red)}
+.green{color:var(--green)}
+
+.sr-only{
+  position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+  overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;
+}
+.skip{
+  position:absolute;left:-9999px;top:0;z-index:99;
+  font-family:var(--mono);font-size:13px;padding:11px 18px;
+  background:var(--ink);color:var(--pad);text-decoration:none;
+}
+.skip:focus{left:12px;top:12px}
+
+/* ---------- header ---------- */
+.top{
+  position:relative;z-index:2;border-bottom:1px solid var(--rule);
+  background:var(--pad);
+}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;min-height:64px;gap:16px;padding-top:10px;padding-bottom:10px}
+.mark{font-family:var(--display);font-weight:800;font-size:21px;letter-spacing:-.03em}
+.mark sup{font-family:var(--mono);font-size:9px;font-weight:400;letter-spacing:.1em;color:var(--ink-soft);top:-.9em}
+
+.btn{
+  display:inline-block;font-family:var(--mono);font-size:13px;
+  letter-spacing:.08em;text-transform:uppercase;text-decoration:none;
+  padding:11px 18px;border:1.5px solid var(--ink);background:var(--ink);color:var(--pad);
+  cursor:pointer;transition:transform .12s ease, box-shadow .12s ease;
+  line-height:1.3;text-align:center;
+}
+.btn:hover{transform:translate(-1px,-1px);box-shadow:3px 3px 0 var(--ink)}
+.btn-ghost{background:transparent;color:var(--ink)}
+.btn-ghost:hover{box-shadow:3px 3px 0 var(--rule)}
+.btn[disabled]{opacity:.55;cursor:default;transform:none;box-shadow:none}
+:focus-visible{outline:2.5px solid var(--red);outline-offset:3px}
+
+/* ---------- hero ---------- */
+.hero{padding:74px 0 56px}
+.hero h1{font-size:clamp(34px,6.1vw,70px);max-width:15ch}
+.hero .lede{font-size:clamp(17px,2vw,20px);max-width:56ch;margin-top:24px;color:var(--ink-soft)}
+.hero .lede strong{color:var(--ink);font-weight:600}
+.hero-cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px;align-items:center}
+.hero-note{font-family:var(--mono);font-size:12px;color:var(--ink-soft)}
+
+/* ---------- SIGNATURE: the leak ledger ---------- */
+.ledger{
+  margin:56px 0 0;background:var(--pad-2);border:1.5px solid var(--ink);
+  box-shadow:6px 6px 0 var(--shadow);
+}
+.ledger-head{
+  display:flex;justify-content:space-between;align-items:baseline;gap:12px;
+  padding:14px 20px;border-bottom:1.5px solid var(--ink);flex-wrap:wrap;
+}
+.ledger-head .t{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase}
+.ledger-head .s{font-family:var(--mono);font-size:11px;color:var(--ink-soft)}
+.led-scroll{overflow-x:auto}
+table.led{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:14px}
+table.led caption{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+table.led th{
+  text-align:left;font-weight:400;font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-soft);padding:9px 20px;border-bottom:1px solid var(--rule);
+}
+table.led td{padding:9px 20px;border-bottom:1px solid var(--rule-soft)}
+table.led .num{text-align:right;white-space:nowrap}
+table.led th.num{text-align:right}
+table.led tr.tot td{
+  border-top:2.5px double var(--ink);border-bottom:none;
+  padding-top:14px;padding-bottom:16px;font-weight:700;font-size:16px;
+}
+.led-row{opacity:0;transform:translateY(5px)}
+.led-row.in{animation:stamp .34s ease-out forwards}
+.no-js .led-row{opacity:1;transform:none}
+@keyframes stamp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+.ledger-foot{
+  padding:12px 20px;border-top:1.5px solid var(--ink);
+  font-family:var(--mono);font-size:11px;color:var(--ink-soft);
+}
+
+/* ---------- generic section ---------- */
+section{padding:74px 0;position:relative;z-index:1}
+.rule-top{border-top:1.5px solid var(--ink)}
+.sec-h{font-size:clamp(26px,4vw,40px);max-width:20ch}
+.sec-sub{max-width:58ch;margin-top:16px;color:var(--ink-soft)}
+
+/* ---------- receipts ---------- */
+.receipts{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:40px}
+.receipt{border:1.5px solid var(--ink);background:var(--pad-2);padding:22px 20px 20px}
+.receipt .ref{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--ink-soft)}
+.receipt .fig{font-family:var(--display);font-weight:800;font-size:clamp(30px,4.4vw,38px);line-height:1;margin:12px 0 8px;letter-spacing:-.03em}
+.receipt .cap{font-size:15px;color:var(--ink-soft);line-height:1.45;margin:0}
+
+/* ---------- audit tool ---------- */
+.tool{border:1.5px solid var(--ink);background:var(--pad-2);box-shadow:6px 6px 0 var(--shadow);margin-top:40px}
+.tool-head{padding:16px 24px;border-bottom:1.5px solid var(--ink);display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.tool-head .t{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase}
+.tool-body{padding:26px 24px}
+.q{padding:16px 0;border-bottom:1px solid var(--rule-soft);display:grid;grid-template-columns:1fr 190px;gap:16px;align-items:center}
+.q:last-of-type{border-bottom:none}
+.q label{font-size:16px;line-height:1.4}
+.q .hint{display:block;font-family:var(--mono);font-size:11.5px;color:var(--ink-soft);margin-top:5px}
+.q select{
+  width:100%;font-family:var(--mono);font-size:16px;padding:11px 12px;
+  border:1.5px solid var(--ink);background:var(--pad);color:var(--ink);border-radius:0;
+  appearance:none;
+  background-image:linear-gradient(45deg,transparent 50%,var(--ink) 50%),linear-gradient(135deg,var(--ink) 50%,transparent 50%);
+  background-position:calc(100% - 17px) 50%,calc(100% - 12px) 50%;background-size:5px 5px,5px 5px;background-repeat:no-repeat;
+}
+.q.bad select{border-color:var(--red);border-width:2.5px}
+.q .qerr{display:none;font-family:var(--mono);font-size:11.5px;color:var(--red);margin-top:6px}
+.q.bad .qerr{display:block}
+.tool-foot{padding:20px 24px;border-top:1.5px solid var(--ink);display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+#err:not(:empty){color:var(--red)}
+
+.result{display:none;padding:26px 24px;border-top:1.5px solid var(--ink);background:var(--pad)}
+.result.show{display:block}
+.result .big{font-family:var(--display);font-weight:800;font-size:clamp(38px,7vw,66px);line-height:1;letter-spacing:-.03em;margin:6px 0 4px}
+.result .sub{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 2px}
+.result .rec{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);border-top:2.5px double var(--ink);padding-top:12px;margin-top:14px}
+.result .rec b{font-size:19px;letter-spacing:0}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:30px;margin-top:26px}
+.oppo{list-style:none;padding:0;margin:0}
+.oppo li{padding:11px 0;border-bottom:1px solid var(--rule-soft);font-size:15.5px;display:flex;gap:12px}
+.oppo li .n{font-family:var(--mono);color:var(--red);flex:0 0 auto}
+.oppo li .amt{font-family:var(--mono);font-weight:700}
+
+.gate{margin-top:26px;border:1.5px solid var(--ink);padding:20px;background:var(--pad-2)}
+.gate h3{font-size:20px;margin-bottom:8px}
+.gate p{font-size:15px;color:var(--ink-soft);margin-bottom:14px}
+.gate .row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+.gate .fld{flex:1 1 240px;display:flex;flex-direction:column;gap:5px}
+.gate .fld label{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft)}
+.gate input{
+  font-family:var(--mono);font-size:16px;padding:12px;width:100%;
+  border:1.5px solid var(--ink);background:var(--pad);border-radius:0;color:var(--ink);
+}
+.gate input[aria-invalid="true"]{border-color:var(--red);border-width:2.5px}
+.gate .small{font-family:var(--mono);font-size:11.5px;margin:12px 0 0;color:var(--ink-soft)}
+.gate .small.bad{color:var(--red)}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+
+/* ---------- pricing ---------- */
+.tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:40px}
+.tier{border:1.5px solid var(--ink);background:var(--pad-2);padding:24px 22px;display:flex;flex-direction:column}
+.tier.pick{background:var(--ink);color:var(--pad);box-shadow:6px 6px 0 var(--shadow)}
+.tier.pick .price,.tier.pick h3{color:var(--pad)}
+.tier.pick .lst li{border-color:#3A3E33;color:#CFCDC2}
+.tier .step{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--ink-soft)}
+.tier.pick .step{color:#9C9E92}
+.tier h3{font-size:23px;margin:10px 0 6px}
+.tier .price{font-family:var(--mono);font-size:15px;font-weight:700;margin-bottom:14px}
+.lst{list-style:none;padding:0;margin:0 0 20px;flex:1}
+.lst li{font-size:15px;padding:9px 0;border-bottom:1px solid var(--rule-soft);color:var(--ink-soft)}
+.lst li:last-child{border-bottom:none}
+.tier .btn{align-self:flex-start}
+.tier.pick .btn{background:var(--pad);color:var(--ink);border-color:var(--pad)}
+.tier.pick .btn:hover{box-shadow:3px 3px 0 #4E5347}
+.vat-note{font-family:var(--mono);font-size:11.5px;color:var(--ink-soft);margin-top:20px}
+
+/* ---------- operator ---------- */
+.op{display:grid;grid-template-columns:1.15fr .85fr;gap:44px;align-items:start}
+.op p{font-size:17px}
+.card{border:1.5px solid var(--ink);background:var(--pad-2);padding:22px}
+.card dl{margin:0;font-family:var(--mono);font-size:13px}
+.card dt{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);margin-top:14px}
+.card dt:first-child{margin-top:0}
+.card dd{margin:3px 0 0}
+
+/* ---------- faq ---------- */
+details{border-bottom:1px solid var(--rule);padding:18px 0}
+details summary{
+  cursor:pointer;font-family:var(--display);font-weight:600;font-size:18.5px;
+  list-style:none;display:flex;justify-content:space-between;gap:16px;
+}
+details summary::-webkit-details-marker{display:none}
+details summary::after{content:"+";font-family:var(--mono);color:var(--red);flex:0 0 auto}
+details[open] summary::after{content:"−"}
+details p{margin-top:12px;margin-bottom:0;color:var(--ink-soft);max-width:68ch;font-size:16px}
+
+/* ---------- final cta + footer ---------- */
+.final{background:var(--ink);color:var(--pad);text-align:center}
+.final h2{color:var(--pad);margin:0 auto;font-size:clamp(26px,4.4vw,44px);max-width:18ch}
+.final p{color:#B4B7AB;max-width:50ch;margin:18px auto 28px}
+.final .btn{background:var(--pad);color:var(--ink);border-color:var(--pad)}
+.final .btn:hover{box-shadow:3px 3px 0 #4E5347}
+.final :focus-visible{outline-color:var(--pad)}
+
+footer{border-top:1.5px solid var(--ink);padding:26px 0;font-family:var(--mono);font-size:12px;color:var(--ink-soft)}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+footer a{color:var(--ink-soft)}
+footer nav{display:flex;gap:16px;flex-wrap:wrap}
+
+/* ---------- responsive ---------- */
+@media(max-width:860px){
+  .receipts,.tiers,.split{grid-template-columns:1fr}
+  .op{grid-template-columns:1fr;gap:28px}
+  .q{grid-template-columns:1fr;gap:10px}
+  section{padding:54px 0}
+  .hero{padding:48px 0 40px}
+  .ledger-head,.ledger-foot,table.led th,table.led td{padding-left:16px;padding-right:16px}
+  .tool-body,.tool-head,.tool-foot,.result{padding-left:18px;padding-right:18px}
+}
+@media(max-width:420px){
+  .wrap{padding:0 16px}
+  body{font-size:16px}
+  .top .btn{padding:10px 12px;font-size:12px}
+}
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  .led-row{opacity:1;transform:none}
+  html{scroll-behavior:auto}
+}
+@media print{
+  body::before{display:none}
+  .top,.final,.gate{display:none}
+}
+</style>
+</head>
+<body class="no-js">
+
+<a class="skip" href="#audit">Skip to the audit</a>
+
+<header class="top">
+  <div class="wrap">
+    <div class="mark">Workings<sup>01</sup></div>
+    <a class="btn btn-ghost" href="#audit">Run the free audit</a>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- ============ HERO + LEAK LEDGER ============ -->
+<div class="wrap hero">
+  <p class="eyebrow">AI &amp; automation · 5–20 staff · £1m–£3m turnover</p>
+  <h1>The most expensive person in your business is the one doing it by hand.</h1>
+  <p class="lede">
+    I run a retail and e-commerce business in South Wales. Over the last two years I handed the
+    repetitive half of it to software — purchasing, stock, pricing, reporting, marketing.
+    <strong>Same headcount. Considerably less faff.</strong>
+    Now I do the same for other owner-managed firms growing faster than their admin can cope with.
+  </p>
+  <div class="hero-cta">
+    <a class="btn" href="#audit">Run the free three-minute audit</a>
+    <a class="btn btn-ghost" href="#pricing">See what it costs</a>
+    <span class="hero-note">No sales call required to get your number.</span>
+  </div>
+
+  <div class="ledger">
+    <div class="ledger-head">
+      <span class="t">Leak ledger — typical 12-person firm</span>
+      <span class="s">£22/hr loaded · 46 working weeks</span>
+    </div>
+    <div class="led-scroll">
+      <table class="led">
+        <caption>Illustrative annual cost of manual admin in a typical twelve-person firm.</caption>
+        <thead>
+          <tr><th scope="col">Account</th><th scope="col" class="num">Hrs / week</th><th scope="col" class="num">Cost / year</th></tr>
+        </thead>
+        <tbody id="ledgerBody">
+          <tr class="led-row"><td>Re-typing data between systems</td><td class="num">7.0</td><td class="num red">£7,084</td></tr>
+          <tr class="led-row"><td>Building quotes and purchase orders</td><td class="num">5.5</td><td class="num red">£5,566</td></tr>
+          <tr class="led-row"><td>Answering the same twenty questions</td><td class="num">6.0</td><td class="num red">£6,072</td></tr>
+          <tr class="led-row"><td>Stock counts and reconciliation</td><td class="num">4.5</td><td class="num red">£4,554</td></tr>
+          <tr class="led-row"><td>Pulling numbers into a report nobody reads</td><td class="num">3.0</td><td class="num red">£3,036</td></tr>
+          <tr class="led-row tot"><td>Total, sat in the wrong column</td><td class="num">26.0</td><td class="num red">£26,312</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="ledger-foot">Illustrative. Yours will be different — that's what the audit is for.</div>
+  </div>
+</div>
+
+<!-- ============ RECEIPTS ============ -->
+<section class="rule-top">
+  <div class="wrap">
+    <p class="eyebrow">Receipts, not case studies</p>
+    <h2 class="sec-h">Everything I sell, I built for myself first.</h2>
+    <p class="sec-sub">These are from my own business. I'll walk you through any of them, warts included, on a call.</p>
+    <div class="receipts">
+      <div class="receipt">
+        <div class="ref">REF / PURCHASING</div>
+        <p class="fig green">6 hrs → 20 min</p>
+        <p class="cap">Weekly supplier reorder. Sales velocity, seasonality and stock-by-location worked out automatically. The buyer reviews and sends.</p>
+      </div>
+      <div class="receipt">
+        <div class="ref">REF / DEAD STOCK</div>
+        <p class="fig">986 lines</p>
+        <p class="cap">Slow stock scored by how dead it actually was, priced by tier with a cost floor, and written straight to the website. Two days of work, done in an afternoon.</p>
+      </div>
+      <div class="receipt">
+        <div class="ref">REF / EMAIL</div>
+        <p class="fig green">2.5×</p>
+        <p class="cap">Click rate on the rebuilt welcome sequence, after segmenting on actual buying behaviour rather than "everyone who ever gave us an email".</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ THE AUDIT TOOL ============ -->
+<section class="rule-top" id="audit">
+  <div class="wrap">
+    <p class="eyebrow">Free · no call · 3 minutes</p>
+    <h2 class="sec-h">Work out what your admin is actually costing you.</h2>
+    <p class="sec-sub">Eight questions. Best estimates are fine — you know your business better than any benchmark does. You'll get a number and the three jobs worth fixing first.</p>
+
+    <div class="tool">
+      <div class="tool-head">
+        <span class="t">Waste audit · form WA-1</span>
+        <span class="t" id="progress" role="status" aria-live="polite">0 / 8 answered</span>
+      </div>
+      <div class="tool-body" id="questions">
+        <noscript>
+          <p style="margin:0">The audit needs JavaScript to do the arithmetic. If you'd rather not turn it on, email me at
+          <a href="mailto:graham@workings.co.uk">graham@workings.co.uk</a> with a rough idea of the hours and I'll work it out by hand.</p>
+        </noscript>
+      </div>
+      <div class="tool-foot">
+        <button class="btn" id="calc" type="button">Calculate my number</button>
+        <span class="hero-note" id="err" role="status" aria-live="polite"></span>
+      </div>
+
+      <div class="result" id="result" aria-live="polite">
+        <p class="sr-only" id="announce"></p>
+        <p class="sub">Estimated annual cost of manual admin</p>
+        <p class="big red" id="total">£0</p>
+        <p class="rec">Realistically recoverable in year one <b class="green mono" id="recover">£0</b></p>
+
+        <div class="split">
+          <div>
+            <h3 class="eyebrow" style="margin-top:6px">Worth fixing first</h3>
+            <ul class="oppo" id="oppos"></ul>
+          </div>
+          <div>
+            <h3 class="eyebrow" style="margin-top:6px">How I got there</h3>
+            <div class="mono" style="font-size:13px;line-height:1.65" id="workings"></div>
+          </div>
+        </div>
+
+        <form class="gate" id="gate" novalidate>
+          <h3>Want me to look at it properly?</h3>
+          <p>I'll read it and reply personally — usually within a day — with what I'd actually do about it.</p>
+          <div class="row">
+            <span class="fld">
+              <label for="email">Your email</label>
+              <input type="email" id="email" name="email" autocomplete="email" inputmode="email" placeholder="you@yourcompany.co.uk" required>
+            </span>
+            <span class="fld">
+              <label for="company">Company name</label>
+              <input type="text" id="company" name="company" autocomplete="organization" placeholder="Your Company Ltd">
+            </span>
+            <input class="hp" type="text" id="website" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+            <button class="btn" id="send" type="submit">Send it to Graham</button>
+          </div>
+          <p class="small" id="gateMsg" role="status" aria-live="polite">Goes straight to me, not a mailing list. One reply, from a person. No sequence, no newsletter. <a href="/privacy.html">What I do with it</a>.</p>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PRICING ============ -->
+<section class="rule-top" id="pricing">
+  <div class="wrap">
+    <p class="eyebrow">Fixed prices · no day rates · no lock-in</p>
+    <h2 class="sec-h">Start small. Prove it pays. Then do more.</h2>
+    <p class="sec-sub">Most people start at step two and stop there quite happily. That's a fine outcome.</p>
+    <div class="tiers">
+
+      <div class="tier">
+        <span class="step">STEP 01</span>
+        <h3>The look</h3>
+        <p class="price">Free · 45 minutes</p>
+        <ul class="lst">
+          <li>A call, on video, with me</li>
+          <li>You show me how the work actually flows</li>
+          <li>I tell you the two or three things I'd change</li>
+          <li>If there's nothing worth doing, I'll say so</li>
+        </ul>
+        <a class="btn btn-ghost" href="https://cal.com/workings/look-45min">Book a look</a>
+      </div>
+
+      <div class="tier pick">
+        <span class="step">STEP 02 · MOST START HERE</span>
+        <h3>The audit</h3>
+        <p class="price">£1,200 + VAT · 2 weeks</p>
+        <ul class="lst">
+          <li>Half a day on site, watching the real thing</li>
+          <li>Every repetitive job costed and ranked</li>
+          <li>A build plan with prices against each item</li>
+          <li>One quick win built and live before I leave</li>
+          <li>Fee comes off the first build if you go ahead</li>
+        </ul>
+        <a class="btn" href="https://cal.com/workings/look-45min">Book the audit</a>
+      </div>
+
+      <div class="tier">
+        <span class="step">STEP 03</span>
+        <h3>The build</h3>
+        <p class="price">From £3,500 + VAT · 3–4 weeks</p>
+        <ul class="lst">
+          <li>One job, properly automated, in production</li>
+          <li>Built on tools you already pay for where possible</li>
+          <li>Your team trained on it, in plain English</li>
+          <li>Written down so you're not hostage to me</li>
+          <li>Ongoing support from £750/month if wanted</li>
+        </ul>
+        <a class="btn btn-ghost" href="https://cal.com/workings/look-45min">Talk it through</a>
+      </div>
+
+    </div>
+    <p class="vat-note">Prices are per project, not per day. Nothing starts without a written scope you've agreed.</p>
+  </div>
+</section>
+
+<!-- ============ OPERATOR ============ -->
+<section class="rule-top" id="who">
+  <div class="wrap op">
+    <div>
+      <p class="eyebrow">Who you'd actually be dealing with</p>
+      <h2 class="sec-h">I've met a payroll. Most people selling you AI haven't.</h2>
+      <p style="margin-top:22px">
+        I'm Graham. I started a retail business in 2020, opened a shop in 2023, and now run a
+        team across a shop and a warehouse. I've done the VAT return at eleven at night. I've
+        had the cashflow week where you move money around and hope. I know what it's like when
+        the thing that's supposed to save you time takes six months and a consultant to install.
+      </p>
+      <p>
+        So I work the other way round. Small pieces, fast, on tools you're already paying for.
+        Nothing that needs a change programme. Nothing that leaves you unable to run your own
+        business without me. If the honest answer is "hire someone" or "just use a spreadsheet",
+        that's what I'll tell you — I'd rather lose the sale than sell you a machine you don't need.
+      </p>
+      <p>
+        And I'm still running the day job, which means two things. One: everything I recommend
+        is something I'm living with myself. Two: I take on three clients at a time,
+        so if I'm full I'll say so and tell you when I'm not.
+      </p>
+    </div>
+    <div class="card">
+      <dl>
+        <dt>Based</dt><dd>Barry, South Wales</dd>
+        <dt>Works with</dt><dd>UK firms, 5–20 staff</dd>
+        <dt>Best fit</dt><dd>Retail, e-commerce, distribution, trade &amp; wholesale</dd>
+        <dt>Tools I lean on</dt><dd>Shopify, Xero, Klaviyo, Google Workspace, Cloudflare, Claude</dd>
+        <dt>Capacity</dt><dd>3 active clients</dd>
+        <dt>Will not do</dt><dd>Six-month discovery phases. Anything a spreadsheet already does well.</dd>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section class="rule-top" id="questions-section">
+  <div class="wrap">
+    <p class="eyebrow">The awkward questions</p>
+    <h2 class="sec-h">Asked before you have to ask them.</h2>
+    <div style="margin-top:32px">
+      <details>
+        <summary>Is this going to cost me staff?</summary>
+        <p>Usually not, and I'd be wary of anyone promising it will. In a business your size the bottleneck isn't headcount, it's that your good people spend a third of the week on work a machine should do. The gain shows up as more done with the people you've got — which is what you need if you're growing and can't afford the next hire yet.</p>
+      </details>
+      <details>
+        <summary>We've been burned by an agency before.</summary>
+        <p>Most people have. That's why the audit is fixed-price and comes off the build, why there's no retainer until something is live and working, and why everything gets documented so you can take it in-house or to someone else. If I disappeared tomorrow your business would still run.</p>
+      </details>
+      <details>
+        <summary>Our data is a mess. Aren't we too early for this?</summary>
+        <p>Everyone's data is a mess. Mine was. You don't need a data warehouse to stop someone re-typing invoices into a spreadsheet. I start with the jobs that don't depend on clean data, and the data tends to tidy itself up as a side effect of automating the thing that kept breaking it.</p>
+      </details>
+      <details>
+        <summary>Cashflow is tight. That's rather the problem.</summary>
+        <p>Understood — it's why the first step is free and the second is £1,200 rather than £15,000. I'd rather find you one thing that pays for itself inside a quarter than sell you a programme. If the audit turns up nothing worth building, I'll tell you that on the day rather than write it up nicely and invoice you anyway.</p>
+      </details>
+      <details>
+        <summary>Do you actually build it, or just write a report?</summary>
+        <p>I build it. The audit includes something working before I leave, so you can see the difference between a slide deck and a thing that runs on Tuesday morning without anyone touching it.</p>
+      </details>
+      <details>
+        <summary>What if we're in the same trade as you?</summary>
+        <p>Then I'll turn you down. I won't take on a business that competes with mine, and I don't reuse one client's numbers or systems on another's account. Say so early and neither of us wastes an hour.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FINAL ============ -->
+<section class="final rule-top">
+  <div class="wrap">
+    <h2>Find out what a fortnight of your week is worth.</h2>
+    <p>Three minutes, no call, no email needed to see your number.</p>
+    <a class="btn" href="#audit">Run the audit</a>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Workings · [SOLE TRADER / COMPANY DETAILS] · Barry, South Wales</span>
+    <nav aria-label="Legal">
+      <a href="mailto:graham@workings.co.uk">graham@workings.co.uk</a>
+      <a href="/privacy.html">Privacy</a>
+      <a href="/terms.html">Terms</a>
+    </nav>
+  </div>
+</footer>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ProfessionalService",
+  "name": "Workings",
+  "url": "https://workings.co.uk/",
+  "email": "graham@workings.co.uk",
+  "description": "AI and automation for UK owner-managed businesses with 5 to 20 staff. Fixed-price audits and build sprints.",
+  "areaServed": { "@type": "Country", "name": "United Kingdom" },
+  "address": { "@type": "PostalAddress", "addressLocality": "Barry", "addressRegion": "South Wales", "addressCountry": "GB" },
+  "founder": { "@type": "Person", "name": "Graham" },
+  "knowsAbout": ["Business process automation", "E-commerce operations", "Shopify", "Xero", "Reporting automation"],
+  "priceRange": "££"
+}
+</script>
+
+<script>
+(function(){
+'use strict';
+document.body.classList.remove('no-js');
+
+/* ---------- ledger stamp-in on load ---------- */
+(function(){
+  var rows = document.querySelectorAll('#ledgerBody .led-row');
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduce){
+    Array.prototype.forEach.call(rows, function(r){ r.style.opacity = 1; r.style.transform = 'none'; });
+    return;
+  }
+  Array.prototype.forEach.call(rows, function(r,i){
+    setTimeout(function(){ r.classList.add('in'); }, 220 + i*130);
+  });
+})();
+
+/* ---------- audit questions ---------- */
+var HOURS = [
+  {v:'',   t:'Choose…'},
+  {v:'0',  t:'None, honestly'},
+  {v:'2',  t:'1–3 hours'},
+  {v:'4.5',t:'3–6 hours'},
+  {v:'8',  t:'6–10 hours'},
+  {v:'14', t:'More than 10'}
+];
+
+var QUESTIONS = [
+  {id:'entry',  q:'Re-typing the same information into two different systems',
+   hint:'Orders, invoices, stock, contacts — anything that gets keyed in twice.', opts:HOURS, key:'Data re-entry'},
+  {id:'quotes', q:'Building quotes, purchase orders or supplier orders by hand',
+   hint:'Including working out what to order and how much.', opts:HOURS, key:'Quoting & purchasing'},
+  {id:'inbox',  q:'Answering customer questions you have answered a hundred times',
+   hint:'Where is my order, do you have it in stock, what are your hours.', opts:HOURS, key:'Repeat customer questions'},
+  {id:'stock',  q:'Stock counts, reconciliation or chasing what does not match',
+   hint:'Or for service firms: timesheets, job sheets, reconciling what was actually done.', opts:HOURS, key:'Stock & reconciliation'},
+  {id:'report', q:'Pulling numbers together into reports and spreadsheets',
+   hint:'Weekly sales, margin, KPI packs, anything copied out of one system into a spreadsheet.', opts:HOURS, key:'Reporting'},
+  {id:'market', q:'Writing and sending marketing by hand',
+   hint:'Emails, social posts, product descriptions, listings.', opts:HOURS, key:'Marketing production'},
+  {id:'rate',   q:'Roughly what does an hour of that person cost you?',
+   hint:'Salary plus NI, pension and overhead. Guess high rather than low.',
+   opts:[{v:'',t:'Choose…'},{v:'16',t:'About £16/hr'},{v:'22',t:'About £22/hr'},{v:'30',t:'About £30/hr'},{v:'45',t:'About £45/hr — it is often me'}]},
+  {id:'weeks',  q:'How many weeks a year does the business actually trade?',
+   hint:'Take off shutdown, holidays and the dead fortnight in August.',
+   opts:[{v:'',t:'Choose…'},{v:'40',t:'About 40'},{v:'46',t:'About 46'},{v:'50',t:'About 50'},{v:'52',t:'All of them, sadly'}]}
+];
+
+var box = document.getElementById('questions');
+
+QUESTIONS.forEach(function(q){
+  var row = document.createElement('div');
+  row.className = 'q';
+
+  var label = document.createElement('label');
+  label.setAttribute('for', q.id);
+  label.appendChild(document.createTextNode(q.q));
+  var hint = document.createElement('span');
+  hint.className = 'hint';
+  hint.textContent = q.hint;
+  label.appendChild(hint);
+
+  var wrap = document.createElement('div');
+  var sel = document.createElement('select');
+  sel.id = q.id;
+  sel.setAttribute('aria-describedby', q.id + '-err');
+  q.opts.forEach(function(o){
+    var opt = document.createElement('option');
+    opt.value = o.v;
+    opt.textContent = o.t;
+    sel.appendChild(opt);
+  });
+  var qerr = document.createElement('span');
+  qerr.className = 'qerr';
+  qerr.id = q.id + '-err';
+  qerr.textContent = 'Needs an answer.';
+
+  wrap.appendChild(sel);
+  wrap.appendChild(qerr);
+  row.appendChild(label);
+  row.appendChild(wrap);
+  box.appendChild(row);
+
+  sel.addEventListener('change', function(){
+    if (sel.value !== ''){
+      row.classList.remove('bad');
+      sel.removeAttribute('aria-invalid');
+    }
+    updateProgress();
+  });
+});
+
+function el(id){ return document.getElementById(id); }
+function answeredCount(){
+  return QUESTIONS.filter(function(q){ return el(q.id).value !== ''; }).length;
+}
+function updateProgress(){
+  el('progress').textContent = answeredCount() + ' / ' + QUESTIONS.length + ' answered';
+}
+updateProgress();
+
+function money(n){ return '£' + Math.round(n).toLocaleString('en-GB'); }
+function hrs(n){ return (Math.round(n * 10) / 10).toFixed(1); }
+
+var LAST = null;
+var RENDERED_AT = Date.now();
+
+el('calc').addEventListener('click', function(){
+  var err = el('err');
+  var firstBad = null;
+
+  QUESTIONS.forEach(function(q){
+    var sel = el(q.id);
+    var row = sel.closest('.q');
+    if (sel.value === ''){
+      row.classList.add('bad');
+      sel.setAttribute('aria-invalid','true');
+      if (!firstBad) firstBad = sel;
+    } else {
+      row.classList.remove('bad');
+      sel.removeAttribute('aria-invalid');
+    }
+  });
+
+  if (firstBad){
+    err.textContent = 'Answer all eight and I can give you a number.';
+    firstBad.focus();
+    return;
+  }
+  err.textContent = '';
+
+  var rate  = parseFloat(el('rate').value);
+  var weeks = parseFloat(el('weeks').value);
+
+  var tasks = QUESTIONS.filter(function(q){ return q.key; }).map(function(q){
+    var h = parseFloat(el(q.id).value);
+    return { name: q.key, hrs: h, cost: Math.round(h * rate * weeks) };
+  });
+
+  var hours = tasks.reduce(function(a,t){ return a + t.hrs; }, 0);
+  var total = Math.round(hours * rate * weeks);
+  var recoverable = Math.round(total * 0.55);
+
+  el('total').textContent = money(total);
+  el('recover').textContent = money(recoverable);
+
+  var w = el('workings');
+  w.textContent = '';
+  var lines = [
+    hrs(hours) + ' hrs/week × ' + money(rate) + '/hr × ' + weeks + ' weeks',
+    '= ' + money(total) + ' a year.',
+    '',
+    money(total) + ' × 0.55 = ' + money(recoverable) + ' realistically recoverable.',
+    '',
+    'The 55% is deliberately conservative. Some of these jobs go to near zero. Others just get faster. None of them go away entirely — and I would not believe anyone who told you they did.'
+  ];
+  lines.forEach(function(line, i){
+    if (line === ''){ w.appendChild(document.createElement('br')); return; }
+    var p = document.createElement('div');
+    p.textContent = line;
+    w.appendChild(p);
+  });
+
+  var top = tasks.filter(function(t){ return t.hrs > 0; })
+                 .sort(function(a,b){ return b.cost - a.cost; })
+                 .slice(0,3);
+
+  var ul = el('oppos');
+  ul.textContent = '';
+  if (top.length){
+    top.forEach(function(t,i){
+      var li = document.createElement('li');
+      var n = document.createElement('span');
+      n.className = 'n';
+      n.textContent = ('0' + (i+1)).slice(-2);
+      var s = document.createElement('span');
+      s.appendChild(document.createTextNode(t.name + ' — '));
+      var b = document.createElement('span');
+      b.className = 'amt red';
+      b.textContent = money(t.cost);
+      s.appendChild(b);
+      s.appendChild(document.createTextNode(' a year, ' + hrs(t.hrs) + ' hrs a week'));
+      li.appendChild(n);
+      li.appendChild(s);
+      ul.appendChild(li);
+    });
+  } else {
+    var li = document.createElement('li');
+    li.textContent = 'Nothing obvious. Either you are already tidy, or you are underestimating. It is usually the second one.';
+    ul.appendChild(li);
+  }
+
+  LAST = {
+    total: total,
+    recoverable: recoverable,
+    hours: Math.round(hours * 10) / 10,
+    rate: rate,
+    weeks: weeks,
+    tasks: tasks
+  };
+
+  el('announce').textContent = total > 0
+    ? 'Result: an estimated ' + money(total) + ' a year, of which about ' + money(recoverable) + ' is realistically recoverable.'
+    : 'Result: no measurable manual admin from your answers.';
+
+  var res = el('result');
+  res.classList.add('show');
+  res.scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
+
+/* ---------- lead capture ----------
+   POSTs to the Cloudflare Worker at /api/lead (see worker/src/index.js).
+   Route the Worker on this domain so this stays a same-origin request. */
+el('gate').addEventListener('submit', function(ev){
+  ev.preventDefault();
+
+  var emailEl = el('email');
+  var email = emailEl.value.trim();
+  var company = el('company').value.trim();
+  var msg = el('gateMsg');
+  var btn = el('send');
+
+  if (!LAST){
+    msg.textContent = 'Run the numbers first and then I will have something to reply to.';
+    msg.classList.add('bad');
+    return;
+  }
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(email) || email.length > 254){
+    msg.textContent = 'That email does not look right. Have another go.';
+    msg.classList.add('bad');
+    emailEl.setAttribute('aria-invalid','true');
+    emailEl.focus();
+    return;
+  }
+  emailEl.removeAttribute('aria-invalid');
+  msg.classList.remove('bad');
+  msg.textContent = 'Sending…';
+  btn.disabled = true;
+
+  var payload = {
+    email: email,
+    company: company,
+    website: el('website').value,
+    elapsed: Date.now() - RENDERED_AT,
+    audit: LAST,
+    source: 'waste-audit-WA1'
+  };
+
+  fetch('/api/lead', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  }).then(function(res){
+    if (res.status === 429) throw new Error('rate');
+    if (!res.ok) throw new Error('http ' + res.status);
+    return res.json();
+  }).then(function(data){
+    if (!data || data.ok !== true) throw new Error('bad body');
+    msg.textContent = 'Got it. I will read it and come back to you within a working day.';
+    btn.textContent = 'Sent';
+  })['catch'](function(e){
+    btn.disabled = false;
+    msg.classList.add('bad');
+    msg.textContent = (e && e.message === 'rate')
+      ? 'That is a few goes now. Email me directly at graham@workings.co.uk.'
+      : 'That did not send. Email me directly at graham@workings.co.uk and I will do it by hand.';
+  });
+});
+})();
+</script>
+
+</body>
+</html>

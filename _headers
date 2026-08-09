@@ -1,0 +1,40 @@
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), interest-cohort=()
+  Cross-Origin-Opener-Policy: same-origin
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  Content-Security-Policy: default-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com; connect-src 'self' https://cloudflareinsights.com; upgrade-insecure-requests
+
+# Notes on the CSP above:
+#
+# 'unsafe-inline' is present for script-src and style-src on purpose. The site is
+# a single self-contained HTML file with its CSS and JS inline, which is the whole
+# point — Graham can open it in a text editor and change it without a build step.
+# Hashes would be stricter but would silently break the page every time a character
+# changes. Given the page has no user-generated content, no third-party scripts and
+# no cookies or auth to steal, the residual XSS risk is close to nil.
+#
+# script-src also allows static.cloudflareinsights.com, which is where Cloudflare
+# Web Analytics loads its beacon from. Remove it if you don't turn analytics on.
+#
+# If you ever move to a build step, drop 'unsafe-inline' and use a nonce.
+
+# Fonts and the favicon can be cached hard. HTML must not be.
+/favicon.svg
+  Cache-Control: public, max-age=604800
+
+/og.png
+  Cache-Control: public, max-age=604800
+
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+/
+  Cache-Control: public, max-age=0, must-revalidate
+
+# The leads page is not for the public and not for search engines.
+/admin.html
+  X-Robots-Tag: noindex, nofollow
+  Cache-Control: no-store

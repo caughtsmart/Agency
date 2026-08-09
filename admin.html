@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Leads — Workings</title>
+<!--
+  Not linked from anywhere and not indexed. Open it directly, paste the
+  ADMIN_KEY, read the list. The key is held in memory only — refresh the
+  page and you type it again. That is deliberate: nothing on this site
+  writes to localStorage.
+-->
+<style>
+:root{
+  --pad:#E6E4DA;--pad-2:#DEDCD0;--rule:#C0C4B6;--rule-soft:#D2D5C9;
+  --ink:#14170F;--ink-soft:#4E5347;--red:#A32E22;--green:#1F5C3D;
+  --mono:ui-monospace,"Courier New",Menlo,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--pad);color:var(--ink);font-family:var(--mono);font-size:14px;line-height:1.55}
+.wrap{max-width:1080px;margin:0 auto;padding:28px 20px 60px}
+h1{font-size:20px;letter-spacing:-.01em;margin:0 0 4px}
+.sub{color:var(--ink-soft);font-size:12px;margin:0 0 24px}
+form{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;border:1.5px solid var(--ink);background:var(--pad-2);padding:16px;margin-bottom:24px}
+label{display:block;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:5px}
+input{font-family:var(--mono);font-size:15px;padding:10px;border:1.5px solid var(--ink);background:var(--pad);border-radius:0;color:var(--ink);min-width:280px}
+button{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;padding:11px 18px;border:1.5px solid var(--ink);background:var(--ink);color:var(--pad);cursor:pointer}
+button[disabled]{opacity:.55;cursor:default}
+:focus-visible{outline:2.5px solid var(--red);outline-offset:3px}
+#msg{color:var(--red);font-size:12px;min-height:1.2em;margin:0 0 16px}
+table{width:100%;border-collapse:collapse;font-size:13px;background:var(--pad-2);border:1.5px solid var(--ink)}
+th{text-align:left;font-weight:400;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);padding:10px;border-bottom:1.5px solid var(--ink)}
+td{padding:10px;border-bottom:1px solid var(--rule-soft);vertical-align:top}
+.num{text-align:right;white-space:nowrap}
+.red{color:var(--red)}
+.green{color:var(--green)}
+.tasks{color:var(--ink-soft);font-size:11.5px}
+.flag{color:var(--red);font-size:11px}
+a{color:var(--ink)}
+.scroll{overflow-x:auto}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Leads</h1>
+  <p class="sub">Whatever has come through the audit form. Newest first. Reply from your inbox — this page only reads.</p>
+
+  <form id="f">
+    <div>
+      <label for="key">Admin key</label>
+      <input type="password" id="key" autocomplete="off" spellcheck="false" placeholder="paste ADMIN_KEY">
+    </div>
+    <button type="submit" id="go">Load</button>
+  </form>
+
+  <p id="msg" role="status" aria-live="polite"></p>
+
+  <div class="scroll">
+    <table id="tbl" hidden>
+      <thead>
+        <tr>
+          <th scope="col">When</th>
+          <th scope="col">Company</th>
+          <th scope="col">Email</th>
+          <th scope="col" class="num">Total/yr</th>
+          <th scope="col" class="num">Recoverable</th>
+          <th scope="col">Top three</th>
+        </tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+(function(){
+'use strict';
+var msg = document.getElementById('msg');
+var tbl = document.getElementById('tbl');
+var rows = document.getElementById('rows');
+
+function gbp(n){ return '£' + Number(n || 0).toLocaleString('en-GB'); }
+function when(iso){
+  var d = new Date(iso);
+  return isNaN(d) ? iso : d.toLocaleString('en-GB', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
+}
+function cell(row, text, cls){
+  var td = document.createElement('td');
+  if (cls) td.className = cls;
+  td.textContent = text;
+  row.appendChild(td);
+  return td;
+}
+
+document.getElementById('f').addEventListener('submit', function(ev){
+  ev.preventDefault();
+  var key = document.getElementById('key').value.trim();
+  var btn = document.getElementById('go');
+  if (!key){ msg.textContent = 'Needs the key.'; return; }
+
+  msg.textContent = 'Loading…';
+  btn.disabled = true;
+
+  fetch('/api/leads?limit=200&key=' + encodeURIComponent(key))
+    .then(function(r){
+      if (r.status === 401) throw new Error('Wrong key.');
+      if (!r.ok) throw new Error('Server said ' + r.status + '.');
+      return r.json();
+    })
+    .then(function(data){
+      rows.textContent = '';
+      (data.leads || []).forEach(function(l){
+        var tr = document.createElement('tr');
+        cell(tr, when(l.created_at));
+
+        var c = cell(tr, l.company || '—');
+        if (!l.notified){
+          var f = document.createElement('div');
+          f.className = 'flag';
+          f.textContent = 'email not sent';
+          c.appendChild(f);
+        }
+
+        var td = document.createElement('td');
+        var a = document.createElement('a');
+        a.href = 'mailto:' + l.email;
+        a.textContent = l.email;
+        td.appendChild(a);
+        tr.appendChild(td);
+
+        cell(tr, gbp(l.total), 'num red');
+        cell(tr, gbp(l.recoverable), 'num green');
+
+        var top = (l.tasks || []).slice().filter(function(t){ return t.hrs > 0; })
+          .sort(function(a,b){ return b.cost - a.cost; }).slice(0,3)
+          .map(function(t){ return t.name + ' ' + gbp(t.cost); }).join(' · ');
+        cell(tr, top || 'answered none to everything', 'tasks');
+
+        rows.appendChild(tr);
+      });
+      tbl.hidden = false;
+      msg.textContent = (data.count || 0) + ' submissions.';
+      msg.style.color = 'var(--ink-soft)';
+    })
+    ['catch'](function(e){
+      msg.style.color = 'var(--red)';
+      msg.textContent = e.message || 'That did not work.';
+    })
+    .then(function(){ btn.disabled = false; });
+});
+})();
+</script>
+</body>
+</html>
