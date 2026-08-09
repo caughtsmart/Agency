@@ -43,16 +43,24 @@
 <meta name="twitter:title" content="The most expensive person in your business is the one doing it by hand.">
 <meta name="twitter:description" content="Work out what your manual admin actually costs, in three minutes. No call, no email needed to see the number.">
 <meta name="twitter:image" content="https://workings.co.uk/og.png">
+<meta name="twitter:image:alt" content="A ledger showing a typical firm's admin hours costed out in red.">
 
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="/favicon.svg">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="color-scheme" content="light">
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Public+Sans:ital,wght@0,400;0,600;1,400&family=Courier+Prime:wght@400;700&display=swap">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Public+Sans:ital,wght@0,400;0,600;1,400&family=Courier+Prime:wght@400;700&display=swap">
+<!-- Fonts are self-hosted: no third-party request in the critical path, and
+     nothing for the privacy notice to disclose. Latin subsets only, ~110KB. -->
+<link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/bricolage-800.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/public-sans.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/courier-prime-400.woff2">
 
 <style>
+@font-face{font-family:'Bricolage Grotesque';font-style:normal;font-weight:800;font-stretch:100%;font-display:swap;src:url('/fonts/bricolage-800.woff2') format('woff2')}
+@font-face{font-family:'Public Sans';font-style:normal;font-weight:400 600;font-display:swap;src:url('/fonts/public-sans.woff2') format('woff2')}
+@font-face{font-family:'Courier Prime';font-style:normal;font-weight:400;font-display:swap;src:url('/fonts/courier-prime-400.woff2') format('woff2')}
+@font-face{font-family:'Courier Prime';font-style:normal;font-weight:700;font-display:swap;src:url('/fonts/courier-prime-700.woff2') format('woff2')}
+
 :root{
   --pad:#E6E4DA;
   --pad-2:#DEDCD0;
@@ -155,8 +163,8 @@ img{max-width:100%;height:auto}
 }
 .ledger-head .t{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase}
 .ledger-head .s{font-family:var(--mono);font-size:11px;color:var(--ink-soft)}
-.led-scroll{overflow-x:auto}
 table.led{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:14px}
+.led-hrs{display:none}
 table.led caption{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 table.led th{
   text-align:left;font-weight:400;font-size:11px;letter-spacing:.12em;text-transform:uppercase;
@@ -172,6 +180,7 @@ table.led tr.tot td{
 .led-row{opacity:0;transform:translateY(5px)}
 .led-row.in{animation:stamp .34s ease-out forwards}
 .no-js .led-row{opacity:1;transform:none}
+.no-js #calc{display:none}
 @keyframes stamp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
 .ledger-foot{
   padding:12px 20px;border-top:1.5px solid var(--ink);
@@ -236,6 +245,7 @@ section{padding:74px 0;position:relative;z-index:1}
   border:1.5px solid var(--ink);background:var(--pad);border-radius:0;color:var(--ink);
 }
 .gate input[aria-invalid="true"]{border-color:var(--red);border-width:2.5px}
+.gate input::placeholder{color:var(--ink-soft);opacity:1}
 .gate .small{font-family:var(--mono);font-size:11.5px;margin:12px 0 0;color:var(--ink-soft)}
 .gate .small.bad{color:var(--red)}
 .hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
@@ -256,6 +266,7 @@ section{padding:74px 0;position:relative;z-index:1}
 .tier .btn{align-self:flex-start}
 .tier.pick .btn{background:var(--pad);color:var(--ink);border-color:var(--pad)}
 .tier.pick .btn:hover{box-shadow:3px 3px 0 #4E5347}
+.tier.pick :focus-visible{outline-color:var(--pad)}
 .vat-note{font-family:var(--mono);font-size:11.5px;color:var(--ink-soft);margin-top:20px}
 
 /* ---------- operator ---------- */
@@ -289,7 +300,8 @@ details p{margin-top:12px;margin-bottom:0;color:var(--ink-soft);max-width:68ch;f
 footer{border-top:1.5px solid var(--ink);padding:26px 0;font-family:var(--mono);font-size:12px;color:var(--ink-soft)}
 footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 footer a{color:var(--ink-soft)}
-footer nav{display:flex;gap:16px;flex-wrap:wrap}
+footer nav{display:flex;gap:24px;flex-wrap:wrap}
+footer nav a{display:inline-block;padding:4px 0}
 
 /* ---------- responsive ---------- */
 @media(max-width:860px){
@@ -302,8 +314,10 @@ footer nav{display:flex;gap:16px;flex-wrap:wrap}
   .tool-body,.tool-head,.tool-foot,.result{padding-left:18px;padding-right:18px}
 }
 @media(max-width:480px){
-  /* the cost column is the punchline — the hours column gives way, not it */
+  /* The cost column is the punchline, so the hours column gives way — but
+     the hours themselves move into the account cell rather than vanishing. */
   table.led th:nth-child(2),table.led td:nth-child(2){display:none}
+  .led-hrs{display:block;font-size:11px;color:var(--ink-soft);margin-top:2px}
 }
 @media(max-width:420px){
   .wrap{padding:0 16px}
@@ -323,7 +337,7 @@ footer nav{display:flex;gap:16px;flex-wrap:wrap}
 </head>
 <body class="no-js">
 
-<a class="skip" href="#audit">Skip to the audit</a>
+<a class="skip" href="#main">Skip to content</a>
 
 <header class="top">
   <div class="wrap">
@@ -332,7 +346,7 @@ footer nav{display:flex;gap:16px;flex-wrap:wrap}
   </div>
 </header>
 
-<main id="main">
+<main id="main" tabindex="-1">
 
 <!-- ============ HERO + LEAK LEDGER ============ -->
 <div class="wrap hero">
@@ -355,19 +369,19 @@ footer nav{display:flex;gap:16px;flex-wrap:wrap}
       <span class="t">Leak ledger — typical 12-person firm</span>
       <span class="s">£22/hr loaded · 46 working weeks</span>
     </div>
-    <div class="led-scroll" role="region" aria-label="Leak ledger" tabindex="0">
+    <div class="led-scroll">
       <table class="led">
         <caption>Illustrative annual cost of manual admin in a typical twelve-person firm.</caption>
         <thead>
           <tr><th scope="col">Account</th><th scope="col" class="num">Hrs / week</th><th scope="col" class="num">Cost / year</th></tr>
         </thead>
         <tbody id="ledgerBody">
-          <tr class="led-row"><td>Re-typing data between systems</td><td class="num">7.0</td><td class="num red">£7,084</td></tr>
-          <tr class="led-row"><td>Building quotes and purchase orders</td><td class="num">5.5</td><td class="num red">£5,566</td></tr>
-          <tr class="led-row"><td>Answering the same twenty questions</td><td class="num">6.0</td><td class="num red">£6,072</td></tr>
-          <tr class="led-row"><td>Stock counts and reconciliation</td><td class="num">4.5</td><td class="num red">£4,554</td></tr>
-          <tr class="led-row"><td>Pulling numbers into a report nobody reads</td><td class="num">3.0</td><td class="num red">£3,036</td></tr>
-          <tr class="led-row tot"><td>Total, sat in the wrong column</td><td class="num">26.0</td><td class="num red">£26,312</td></tr>
+          <tr class="led-row"><td>Re-typing data between systems<span class="led-hrs">7.0 hrs/wk</span></td><td class="num">7.0</td><td class="num red">£7,084</td></tr>
+          <tr class="led-row"><td>Building quotes and purchase orders<span class="led-hrs">5.5 hrs/wk</span></td><td class="num">5.5</td><td class="num red">£5,566</td></tr>
+          <tr class="led-row"><td>Answering the same twenty questions<span class="led-hrs">6.0 hrs/wk</span></td><td class="num">6.0</td><td class="num red">£6,072</td></tr>
+          <tr class="led-row"><td>Stock counts and reconciliation<span class="led-hrs">4.5 hrs/wk</span></td><td class="num">4.5</td><td class="num red">£4,554</td></tr>
+          <tr class="led-row"><td>Pulling numbers into a report nobody reads<span class="led-hrs">3.0 hrs/wk</span></td><td class="num">3.0</td><td class="num red">£3,036</td></tr>
+          <tr class="led-row tot"><td>Total, sat in the wrong column<span class="led-hrs">26.0 hrs/wk</span></td><td class="num">26.0</td><td class="num red">£26,312</td></tr>
         </tbody>
       </table>
     </div>
@@ -409,9 +423,10 @@ footer nav{display:flex;gap:16px;flex-wrap:wrap}
     <p class="sec-sub">Eight questions. Best estimates are fine — you know your business better than any benchmark does. You'll get a number and the three jobs worth fixing first.</p>
 
     <div class="tool">
+      <p class="sr-only" id="announce" role="status" aria-live="polite"></p>
       <div class="tool-head">
         <span class="t">Waste audit · form WA-1</span>
-        <span class="t" id="progress" role="status" aria-live="polite">0 / 8 answered</span>
+        <span class="t" id="progress">0 / 8 answered</span>
       </div>
       <div class="tool-body" id="questions">
         <noscript>
@@ -425,8 +440,7 @@ footer nav{display:flex;gap:16px;flex-wrap:wrap}
         <span class="hero-note" id="err" role="status" aria-live="polite"></span>
       </div>
 
-      <div class="result" id="result">
-        <p class="sr-only" id="announce" role="status" aria-live="polite"></p>
+      <div class="result" id="result" tabindex="-1">
         <p class="sub">Estimated annual cost of manual admin</p>
         <p class="big red" id="total">£0</p>
         <p class="rec">Realistically recoverable in year one <b class="green mono" id="recover">£0</b></p>
@@ -454,10 +468,12 @@ footer nav{display:flex;gap:16px;flex-wrap:wrap}
               <label for="company">Company name</label>
               <input type="text" id="company" name="company" autocomplete="organization" placeholder="Your Company Ltd">
             </span>
+            <!-- Honeypot. tabindex="-1" and aria-hidden must stay paired:
+                 aria-hidden on a tabbable control is an instant axe failure. -->
             <input class="hp" type="text" id="website" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
             <button class="btn" id="send" type="submit">Send it to Graham</button>
           </div>
-          <p class="small" id="gateMsg" role="status" aria-live="polite">Goes straight to me, not a mailing list. One reply, from a person. No sequence, no newsletter. <a href="/privacy.html">What I do with it</a>.</p>
+          <p class="small" id="gateMsg" role="status" aria-live="polite">Goes straight to me, not a mailing list. One reply, from a person. No sequence, no newsletter. <a href="/privacy">What I do with it</a>.</p>
         </form>
       </div>
     </div>
@@ -605,8 +621,8 @@ footer nav{display:flex;gap:16px;flex-wrap:wrap}
     <span>Workings · [SOLE TRADER / COMPANY DETAILS] · Barry, South Wales</span>
     <nav aria-label="Legal">
       <a href="mailto:graham@workings.co.uk">graham@workings.co.uk</a>
-      <a href="/privacy.html">Privacy</a>
-      <a href="/terms.html">Terms</a>
+      <a href="/privacy">Privacy</a>
+      <a href="/terms">Terms</a>
     </nav>
   </div>
 </footer>
@@ -617,6 +633,7 @@ footer nav{display:flex;gap:16px;flex-wrap:wrap}
   "@type": "ProfessionalService",
   "name": "Workings",
   "url": "https://workings.co.uk/",
+  "image": "https://workings.co.uk/og.png",
   "email": "graham@workings.co.uk",
   "description": "AI and automation for UK owner-managed businesses with 5 to 20 staff. Fixed-price audits and build sprints.",
   "areaServed": { "@type": "Country", "name": "United Kingdom" },
@@ -640,8 +657,10 @@ document.body.classList.remove('no-js');
     Array.prototype.forEach.call(rows, function(r){ r.style.opacity = 1; r.style.transform = 'none'; });
     return;
   }
+  // Short stagger: long fades leave the red figures at low-contrast opacity
+  // for over a second, which automated contrast audits can catch mid-fade.
   Array.prototype.forEach.call(rows, function(r,i){
-    setTimeout(function(){ r.classList.add('in'); }, 220 + i*130);
+    setTimeout(function(){ r.classList.add('in'); }, 120 + i*70);
   });
 })();
 
@@ -686,18 +705,26 @@ QUESTIONS.forEach(function(q){
   var row = document.createElement('div');
   row.className = 'q';
 
+  // The hint lives beside the label, not inside it — inside, it would be
+  // read as part of the question's accessible name, doubling its length.
+  var labelWrap = document.createElement('div');
   var label = document.createElement('label');
   label.setAttribute('for', q.id);
-  label.appendChild(document.createTextNode(q.q));
+  label.textContent = q.q;
   var hint = document.createElement('span');
   hint.className = 'hint';
+  hint.id = q.id + '-hint';
   hint.textContent = q.hint;
-  label.appendChild(hint);
+  labelWrap.appendChild(label);
+  labelWrap.appendChild(hint);
 
   var wrap = document.createElement('div');
   var sel = document.createElement('select');
   sel.id = q.id;
-  sel.setAttribute('aria-describedby', q.id + '-err');
+  // The error id is only attached when the select actually fails validation —
+  // wired up-front, every screen reader hears "Needs an answer." eight times
+  // on a form nobody has touched yet.
+  sel.setAttribute('aria-describedby', q.id + '-hint');
   q.opts.forEach(function(o){
     var opt = document.createElement('option');
     opt.value = o.v;
@@ -711,7 +738,7 @@ QUESTIONS.forEach(function(q){
 
   wrap.appendChild(sel);
   wrap.appendChild(qerr);
-  row.appendChild(label);
+  row.appendChild(labelWrap);
   row.appendChild(wrap);
   box.appendChild(row);
 
@@ -719,6 +746,7 @@ QUESTIONS.forEach(function(q){
     if (sel.value !== ''){
       row.classList.remove('bad');
       sel.removeAttribute('aria-invalid');
+      sel.setAttribute('aria-describedby', q.id + '-hint');
     }
     updateProgress();
     // A changed answer makes the calculated result a lie. Hide it and make
@@ -744,7 +772,10 @@ updateProgress();
 function money(n){ return '£' + Math.round(n).toLocaleString('en-GB'); }
 function hrs(n){ return (Math.round(n * 10) / 10).toFixed(1); }
 
-var REDUCE_MOTION = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+// Read fresh each time — the user can toggle the OS setting mid-visit.
+function reduceMotion(){
+  return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
 var LAST = null;
 var RENDERED_AT = Date.now();
 
@@ -758,10 +789,12 @@ el('calc').addEventListener('click', function(){
     if (sel.value === ''){
       row.classList.add('bad');
       sel.setAttribute('aria-invalid','true');
+      sel.setAttribute('aria-describedby', q.id + '-err ' + q.id + '-hint');
       if (!firstBad) firstBad = sel;
     } else {
       row.classList.remove('bad');
       sel.removeAttribute('aria-invalid');
+      sel.setAttribute('aria-describedby', q.id + '-hint');
     }
   });
 
@@ -849,15 +882,19 @@ el('calc').addEventListener('click', function(){
 
   var res = el('result');
   res.classList.add('show');
-  res.scrollIntoView({ behavior: REDUCE_MOTION ? 'auto' : 'smooth', block: 'start' });
+  // Focus first so a keyboard user lands on the number rather than being
+  // stranded on the Calculate button above the fold.
+  res.focus({ preventScroll: true });
+  res.scrollIntoView({ behavior: reduceMotion() ? 'auto' : 'smooth', block: 'start' });
 
-  // The live region only announces mutations it can see — populate it a frame
-  // after the panel becomes visible, or screen readers hear nothing.
-  requestAnimationFrame(function(){
+  // The announcement region lives outside the hidden panel and is populated a
+  // beat after the panel shows — screen readers reliably pick up mutations on
+  // a region that was already in the tree, not on one that just appeared.
+  setTimeout(function(){
     el('announce').textContent = total > 0
       ? 'Result: an estimated ' + money(total) + ' a year, of which about ' + money(recoverable) + ' is realistically recoverable.'
       : 'Result: no measurable manual admin from your answers.';
-  });
+  }, 120);
 });
 
 /* ---------- lead capture ----------

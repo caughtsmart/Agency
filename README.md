@@ -12,15 +12,21 @@ admin.html          leads list. Not linked, not indexed. Needs the admin key.
 robots.txt
 sitemap.xml
 favicon.svg
+apple-touch-icon.png
 og.png              1200×630 social share card
+fonts/              self-hosted latin subsets — no Google Fonts request
 _headers            security headers for Cloudflare Pages
-setup.sh            swaps the four placeholders for your real details
+setup.sh            swaps the placeholders for your real details
 reply-template.md   how to answer a submission
 worker/
   src/index.js      lead capture Worker
   wrangler.toml
   schema.sql        D1 tables
 ```
+
+The fonts are served from this repo rather than from Google. That keeps first paint fast
+on a bad connection, means the audit tool can't be delayed by a third-party outage, and
+keeps the privacy notice's "your browser talks to nobody else" claim literally true.
 
 ---
 
@@ -214,12 +220,9 @@ about twenty seconds. Things worth knowing:
 
 ## Things I'd consider later, and why they're not here
 
-- **Self-hosting the three fonts.** Would drop the request to `fonts.gstatic.com`, shave a
-  round trip off first paint, and let the privacy notice say "no third parties" flat out.
-  Costs about 250KB in the repo and one more thing to understand. Worth doing if the
-  Lighthouse performance score ever dips below 95 on a real phone.
 - **Cloudflare's native rate-limiting binding** instead of the `rate_hits` table. Cleaner,
-  but it's one more binding to configure and the table works.
+  but it's one more binding to configure and the table works. (The WAF rule above is the
+  higher-value version of the same idea.)
 - **Funnel events** — see above. Deliberately deferred.
 - **A PDF of the audit.** Explicitly out of scope, and it should stay that way. The reply
   is the product; a PDF is a thing you'd then have to keep maintaining.

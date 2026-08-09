@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
+<meta name="color-scheme" content="light">
 <title>Leads — Workings</title>
 <!--
   Not linked from anywhere and not indexed. Open it directly, paste the
@@ -24,6 +25,7 @@ h1{font-size:20px;letter-spacing:-.01em;margin:0 0 4px}
 .sub{color:var(--ink-soft);font-size:12px;margin:0 0 24px}
 form{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;border:1.5px solid var(--ink);background:var(--pad-2);padding:16px;margin-bottom:24px}
 label{display:block;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:5px}
+input::placeholder{color:var(--ink-soft);opacity:1}
 input{font-family:var(--mono);font-size:15px;padding:10px;border:1.5px solid var(--ink);background:var(--pad);border-radius:0;color:var(--ink);min-width:280px}
 button{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;padding:11px 18px;border:1.5px solid var(--ink);background:var(--ink);color:var(--pad);cursor:pointer}
 button[disabled]{opacity:.55;cursor:default}
@@ -42,14 +44,14 @@ a{color:var(--ink)}
 </style>
 </head>
 <body>
-<div class="wrap">
+<main class="wrap">
   <h1>Leads</h1>
   <p class="sub">Whatever has come through the audit form. Newest first. Reply from your inbox — this page only reads.</p>
 
   <form id="f">
     <div>
       <label for="key">Admin key</label>
-      <input type="password" id="key" autocomplete="off" spellcheck="false" placeholder="paste ADMIN_KEY">
+      <input type="password" id="key" autocomplete="current-password" spellcheck="false" placeholder="paste ADMIN_KEY">
     </div>
     <button type="submit" id="go">Load</button>
   </form>
@@ -71,7 +73,7 @@ a{color:var(--ink)}
       <tbody id="rows"></tbody>
     </table>
   </div>
-</div>
+</main>
 
 <script>
 (function(){

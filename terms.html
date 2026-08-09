@@ -5,14 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Terms — Workings</title>
 <meta name="description" content="Terms for using the Workings site and the waste audit tool. Plain English, one page.">
-<link rel="canonical" href="https://workings.co.uk/terms.html">
+<link rel="canonical" href="https://workings.co.uk/terms">
 <meta name="robots" content="index,follow">
 <meta name="theme-color" content="#E6E4DA">
+<meta name="color-scheme" content="light">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,800&family=Public+Sans:wght@400;600&family=Courier+Prime:wght@400;700&display=swap">
 <style>
+@font-face{font-family:'Bricolage Grotesque';font-style:normal;font-weight:800;font-stretch:100%;font-display:swap;src:url('/fonts/bricolage-800.woff2') format('woff2')}
+@font-face{font-family:'Public Sans';font-style:normal;font-weight:400 600;font-display:swap;src:url('/fonts/public-sans.woff2') format('woff2')}
+@font-face{font-family:'Courier Prime';font-style:normal;font-weight:400;font-display:swap;src:url('/fonts/courier-prime-400.woff2') format('woff2')}
+@font-face{font-family:'Courier Prime';font-style:normal;font-weight:700;font-display:swap;src:url('/fonts/courier-prime-700.woff2') format('woff2')}
 :root{
   --pad:#E6E4DA;--pad-2:#DEDCD0;--rule:#C0C4B6;--rule-soft:#D2D5C9;
   --ink:#14170F;--ink-soft:#4E5347;--red:#A32E22;
@@ -46,7 +48,8 @@ main{padding:64px 0 74px}
 footer{border-top:1.5px solid var(--ink);padding:26px 0;font-family:var(--mono);font-size:12px;color:var(--ink-soft)}
 footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;max-width:1080px}
 footer a{color:var(--ink-soft)}
-footer nav{display:flex;gap:16px;flex-wrap:wrap}
+footer nav{display:flex;gap:24px;flex-wrap:wrap}
+footer nav a{display:inline-block;padding:4px 0}
 @media(max-width:420px){.wrap{padding:0 16px}body{font-size:16px}}
 </style>
 </head>
@@ -77,7 +80,7 @@ footer nav{display:flex;gap:16px;flex-wrap:wrap}
   <p>The prices shown are the current standard prices for standard scopes, in pounds sterling, excluding VAT. They are an invitation to talk, not a binding offer. If your job needs something different, I'll tell you what it costs before anyone commits to anything, in writing.</p>
 
   <h2>What I do with what you send</h2>
-  <p>Covered in the <a href="/privacy.html">privacy notice</a>. In short: I use it to reply to you, and nothing else.</p>
+  <p>Covered in the <a href="/privacy">privacy notice</a>. In short: I use it to reply to you, and nothing else.</p>
 
   <h2>Confidentiality</h2>
   <p>Anything you tell me about how your business runs — on the form, on a call, or on site — I treat as confidential. I don't reuse one client's systems, figures or data on another client's account, and I won't take on a business that competes directly with my own retail business. If that might be you, say so early.</p>
@@ -111,8 +114,8 @@ footer nav{display:flex;gap:16px;flex-wrap:wrap}
     <span>Workings · [SOLE TRADER / COMPANY DETAILS] · Barry, South Wales</span>
     <nav aria-label="Legal">
       <a href="mailto:graham@workings.co.uk">graham@workings.co.uk</a>
-      <a href="/privacy.html">Privacy</a>
-      <a href="/terms.html">Terms</a>
+      <a href="/privacy">Privacy</a>
+      <a href="/terms">Terms</a>
     </nav>
   </div>
 </footer>
