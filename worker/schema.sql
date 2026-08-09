@@ -33,3 +33,7 @@ CREATE TABLE IF NOT EXISTS rate_hits (
 );
 
 CREATE INDEX IF NOT EXISTS idx_rate_hits ON rate_hits (ip_key, ts);
+
+-- The prune runs on every accepted request and filters on ts alone; without
+-- this index it would scan the whole table each time.
+CREATE INDEX IF NOT EXISTS idx_rate_hits_ts ON rate_hits (ts);

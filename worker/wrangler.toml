@@ -34,10 +34,12 @@ database_id = "PASTE_DATABASE_ID_HERE"
 [observability]
 enabled = true
 
-# Weekly retention sweep: deletes audit submissions older than 24 months and
-# stale rate-limit rows, so the privacy notice keeps itself honest.
+# Daily retention sweep: deletes audit submissions older than 24 months and
+# stale rate-limit rows, so the privacy notice keeps itself honest. Daily
+# rather than weekly because the notice promises rate-limit fingerprints go
+# quickly even when nobody is submitting.
 [triggers]
-crons = ["17 4 * * 1"]
+crons = ["17 4 * * *"]
 
 # ---------------------------------------------------------------------------
 # Secrets — set with `npx wrangler secret put NAME`. Never in this file.

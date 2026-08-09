@@ -50,10 +50,10 @@ const TASK_ORDER = [
 
 export default {
   /**
-   * Weekly cron (see wrangler.toml). Enforces the two retention promises the
+   * Daily cron (see wrangler.toml). Enforces the two retention promises the
    * privacy notice makes, so neither depends on anyone remembering:
    *   - audit submissions deleted after 24 months
-   *   - rate-limit fingerprints deleted within hours
+   *   - rate-limit fingerprints deleted within hours of expiring
    */
   async scheduled(event, env, ctx) {
     const cutoffLeads = new Date(Date.now() - 24 * 30.44 * 24 * 3600 * 1000).toISOString();
@@ -83,7 +83,12 @@ export default {
     }
 
     if (url.pathname === '/api/leads' && request.method === 'GET') {
-      return handleList(request, env, url);
+      try {
+        return await handleList(request, env, url);
+      } catch (err) {
+        console.error('list handler failed', err && err.stack ? err.stack : err);
+        return json({ ok: false, error: 'server_error' }, 500, request, env);
+      }
     }
 
     if (url.pathname === '/api/lead' || url.pathname === '/api/leads') {
@@ -99,16 +104,28 @@ export default {
  * ------------------------------------------------------------------ */
 
 async function handleLead(request, env, ctx) {
-  /* 1. Body size guard, before we parse anything. */
+  /* 0. Same-origin gate. Browsers attach an Origin header to every cross-site
+        POST; if one turns up that isn't ours, refuse before doing any work.
+        This matters because a "text/plain" POST skips the CORS preflight
+        entirely — checking Origin here is what actually closes that door.
+        Requests with no Origin header (curl, server-to-server) pass through
+        and take their chances with the rate limiter. */
+  const origin = request.headers.get('Origin');
+  if (origin && !allowedOrigins(env).includes(origin)) {
+    return json({ ok: false, error: 'forbidden' }, 403, request, env);
+  }
+
+  /* 1. Body size guard, in actual bytes, before parsing anything. */
   const declared = Number(request.headers.get('content-length') || 0);
   if (declared > MAX_BODY_BYTES) {
     return json({ ok: false, error: 'payload_too_large' }, 413, request, env);
   }
 
-  const raw = await request.text();
-  if (raw.length > MAX_BODY_BYTES) {
+  const buf = await request.arrayBuffer();
+  if (buf.byteLength > MAX_BODY_BYTES) {
     return json({ ok: false, error: 'payload_too_large' }, 413, request, env);
   }
+  const raw = new TextDecoder().decode(buf);
 
   let body;
   try {
@@ -121,22 +138,26 @@ async function handleLead(request, env, ctx) {
   }
 
   /* 2. Rate limit by IP, before doing any real work. Every attempt counts,
-        so a bot hammering the endpoint gets throttled whatever it sends. */
+        so a bot hammering the endpoint gets throttled whatever it sends.
+        The hit is recorded and counted in one atomic batch — record first,
+        then look at the total — so a burst of concurrent requests can't all
+        read a stale count and slip past together. */
   const ip = request.headers.get('CF-Connecting-IP') || '';
-  const ipKey = await hashIp(ip, env.RATE_SALT || 'workings-fallback-salt');
-  const limited = await isRateLimited(env, ipKey);
-  if (limited) {
+  const ipKey = await hashIp(rateKeyFor(ip), env.RATE_SALT || warnDefaultSalt());
+  const attempts = await recordAndCount(env, ipKey);
+  if (attempts > RATE_LIMIT) {
     return json({ ok: false, error: 'rate_limited' }, 429, request, env);
   }
-  ctx.waitUntil(recordHit(env, ipKey));
 
   /* 3. Honeypot. Real people never see this field, so if it has anything in it
         — or the form was "filled in" in under a second and a half — bin it
         quietly. A bot that gets a 400 learns something; a bot that gets a 200
-        learns nothing and goes away happy. */
+        learns nothing and goes away happy. The elapsed check only applies when
+        the field is genuinely a number: null or "" must not coerce to 0 and
+        silently bin a real person's submission. */
   const honeypot = typeof body.website === 'string' ? body.website.trim() : '';
-  const elapsed = Number(body.elapsed);
-  const tooFast = Number.isFinite(elapsed) && elapsed >= 0 && elapsed < 1500;
+  const tooFast = typeof body.elapsed === 'number' &&
+    Number.isFinite(body.elapsed) && body.elapsed >= 0 && body.elapsed < 1500;
   if (honeypot !== '' || tooFast) {
     return json({ ok: true }, 200, request, env);
   }
@@ -197,8 +218,10 @@ async function handleLead(request, env, ctx) {
  * ------------------------------------------------------------------ */
 
 async function handleList(request, env, url) {
-  const key = url.searchParams.get('key') || '';
-  if (!env.ADMIN_KEY || !timingSafeEqual(key, env.ADMIN_KEY)) {
+  /* The key travels in a header, never the query string — request URLs end up
+     in Cloudflare's logs and in browser history; header values do not. */
+  const key = request.headers.get('X-Admin-Key') || '';
+  if (!env.ADMIN_KEY || !(await keysMatch(key, env.ADMIN_KEY))) {
     return json({ ok: false, error: 'unauthorised' }, 401, request, env);
   }
 
@@ -261,6 +284,10 @@ function num(value, min, max) {
  * ignored — everything shown in the notification email is derived here from
  * hours, rate and weeks, so the figures in the subject line are always the
  * figures the arithmetic supports.
+ *
+ * NOTE the same invariant as the front end: every shipped weeks option is
+ * even, so per-task costs are always whole numbers and always sum exactly to
+ * the total. Keep weeks even if the options ever change.
  */
 function normaliseAudit(input) {
   if (!input || typeof input !== 'object' || Array.isArray(input)) return null;
@@ -301,18 +328,52 @@ function safeParse(s) {
  * IP handling — hashed for rate limiting, truncated for storage
  * ------------------------------------------------------------------ */
 
+let saltWarned = false;
+function warnDefaultSalt() {
+  if (!saltWarned) {
+    saltWarned = true;
+    console.warn('RATE_SALT is not set — using a built-in default. Set the secret: npx wrangler secret put RATE_SALT');
+  }
+  return 'workings-fallback-salt';
+}
+
 async function hashIp(ip, salt) {
   const data = new TextEncoder().encode(salt + '|' + ip);
   const digest = await crypto.subtle.digest('SHA-256', data);
   return [...new Uint8Array(digest)].map(b => b.toString(16).padStart(2, '0')).join('').slice(0, 32);
 }
 
-/** 81.2.69.142 -> 81.2.69.0 ; 2a00:1450:4009:81f::200e -> 2a00:1450:4009:: */
+/** Expand an IPv6 address's "::" elision into its full eight groups.
+ *  Returns null for anything that doesn't parse. */
+function expandIpv6(ip) {
+  const halves = ip.split('::');
+  if (halves.length > 2) return null;
+  const head = halves[0] ? halves[0].split(':') : [];
+  const tail = halves.length === 2 && halves[1] ? halves[1].split(':') : [];
+  if (halves.length === 1) {
+    return head.length === 8 ? head.map(g => g.toLowerCase()) : null;
+  }
+  const missing = 8 - head.length - tail.length;
+  if (missing < 1) return null;
+  return head.concat(Array(missing).fill('0'), tail).map(g => g.toLowerCase());
+}
+
+/** What the rate limiter keys on. A single IPv6 customer holds an entire /64,
+ *  so keying on the full address would hand them unlimited fresh identities —
+ *  key on the /64 prefix instead. IPv4 is keyed as-is. */
+function rateKeyFor(ip) {
+  if (!ip || !ip.includes(':')) return ip;
+  const groups = expandIpv6(ip);
+  return groups ? groups.slice(0, 4).join(':') : ip;
+}
+
+/** For storage: 81.2.69.142 -> 81.2.69.0 ; 2606:4700::6810:85e5 -> 2606:4700:0::
+ *  (the elision is expanded first, so the kept /48 is the real one). */
 function truncateIp(ip) {
   if (!ip) return '';
   if (ip.includes(':')) {
-    const parts = ip.split(':').filter(Boolean).slice(0, 3);
-    return parts.join(':') + '::';
+    const groups = expandIpv6(ip);
+    return groups ? groups.slice(0, 3).join(':') + '::' : '';
   }
   const parts = ip.split('.');
   if (parts.length !== 4) return '';
@@ -320,42 +381,46 @@ function truncateIp(ip) {
   return parts.join('.');
 }
 
-async function isRateLimited(env, ipKey) {
-  const cutoff = Math.floor(Date.now() / 1000) - RATE_WINDOW_SECONDS;
+/**
+ * Record this attempt and return how many attempts the window now holds,
+ * this one included — in a single D1 batch, which runs as one transaction.
+ * Doing the insert and the count atomically closes the burst race a separate
+ * check-then-record pair would have. The stale-row prune rides along too.
+ */
+async function recordAndCount(env, ipKey) {
+  const now = Math.floor(Date.now() / 1000);
+  const cutoff = now - RATE_WINDOW_SECONDS;
   try {
-    const row = await env.DB.prepare(
-      `SELECT COUNT(*) AS n FROM rate_hits WHERE ip_key = ?1 AND ts > ?2`
-    ).bind(ipKey, cutoff).first();
-    return !!row && Number(row.n) >= RATE_LIMIT;
+    const results = await env.DB.batch([
+      env.DB.prepare(`INSERT INTO rate_hits (ip_key, ts) VALUES (?1, ?2)`).bind(ipKey, now),
+      env.DB.prepare(`DELETE FROM rate_hits WHERE ts < ?1`).bind(cutoff),
+      env.DB.prepare(`SELECT COUNT(*) AS n FROM rate_hits WHERE ip_key = ?1 AND ts > ?2`).bind(ipKey, cutoff)
+    ]);
+    const count = results[results.length - 1];
+    const row = count && count.results && count.results[0];
+    return row ? Number(row.n) : 1;
   } catch (err) {
     // If the rate-limit table is unreachable, let the request through rather
     // than lose a real lead. Losing a lead is worse than accepting a duplicate.
-    console.error('rate limit check failed', err && err.message);
+    console.error('rate limit unavailable', err && err.message);
+    return 1;
+  }
+}
+
+/** Constant-time comparison via fixed-length digests: hashing both sides first
+ *  means the loop length and timing are independent of either input. */
+async function keysMatch(supplied, actual) {
+  if (typeof supplied !== 'string' || typeof actual !== 'string' || !supplied || !actual) {
     return false;
   }
-}
-
-async function recordHit(env, ipKey) {
-  const now = Math.floor(Date.now() / 1000);
-  try {
-    await env.DB.batch([
-      env.DB.prepare(`INSERT INTO rate_hits (ip_key, ts) VALUES (?1, ?2)`).bind(ipKey, now),
-      env.DB.prepare(`DELETE FROM rate_hits WHERE ts < ?1`).bind(now - RATE_WINDOW_SECONDS * 2)
-    ]);
-  } catch (err) {
-    console.error('rate hit write failed', err && err.message);
-  }
-}
-
-function timingSafeEqual(a, b) {
-  const av = new TextEncoder().encode(String(a));
-  const bv = new TextEncoder().encode(String(b));
-  // Compare a fixed-length digest so the loop length never leaks the key length.
-  let diff = av.length ^ bv.length;
-  const len = Math.max(av.length, bv.length);
-  for (let i = 0; i < len; i++) {
-    diff |= (av[i] || 0) ^ (bv[i] || 0);
-  }
+  const enc = new TextEncoder();
+  const [a, b] = await Promise.all([
+    crypto.subtle.digest('SHA-256', enc.encode(supplied)),
+    crypto.subtle.digest('SHA-256', enc.encode(actual))
+  ]);
+  const av = new Uint8Array(a), bv = new Uint8Array(b);
+  let diff = 0;
+  for (let i = 0; i < av.length; i++) diff |= av[i] ^ bv[i];
   return diff === 0;
 }
 
@@ -364,38 +429,48 @@ function timingSafeEqual(a, b) {
  * ------------------------------------------------------------------ */
 
 async function sendEmails(env, lead) {
-  if (!env.RESEND_API_KEY || !env.FROM_EMAIL || !env.NOTIFY_EMAIL) {
-    console.warn('email not configured — lead stored but nothing sent');
-    return;
-  }
-
-  const label = lead.company || lead.email.slice(lead.email.indexOf('@') + 1);
-  const subject = clean(`[LEAD] ${label} — £${lead.audit.total.toLocaleString('en-GB')}/yr`, 200);
-
-  const notify = send(env, {
-    from: env.FROM_EMAIL,
-    to: env.NOTIFY_EMAIL,
-    reply_to: lead.email,
-    subject,
-    text: notificationBody(lead)
-  });
-
-  const ack = send(env, {
-    from: env.FROM_EMAIL,
-    to: lead.email,
-    reply_to: env.FROM_EMAIL,
-    subject: "Your figures — I've got them",
-    text: acknowledgementBody()
-  });
-
-  const [notifyOk] = await Promise.all([notify, ack]);
-
-  if (notifyOk && lead.leadId != null) {
-    try {
-      await env.DB.prepare(`UPDATE leads SET notified = 1 WHERE id = ?1`).bind(lead.leadId).run();
-    } catch (err) {
-      console.error('could not set notified flag', err && err.message);
+  // Runs inside ctx.waitUntil — a throw here can't reach the user, but it
+  // would count as an unhandled rejection, so the whole thing is guarded.
+  try {
+    if (!env.RESEND_API_KEY || !env.FROM_EMAIL || !env.NOTIFY_EMAIL) {
+      console.warn('email not configured — lead stored but nothing sent');
+      return;
     }
+
+    const label = lead.company || lead.email.slice(lead.email.indexOf('@') + 1);
+    const headline = lead.audit.total > 0
+      ? `£${lead.audit.total.toLocaleString('en-GB')}/yr`
+      : 'answered none to everything';
+    const subject = clean(`[LEAD] ${label} — ${headline}`, 200);
+
+    const notify = send(env, {
+      from: env.FROM_EMAIL,
+      to: env.NOTIFY_EMAIL,
+      reply_to: lead.email,
+      subject,
+      text: notificationBody(lead)
+    });
+
+    // No reply_to on the acknowledgement — a person's mail client wouldn't
+    // set one, and this email has to read like a person sent it.
+    const ack = send(env, {
+      from: env.FROM_EMAIL,
+      to: lead.email,
+      subject: "Your figures — I've got them",
+      text: acknowledgementBody()
+    });
+
+    const [notifyOk] = await Promise.all([notify, ack]);
+
+    if (notifyOk && lead.leadId != null) {
+      try {
+        await env.DB.prepare(`UPDATE leads SET notified = 1 WHERE id = ?1`).bind(lead.leadId).run();
+      } catch (err) {
+        console.error('could not set notified flag', err && err.message);
+      }
+    }
+  } catch (err) {
+    console.error('sendEmails failed', err && err.stack ? err.stack : err);
   }
 }
 
@@ -410,7 +485,9 @@ async function send(env, message) {
       body: JSON.stringify(message)
     });
     if (!res.ok) {
-      console.error('resend failed', res.status, await res.text());
+      // Status only — Resend's error bodies echo the recipient address, and
+      // console output persists in Cloudflare's logs. No PII in logs.
+      console.error('resend failed', res.status);
       return false;
     }
     return true;
@@ -500,14 +577,23 @@ function acknowledgementBody() {
  * HTTP plumbing
  * ------------------------------------------------------------------ */
 
+/** The configured origin plus its www / bare-domain twin, so the site works
+ *  identically whichever of the two the domain is served from. */
+function allowedOrigins(env) {
+  const configured = (env.ALLOWED_ORIGIN || '').replace(/\/+$/, '');
+  if (!configured) return [];
+  const m = configured.match(/^(https?:\/\/)(www\.)?(.+)$/);
+  if (!m) return [configured];
+  return [m[1] + m[3], m[1] + 'www.' + m[3]];
+}
+
 function corsHeaders(request, env) {
   const origin = request.headers.get('Origin');
-  const allowed = env.ALLOWED_ORIGIN || '';
   const headers = { 'Vary': 'Origin' };
-  if (origin && allowed && origin === allowed) {
-    headers['Access-Control-Allow-Origin'] = allowed;
+  if (origin && allowedOrigins(env).includes(origin)) {
+    headers['Access-Control-Allow-Origin'] = origin;
     headers['Access-Control-Allow-Methods'] = 'POST, GET, OPTIONS';
-    headers['Access-Control-Allow-Headers'] = 'Content-Type';
+    headers['Access-Control-Allow-Headers'] = 'Content-Type, X-Admin-Key';
     headers['Access-Control-Max-Age'] = '86400';
   }
   return headers;

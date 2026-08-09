@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 #
-# Swaps the four placeholders for your real details, everywhere at once.
+# Swaps the placeholder domain, email and calendar link for your real details,
+# everywhere at once.
 #
 #   ./setup.sh workings.co.uk graham@workings.co.uk https://cal.com/you/look-45min
 #
@@ -38,15 +39,30 @@ fi
 
 FILES=(index.html privacy.html terms.html robots.txt sitemap.xml worker/wrangler.toml README.md)
 
+# The values travel to Perl through the environment, never through the pattern
+# or replacement text — so an email's @, a URL's ?/&/$, or any other character
+# can't be misread by the shell or by Perl's string interpolation.
+# Order matters: the email is replaced before the bare domain, or the domain
+# substitution would eat the address's domain half first.
 for f in "${FILES[@]}"; do
   [[ -f "$f" ]] || continue
-  # Order matters: replace the email before the bare domain, or the domain
-  # substitution would eat the address's domain part first.
-  perl -pi -e "s/\Qgraham\@workings.co.uk\E/${EMAIL//\//\\/}/g" "$f"
-  perl -pi -e "s|\Qhttps://cal.com/workings/look-45min\E|${CALENDAR//|/\\|}|g" "$f"
-  perl -pi -e "s/\Qworkings.co.uk\E/${DOMAIN//\//\\/}/g" "$f"
+  NEW_DOMAIN="$DOMAIN" NEW_EMAIL="$EMAIL" NEW_CAL="$CALENDAR" perl -pi -e '
+    s/graham\@workings\.co\.uk/$ENV{NEW_EMAIL}/g;
+    s{\Qhttps://cal.com/workings/look-45min\E}{$ENV{NEW_CAL}}g;
+    s/\Qworkings.co.uk\E/$ENV{NEW_DOMAIN}/g;
+  ' "$f"
   echo "updated $f"
 done
+
+# A silent half-swap is worse than a loud failure — refuse to report success
+# if any placeholder survived. (Skipped if the real domain IS workings.co.uk,
+# where the check couldn't tell success from failure.)
+if [[ "$DOMAIN" != *workings.co.uk* ]] && grep -rqF 'workings.co.uk' index.html privacy.html terms.html robots.txt sitemap.xml worker/wrangler.toml; then
+  echo >&2
+  echo "Something did not get replaced — these placeholders survived:" >&2
+  grep -rnF 'workings.co.uk' index.html privacy.html terms.html robots.txt sitemap.xml worker/wrangler.toml >&2 | head -10
+  exit 1
+fi
 
 echo
 echo "Done. Now:"

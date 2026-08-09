@@ -11,13 +11,15 @@
   WORKINGS — landing page
   Single self-contained file. No build step. No dependencies.
 
-  THE ONLY THINGS YOU NEED TO EDIT ARE THESE FOUR STRINGS.
-  Run ./setup.sh to swap them all in one go, or find-and-replace:
+  The site's contact details are four strings, used throughout:
 
-    workings.co.uk               -> your real domain
-    graham@workings.co.uk        -> your real business email
-    https://cal.com/workings/look-45min   -> your real Cal.com link
-    [SOLE TRADER / COMPANY DETAILS]       -> your legal footer line
+    domain     workings.co.uk
+    email      graham@workings.co.uk
+    calendar   https://cal.com/workings/look-45min
+    legal      [SOLE TRADER / COMPANY DETAILS]   (footer - edit by hand)
+
+  To change the first three everywhere in one go:
+    ./setup.sh <domain> <email> <calendar-url>
 
   Everything else is copy. Edit it in any text editor and re-upload.
   ============================================================
@@ -62,7 +64,9 @@
   --green:#1F5C3D;
   --shadow:rgba(20,23,15,.10);
   --mono:"Courier Prime",ui-monospace,"Cascadia Mono","Segoe UI Mono",Menlo,monospace;
-  --display:"Bricolage Grotesque",Georgia,"Times New Roman",serif;
+  /* The fallbacks are deliberately grotesque-adjacent — if the webfont hasn't
+     landed yet the page must not open in Times. */
+  --display:"Bricolage Grotesque","Arial Black","Arial Narrow Bold",system-ui,sans-serif;
   --body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
 }
 
@@ -218,7 +222,7 @@ section{padding:74px 0;position:relative;z-index:1}
 .split{display:grid;grid-template-columns:1fr 1fr;gap:30px;margin-top:26px}
 .oppo{list-style:none;padding:0;margin:0}
 .oppo li{padding:11px 0;border-bottom:1px solid var(--rule-soft);font-size:15.5px;display:flex;gap:12px}
-.oppo li .n{font-family:var(--mono);color:var(--red);flex:0 0 auto}
+.oppo li .n{font-family:var(--mono);color:var(--ink-soft);flex:0 0 auto}
 .oppo li .amt{font-family:var(--mono);font-weight:700}
 
 .gate{margin-top:26px;border:1.5px solid var(--ink);padding:20px;background:var(--pad-2)}
@@ -270,7 +274,7 @@ details summary{
   list-style:none;display:flex;justify-content:space-between;gap:16px;
 }
 details summary::-webkit-details-marker{display:none}
-details summary::after{content:"+";font-family:var(--mono);color:var(--red);flex:0 0 auto}
+details summary::after{content:"+";font-family:var(--mono);color:var(--ink-soft);flex:0 0 auto}
 details[open] summary::after{content:"−"}
 details p{margin-top:12px;margin-bottom:0;color:var(--ink-soft);max-width:68ch;font-size:16px}
 
@@ -421,8 +425,8 @@ footer nav{display:flex;gap:16px;flex-wrap:wrap}
         <span class="hero-note" id="err" role="status" aria-live="polite"></span>
       </div>
 
-      <div class="result" id="result" aria-live="polite">
-        <p class="sr-only" id="announce"></p>
+      <div class="result" id="result">
+        <p class="sr-only" id="announce" role="status" aria-live="polite"></p>
         <p class="sub">Estimated annual cost of manual admin</p>
         <p class="big red" id="total">£0</p>
         <p class="rec">Realistically recoverable in year one <b class="green mono" id="recover">£0</b></p>
@@ -642,6 +646,10 @@ document.body.classList.remove('no-js');
 })();
 
 /* ---------- audit questions ---------- */
+/* CAREFUL IF EDITING THE OPTIONS: every weeks value is even, so
+   4.5 hrs × rate × weeks is always a whole number and the line items always
+   sum exactly to the headline total. Add an odd weeks value (45, 51) and the
+   "How I got there" panel stops adding up — on this page of all pages. */
 var HOURS = [
   {v:'',   t:'Choose…'},
   {v:'0',  t:'None, honestly'},
@@ -713,6 +721,14 @@ QUESTIONS.forEach(function(q){
       sel.removeAttribute('aria-invalid');
     }
     updateProgress();
+    // A changed answer makes the calculated result a lie. Hide it and make
+    // them press calculate again — the screen must never show a number that
+    // contradicts the answers next to it.
+    if (LAST){
+      LAST = null;
+      el('result').classList.remove('show');
+      el('err').textContent = 'Answers changed — press calculate again.';
+    }
   });
 });
 
@@ -728,6 +744,7 @@ updateProgress();
 function money(n){ return '£' + Math.round(n).toLocaleString('en-GB'); }
 function hrs(n){ return (Math.round(n * 10) / 10).toFixed(1); }
 
+var REDUCE_MOTION = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 var LAST = null;
 var RENDERED_AT = Date.now();
 
@@ -767,18 +784,23 @@ el('calc').addEventListener('click', function(){
   var total = Math.round(hours * rate * weeks);
   var recoverable = Math.round(total * 0.55);
 
-  el('total').textContent = money(total);
+  el('total').textContent = total > 0 ? money(total) : '£0';
+  el('total').classList.toggle('red', total > 0);
   el('recover').textContent = money(recoverable);
 
   var w = el('workings');
   w.textContent = '';
-  var lines = [
+  var lines = total > 0 ? [
     hrs(hours) + ' hrs/week × ' + money(rate) + '/hr × ' + weeks + ' weeks',
     '= ' + money(total) + ' a year.',
     '',
     money(total) + ' × 0.55 = ' + money(recoverable) + ' realistically recoverable.',
     '',
     "The 55% is deliberately conservative. Some of these jobs go to near zero. Others just get faster. None of them go away entirely — and I wouldn't believe anyone who told you they did."
+  ] : [
+    'Zero hours a week × ' + money(rate) + '/hr = nothing.',
+    '',
+    'No arithmetic to show, for once.'
   ];
   lines.forEach(function(line, i){
     if (line === ''){ w.appendChild(document.createElement('br')); return; }
@@ -825,13 +847,17 @@ el('calc').addEventListener('click', function(){
     tasks: tasks
   };
 
-  el('announce').textContent = total > 0
-    ? 'Result: an estimated ' + money(total) + ' a year, of which about ' + money(recoverable) + ' is realistically recoverable.'
-    : 'Result: no measurable manual admin from your answers.';
-
   var res = el('result');
   res.classList.add('show');
-  res.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  res.scrollIntoView({ behavior: REDUCE_MOTION ? 'auto' : 'smooth', block: 'start' });
+
+  // The live region only announces mutations it can see — populate it a frame
+  // after the panel becomes visible, or screen readers hear nothing.
+  requestAnimationFrame(function(){
+    el('announce').textContent = total > 0
+      ? 'Result: an estimated ' + money(total) + ' a year, of which about ' + money(recoverable) + ' is realistically recoverable.'
+      : 'Result: no measurable manual admin from your answers.';
+  });
 });
 
 /* ---------- lead capture ----------
@@ -877,19 +903,28 @@ el('gate').addEventListener('submit', function(ev){
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
   }).then(function(res){
-    if (res.status === 429) throw new Error('rate');
-    if (!res.ok) throw new Error('http ' + res.status);
-    return res.json();
-  }).then(function(data){
-    if (!data || data.ok !== true) throw new Error('bad body');
+    return res.json()['catch'](function(){ return {}; }).then(function(data){
+      if (res.status === 429) throw new Error('rate');
+      if (res.status === 400 && (data.error === 'invalid_email' || data.error === 'disposable_email')) throw new Error('email');
+      if (!res.ok || data.ok !== true) throw new Error('http');
+      return data;
+    });
+  }).then(function(){
     msg.textContent = "Got it. I'll read it and come back to you within a working day.";
     btn.textContent = 'Sent';
   })['catch'](function(e){
     btn.disabled = false;
     msg.classList.add('bad');
-    msg.textContent = (e && e.message === 'rate')
-      ? "That's a few goes now. Email me directly at graham@workings.co.uk."
-      : "That didn't send. Email me directly at graham@workings.co.uk and I'll do it by hand.";
+    var why = e && e.message;
+    if (why === 'rate'){
+      msg.textContent = "That's a few goes now. Email me directly at graham@workings.co.uk.";
+    } else if (why === 'email'){
+      msg.textContent = "That address didn't get past the checks — a work email usually does. Or just email me: graham@workings.co.uk.";
+      emailEl.setAttribute('aria-invalid','true');
+      emailEl.focus();
+    } else {
+      msg.textContent = "That didn't send. Email me directly at graham@workings.co.uk and I'll do it by hand.";
+    }
   });
 });
 })();

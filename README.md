@@ -71,7 +71,14 @@ domain, HTTPS is automatic. `_headers` is picked up on deploy.
 
 Turn on **Web Analytics** (Cloudflare dashboard → Analytics → Web Analytics → add the site).
 Use the automatic setup so Cloudflare injects the beacon — no cookies, so no consent banner.
-The CSP in `_headers` already allows `static.cloudflareinsights.com`.
+The CSP in `_headers` already allows `static.cloudflareinsights.com`. Do this before
+launch: the privacy notice mentions it, so it should be true on day one.
+
+While you're in the dashboard, add a **WAF rate-limiting rule** on `/api/lead`
+(Security → WAF → Rate limiting rules; the free plan includes one). The Worker
+has its own limiter, but the WAF rule runs at the edge before the Worker, so a
+flood costs you nothing in Worker invocations or database reads. Five minutes,
+no code.
 
 ### 3. Worker and database
 
@@ -112,12 +119,22 @@ curl -s https://yourdomain.co.uk/api/lead \
 curl -s -o /dev/null -w '%{http_code}\n' https://yourdomain.co.uk/api/lead \
   -H 'Content-Type: application/json' -d '{"email":"nope"}'
 
-# sixth call within the hour should return 429
-for i in 1 2 3 4 5 6; do
+# every attempt counts toward the 5/hour limit — including the two tests
+# above — so this loop flips from 400 to 429 partway through. If you see
+# any 429 by the end, rate limiting works.
+for i in 1 2 3 4 5 6 7 8; do
   curl -s -o /dev/null -w "$i: %{http_code}\n" https://yourdomain.co.uk/api/lead \
     -H 'Content-Type: application/json' -d '{"email":"x"}'
 done
 ```
+
+Two things about testing that will save you an hour of confusion:
+
+- **The form only works end-to-end on the custom domain.** The Worker route is
+  bound to your zone, so on the `*.pages.dev` preview URL `fetch('/api/lead')`
+  hits Pages, not the Worker, and fails. That is expected, not broken.
+- The rate limit means your own testing can lock you out for an hour. Test the
+  happy path last, or from a different network.
 
 Then run it properly from a phone: answer all eight, check the number appears **before**
 the form, submit, and confirm both emails land.

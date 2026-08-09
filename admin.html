@@ -102,7 +102,9 @@ document.getElementById('f').addEventListener('submit', function(ev){
   msg.textContent = 'Loading…';
   btn.disabled = true;
 
-  fetch('/api/leads?limit=200&key=' + encodeURIComponent(key))
+  // Key goes in a header, not the URL — URLs end up in server logs and
+  // browser history; header values don't.
+  fetch('/api/leads?limit=200', { headers: { 'X-Admin-Key': key } })
     .then(function(r){
       if (r.status === 401) throw new Error('Wrong key.');
       if (!r.ok) throw new Error('Server said ' + r.status + '.');
