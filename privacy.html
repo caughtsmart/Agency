@@ -78,6 +78,7 @@ footer nav{display:flex;gap:16px;flex-wrap:wrap}
     <li>The answers you gave the audit tool and the figures it worked out — hours per task, hourly cost, trading weeks, the annual total.</li>
     <li>The date and time you submitted it.</li>
     <li>A shortened version of your IP address, with the last part removed (for example 81.2.69.0 rather than the full address), plus your browser's user-agent string. I use these to stop the form being abused by bots. I do not store your full IP address.</li>
+    <li>To rate-limit the form, a one-way scrambled fingerprint of your IP address (a salted hash — it can't be turned back into the address) is kept for up to two hours and then deleted. It is used only to count submissions and for nothing else.</li>
   </ul>
 
   <h2>Why I'm allowed to hold it</h2>
@@ -104,7 +105,7 @@ footer nav{display:flex;gap:16px;flex-wrap:wrap}
   <p>I use Cloudflare Web Analytics, which counts page views without cookies and without building a profile of you. That is why there is no cookie banner on this site — there is nothing to consent to.</p>
 
   <h2>How long I keep it</h2>
-  <p>Audit submissions are kept for <strong>24 months</strong> and then deleted, unless you have become a client, in which case the normal business and tax retention rules apply (six years). Email correspondence lives in my mailbox for as long as it is useful and is cleared out periodically.</p>
+  <p>Audit submissions are deleted automatically after <strong>24 months</strong> — the system does it on a schedule, it doesn't wait for me to remember. If you have become a client, the normal business and tax retention rules apply instead (six years). Email correspondence lives in my mailbox for as long as it is useful and is cleared out periodically.</p>
 
   <h2>Your rights</h2>
   <p>You can ask me to show you what I hold, correct it, delete it, restrict what I do with it, or hand it over in a portable format. You can also object to my processing it on legitimate interests. Email <a href="mailto:graham@workings.co.uk">graham@workings.co.uk</a> and I will deal with it within one month — realistically within a day, because there is not much of it and I am the only one who has to look.</p>

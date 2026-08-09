@@ -343,7 +343,7 @@ footer nav{display:flex;gap:16px;flex-wrap:wrap}
   <div class="hero-cta">
     <a class="btn" href="#audit">Run the free three-minute audit</a>
     <a class="btn btn-ghost" href="#pricing">See what it costs</a>
-    <span class="hero-note">No sales call required to get your number.</span>
+    <span class="hero-note">No sales call to get your number. Three clients at a time, and I've still got a shop to run.</span>
   </div>
 
   <div class="ledger">
@@ -380,7 +380,7 @@ footer nav{display:flex;gap:16px;flex-wrap:wrap}
     <div class="receipts">
       <div class="receipt">
         <div class="ref">REF / PURCHASING</div>
-        <p class="fig green">6 hrs → 20 min</p>
+        <p class="fig">6 hrs → 20 min</p>
         <p class="cap">Weekly supplier reorder. Sales velocity, seasonality and stock-by-location worked out automatically. The buyer reviews and sends.</p>
       </div>
       <div class="receipt">
@@ -390,8 +390,8 @@ footer nav{display:flex;gap:16px;flex-wrap:wrap}
       </div>
       <div class="receipt">
         <div class="ref">REF / EMAIL</div>
-        <p class="fig green">2.5×</p>
-        <p class="cap">Click rate on the rebuilt welcome sequence, after segmenting on actual buying behaviour rather than "everyone who ever gave us an email".</p>
+        <p class="fig">2.5×</p>
+        <p class="cap">Click rate on the rebuilt welcome sequence, after segmenting on actual buying behaviour rather than "everyone who ever handed over an email address".</p>
       </div>
     </div>
   </div>
@@ -417,6 +417,7 @@ footer nav{display:flex;gap:16px;flex-wrap:wrap}
       </div>
       <div class="tool-foot">
         <button class="btn" id="calc" type="button">Calculate my number</button>
+        <span class="hero-note">The number appears here. I don't need your email to show it to you.</span>
         <span class="hero-note" id="err" role="status" aria-live="polite"></span>
       </div>
 
@@ -438,7 +439,7 @@ footer nav{display:flex;gap:16px;flex-wrap:wrap}
         </div>
 
         <form class="gate" id="gate" novalidate>
-          <h3>Want me to look at it properly?</h3>
+          <h3>Want to know which one I'd fix first?</h3>
           <p>I'll read it and reply personally — usually within a day — with what I'd actually do about it.</p>
           <div class="row">
             <span class="fld">
@@ -464,7 +465,7 @@ footer nav{display:flex;gap:16px;flex-wrap:wrap}
   <div class="wrap">
     <p class="eyebrow">Fixed prices · no day rates · no lock-in</p>
     <h2 class="sec-h">Start small. Prove it pays. Then do more.</h2>
-    <p class="sec-sub">Most people start at step two and stop there quite happily. That's a fine outcome.</p>
+    <p class="sec-sub">Nothing here obliges you to do the next step. Stopping after the audit is a perfectly respectable outcome.</p>
     <div class="tiers">
 
       <div class="tier">
@@ -481,7 +482,7 @@ footer nav{display:flex;gap:16px;flex-wrap:wrap}
       </div>
 
       <div class="tier pick">
-        <span class="step">STEP 02 · MOST START HERE</span>
+        <span class="step">STEP 02 · THE USEFUL ONE</span>
         <h3>The audit</h3>
         <p class="price">£1,200 + VAT · 2 weeks</p>
         <ul class="lst">
@@ -558,7 +559,7 @@ footer nav{display:flex;gap:16px;flex-wrap:wrap}
     <div style="margin-top:32px">
       <details>
         <summary>Is this going to cost me staff?</summary>
-        <p>Usually not, and I'd be wary of anyone promising it will. In a business your size the bottleneck isn't headcount, it's that your good people spend a third of the week on work a machine should do. The gain shows up as more done with the people you've got — which is what you need if you're growing and can't afford the next hire yet.</p>
+        <p>Usually not, and I'd be wary of anyone promising it will. In a business your size the bottleneck isn't headcount, it's that your good people lose a chunk of every week to work a machine should be doing. The gain shows up as more done with the people you've got — which is what you need if you're growing and can't afford the next hire yet.</p>
       </details>
       <details>
         <summary>We've been burned by an agency before.</summary>
@@ -569,8 +570,8 @@ footer nav{display:flex;gap:16px;flex-wrap:wrap}
         <p>Everyone's data is a mess. Mine was. You don't need a data warehouse to stop someone re-typing invoices into a spreadsheet. I start with the jobs that don't depend on clean data, and the data tends to tidy itself up as a side effect of automating the thing that kept breaking it.</p>
       </details>
       <details>
-        <summary>Cashflow is tight. That's rather the problem.</summary>
-        <p>Understood — it's why the first step is free and the second is £1,200 rather than £15,000. I'd rather find you one thing that pays for itself inside a quarter than sell you a programme. If the audit turns up nothing worth building, I'll tell you that on the day rather than write it up nicely and invoice you anyway.</p>
+        <summary>Cashflow is tight. That's the whole problem.</summary>
+        <p>Understood — it's why the first step is free and the second is £1,200 rather than a five-figure engagement. I'd rather find you one thing that pays for itself inside a quarter than sell you a programme. If the audit turns up nothing worth building, I'll tell you that on the day rather than write it up nicely and invoice you anyway.</p>
       </details>
       <details>
         <summary>Do you actually build it, or just write a report?</summary>
@@ -587,7 +588,7 @@ footer nav{display:flex;gap:16px;flex-wrap:wrap}
 <!-- ============ FINAL ============ -->
 <section class="final rule-top">
   <div class="wrap">
-    <h2>Find out what a fortnight of your week is worth.</h2>
+    <h2>You already know which job it is. Find out what it costs.</h2>
     <p>Three minutes, no call, no email needed to see your number.</p>
     <a class="btn" href="#audit">Run the audit</a>
   </div>
@@ -777,7 +778,7 @@ el('calc').addEventListener('click', function(){
     '',
     money(total) + ' × 0.55 = ' + money(recoverable) + ' realistically recoverable.',
     '',
-    'The 55% is deliberately conservative. Some of these jobs go to near zero. Others just get faster. None of them go away entirely — and I would not believe anyone who told you they did.'
+    "The 55% is deliberately conservative. Some of these jobs go to near zero. Others just get faster. None of them go away entirely — and I wouldn't believe anyone who told you they did."
   ];
   lines.forEach(function(line, i){
     if (line === ''){ w.appendChild(document.createElement('br')); return; }
@@ -811,7 +812,7 @@ el('calc').addEventListener('click', function(){
     });
   } else {
     var li = document.createElement('li');
-    li.textContent = 'Nothing obvious. Either you are already tidy, or you are underestimating. It is usually the second one.';
+    li.textContent = "Either you're already tidy, or you're underestimating. It's usually the second.";
     ul.appendChild(li);
   }
 
@@ -846,12 +847,12 @@ el('gate').addEventListener('submit', function(ev){
   var btn = el('send');
 
   if (!LAST){
-    msg.textContent = 'Run the numbers first and then I will have something to reply to.';
+    msg.textContent = "Run the numbers first and then I'll have something to reply to.";
     msg.classList.add('bad');
     return;
   }
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(email) || email.length > 254){
-    msg.textContent = 'That email does not look right. Have another go.';
+    msg.textContent = "That email doesn't look right. Have another go.";
     msg.classList.add('bad');
     emailEl.setAttribute('aria-invalid','true');
     emailEl.focus();
@@ -881,14 +882,14 @@ el('gate').addEventListener('submit', function(ev){
     return res.json();
   }).then(function(data){
     if (!data || data.ok !== true) throw new Error('bad body');
-    msg.textContent = 'Got it. I will read it and come back to you within a working day.';
+    msg.textContent = "Got it. I'll read it and come back to you within a working day.";
     btn.textContent = 'Sent';
   })['catch'](function(e){
     btn.disabled = false;
     msg.classList.add('bad');
     msg.textContent = (e && e.message === 'rate')
-      ? 'That is a few goes now. Email me directly at graham@workings.co.uk.'
-      : 'That did not send. Email me directly at graham@workings.co.uk and I will do it by hand.';
+      ? "That's a few goes now. Email me directly at graham@workings.co.uk."
+      : "That didn't send. Email me directly at graham@workings.co.uk and I'll do it by hand.";
   });
 });
 })();

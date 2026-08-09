@@ -49,6 +49,23 @@ const TASK_ORDER = [
 ];
 
 export default {
+  /**
+   * Weekly cron (see wrangler.toml). Enforces the two retention promises the
+   * privacy notice makes, so neither depends on anyone remembering:
+   *   - audit submissions deleted after 24 months
+   *   - rate-limit fingerprints deleted within hours
+   */
+  async scheduled(event, env, ctx) {
+    const cutoffLeads = new Date(Date.now() - 24 * 30.44 * 24 * 3600 * 1000).toISOString();
+    const cutoffHits = Math.floor(Date.now() / 1000) - RATE_WINDOW_SECONDS * 2;
+    ctx.waitUntil(
+      env.DB.batch([
+        env.DB.prepare(`DELETE FROM leads WHERE created_at < ?1`).bind(cutoffLeads),
+        env.DB.prepare(`DELETE FROM rate_hits WHERE ts < ?1`).bind(cutoffHits)
+      ]).catch(err => console.error('retention sweep failed', err && err.message))
+    );
+  },
+
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
@@ -367,7 +384,7 @@ async function sendEmails(env, lead) {
     from: env.FROM_EMAIL,
     to: lead.email,
     reply_to: env.FROM_EMAIL,
-    subject: 'Your figures — I have got them',
+    subject: "Your figures — I've got them",
     text: acknowledgementBody()
   });
 

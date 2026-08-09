@@ -145,13 +145,9 @@ npx wrangler d1 execute workings-leads --remote --command \
   "DELETE FROM leads WHERE email = 'them@example.co.uk'"
 ```
 
-The privacy notice promises submissions are deleted after 24 months. Nothing enforces that
-automatically — put a recurring reminder in your calendar and run:
-
-```bash
-npx wrangler d1 execute workings-leads --remote --command \
-  "DELETE FROM leads WHERE created_at < datetime('now','-24 months')"
-```
+The privacy notice promises submissions are deleted after 24 months. The Worker enforces
+that itself: a weekly cron (see `[triggers]` in `wrangler.toml`) deletes anything older
+and sweeps stale rate-limit rows. Nothing for you to remember.
 
 ---
 
