@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Workings">
+  <title>Workings</title>
+  <rect width="64" height="64" fill="#E6E4DA"/>
+  <g stroke="#C0C4B6" stroke-width="2">
+    <path d="M6 20h52M6 30h52M6 40h52"/>
+  </g>
+  <path d="M6 50h52" stroke="#A32E22" stroke-width="4"/>
+  <rect x="3" y="3" width="58" height="58" fill="none" stroke="#14170F" stroke-width="4"/>
+</svg>

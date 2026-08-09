@@ -1,0 +1,52 @@
+#:schema node_modules/wrangler/config-schema.json
+name = "workings-lead"
+main = "src/index.js"
+compatibility_date = "2026-01-15"
+workers_dev = false
+
+# ---------------------------------------------------------------------------
+# Route the Worker on the same domain as the site. This matters: it makes the
+# browser's fetch('/api/lead') a same-origin request, so CORS never gets a vote
+# and there is no preflight round trip to pay for.
+#
+# Swap theworkings.uk for the real domain, then `wrangler deploy`.
+# ---------------------------------------------------------------------------
+routes = [
+  { pattern = "theworkings.uk/api/*", zone_name = "theworkings.uk" },
+  { pattern = "www.theworkings.uk/api/*", zone_name = "theworkings.uk" }
+]
+
+[vars]
+# The only origin CORS is opened to. Not a secret, so it lives here.
+ALLOWED_ORIGIN = "https://theworkings.uk"
+
+# ---------------------------------------------------------------------------
+# D1. Create it once, then paste the id it prints in here:
+#
+#   npx wrangler d1 create workings-leads
+#   npx wrangler d1 execute workings-leads --remote --file=./schema.sql
+# ---------------------------------------------------------------------------
+[[d1_databases]]
+binding = "DB"
+database_name = "workings-leads"
+database_id = "b1454ca0-d945-46ec-9599-42b31cd9eb54"
+
+[observability]
+enabled = true
+
+# Daily retention sweep: deletes audit submissions older than 24 months and
+# stale rate-limit rows, so the privacy notice keeps itself honest. Daily
+# rather than weekly because the notice promises rate-limit fingerprints go
+# quickly even when nobody is submitting.
+[triggers]
+crons = ["17 4 * * *"]
+
+# ---------------------------------------------------------------------------
+# Secrets — set with `npx wrangler secret put NAME`. Never in this file.
+#
+#   NOTIFY_EMAIL     where the [LEAD] email lands
+#   FROM_EMAIL       the verified sending address (use Graham's own)
+#   RESEND_API_KEY   from resend.com
+#   ADMIN_KEY        guards GET /api/leads — use `openssl rand -hex 32`
+#   RATE_SALT        salts the IP hash — use `openssl rand -hex 32`
+# ---------------------------------------------------------------------------
