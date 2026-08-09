@@ -96,6 +96,13 @@ body::before{
   background:repeating-linear-gradient(to bottom,transparent 0 31px,var(--rule-soft) 31px 32px);
   opacity:.45;
 }
+/* paper grain: static SVG noise, one layer, no request. The pad should feel
+   like paper, not a hex code. */
+body::after{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity:.05;
+}
 .wrap{position:relative;z-index:1;max-width:1080px;margin:0 auto;padding:0 24px}
 
 h1,h2,h3{font-family:var(--display);font-weight:800;letter-spacing:-.02em;line-height:1.04;margin:0}
