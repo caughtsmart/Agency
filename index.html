@@ -96,6 +96,13 @@ body::before{
   background:repeating-linear-gradient(to bottom,transparent 0 31px,var(--rule-soft) 31px 32px);
   opacity:.45;
 }
+/* paper grain: static SVG noise, one layer, no request. The pad should feel
+   like paper, not a hex code. */
+body::after{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity:.05;
+}
 .wrap{position:relative;z-index:1;max-width:1080px;margin:0 auto;padding:0 24px}
 
 h1,h2,h3{font-family:var(--display);font-weight:800;letter-spacing:-.02em;line-height:1.04;margin:0}
@@ -145,7 +152,7 @@ img{max-width:100%;height:auto}
 :focus-visible{outline:2.5px solid var(--red);outline-offset:3px}
 
 /* ---------- hero ---------- */
-.hero{padding:74px 0 56px}
+.hero{padding-top:74px;padding-bottom:56px}
 .hero h1{font-size:clamp(34px,6.1vw,70px);max-width:15ch}
 .hero .lede{font-size:clamp(17px,2vw,20px);max-width:56ch;margin-top:24px;color:var(--ink-soft)}
 .hero .lede strong{color:var(--ink);font-weight:600}
@@ -199,6 +206,11 @@ section{padding:74px 0;position:relative;z-index:1}
 .receipt .ref{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--ink-soft)}
 .receipt .fig{font-family:var(--display);font-weight:800;font-size:clamp(30px,4.4vw,38px);line-height:1;margin:12px 0 8px;letter-spacing:-.03em}
 .receipt .cap{font-size:15px;color:var(--ink-soft);line-height:1.45;margin:0}
+
+/* ---------- evidence photo ---------- */
+.evidence{margin:20px 0 0;border:1.5px solid var(--ink);background:var(--pad-2)}
+.evidence img{display:block;width:100%;height:auto}
+.evidence figcaption{padding:10px 20px;border-top:1.5px solid var(--ink);font-family:var(--mono);font-size:11px;color:var(--ink-soft)}
 
 /* ---------- audit tool ---------- */
 .tool{border:1.5px solid var(--ink);background:var(--pad-2);box-shadow:6px 6px 0 var(--shadow);margin-top:40px}
@@ -295,7 +307,15 @@ details[open] summary::after{content:"−"}
 details p{margin-top:12px;margin-bottom:0;color:var(--ink-soft);max-width:68ch;font-size:16px}
 
 /* ---------- final cta + footer ---------- */
-.final{background:var(--ink);color:var(--pad);text-align:center}
+.final{background:var(--ink);color:var(--pad);text-align:center;position:relative;overflow:hidden}
+/* The planning board, washed to ink: blurred past legibility before it ever
+   reached the repo, so the texture of a business being run survives and the
+   contents don't. Strokes top out at #3E4234 - body text stays over 4.5:1. */
+.final::before{
+  content:"";position:absolute;inset:0;
+  background:url('/board-wash.jpg') center/cover no-repeat;
+}
+.final .wrap{position:relative;z-index:1}
 .final h2{color:var(--pad);margin:0 auto;font-size:clamp(26px,4.4vw,44px);max-width:18ch}
 .final p{color:#B4B7AB;max-width:50ch;margin:18px auto 28px}
 .final .btn{background:var(--pad);color:var(--ink);border-color:var(--pad)}
@@ -314,7 +334,7 @@ footer nav a{display:inline-block;padding:4px 0}
   .op{grid-template-columns:1fr;gap:28px}
   .q{grid-template-columns:1fr;gap:10px}
   section{padding:54px 0}
-  .hero{padding:48px 0 40px}
+  .hero{padding-top:48px;padding-bottom:40px}
   .ledger-head,.ledger-foot,table.led th,table.led td{padding-left:16px;padding-right:16px}
   .tool-body,.tool-head,.tool-foot,.result{padding-left:18px;padding-right:18px}
 }
@@ -325,7 +345,6 @@ footer nav a{display:inline-block;padding:4px 0}
   .led-hrs{display:block;font-size:11px;color:var(--ink-soft);margin-top:2px}
 }
 @media(max-width:420px){
-  .wrap{padding:0 16px}
   body{font-size:16px}
   .top .btn{padding:10px 12px;font-size:12px}
 }
@@ -417,6 +436,11 @@ footer nav a{display:inline-block;padding:4px 0}
         <p class="cap">Click rate on the rebuilt welcome sequence, after segmenting on actual buying behaviour rather than "everyone who ever handed over an email address".</p>
       </div>
     </div>
+    <figure class="evidence">
+      <img src="/warehouse-trays.jpg" width="1600" height="560" loading="lazy" decoding="async"
+           alt="Rows of blue warehouse trays with handwritten labels, sorting paint and figure sets by range.">
+      <figcaption>The warehouse. Labelled by hand, reordered by software.</figcaption>
+    </figure>
   </div>
 </section>
 
@@ -511,10 +535,10 @@ footer nav a{display:inline-block;padding:4px 0}
         <h3>The audit</h3>
         <p class="price">£1,200 + VAT · 2 weeks</p>
         <ul class="lst">
-          <li>Half a day on site, watching the real thing</li>
+          <li>Half a day watching the real thing, over screen-share</li>
           <li>Every repetitive job costed and ranked</li>
           <li>A build plan with prices against each item</li>
-          <li>One quick win built and live before I leave</li>
+          <li>One quick win built and live by the end of it</li>
           <li>Fee comes off the first build if you go ahead</li>
         </ul>
         <a class="btn" href="https://cal.com/workings/look-45min">Book the audit</a>
@@ -602,7 +626,7 @@ footer nav a{display:inline-block;padding:4px 0}
       </details>
       <details>
         <summary>Do you actually build it, or just write a report?</summary>
-        <p>I build it. The audit includes something working before I leave, so you can see the difference between a slide deck and a thing that runs on Tuesday morning without anyone touching it.</p>
+        <p>I build it. The audit includes something working by the end of it, so you can see the difference between a slide deck and a thing that runs on Tuesday morning without anyone touching it.</p>
       </details>
       <details>
         <summary>What if we're in the same trade as you?</summary>
@@ -648,6 +672,63 @@ footer nav a{display:inline-block;padding:4px 0}
   "founder": { "@type": "Person", "name": "Graham" },
   "knowsAbout": ["Business process automation", "E-commerce operations", "Shopify", "Xero", "Reporting automation"],
   "priceRange": "££"
+}
+</script>
+
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "FAQPage",
+ "mainEntity": [
+  {
+   "@type": "Question",
+   "name": "Is this going to cost me staff?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Usually not, and I'd be wary of anyone promising it will. In a business your size the bottleneck isn't headcount, it's that your good people lose a chunk of every week to work a machine should be doing. The gain shows up as more done with the people you've got — which is what you need if you're growing and can't afford the next hire yet."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "We've been burned by an agency before.",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Most people have. That's why the audit is fixed-price and comes off the build, why there's no retainer until something is live and working, and why everything gets documented so you can take it in-house or to someone else. If I disappeared tomorrow your business would still run."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Our data is a mess. Aren't we too early for this?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Everyone's data is a mess. Mine was. You don't need a data warehouse to stop someone re-typing invoices into a spreadsheet. I start with the jobs that don't depend on clean data, and the data tends to tidy itself up as a side effect of automating the thing that kept breaking it."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Cashflow is tight. That's the whole problem.",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Understood — it's why the first step is free and the second is £1,200 rather than a five-figure engagement. I'd rather find you one thing that pays for itself inside a quarter than sell you a programme. If the audit turns up nothing worth building, I'll tell you that on the day rather than write it up nicely and invoice you anyway."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Do you actually build it, or just write a report?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "I build it. The audit includes something working by the end of it, so you can see the difference between a slide deck and a thing that runs on Tuesday morning without anyone touching it."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "What if we're in the same trade as you?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Then I'll turn you down. I won't take on a business that competes with mine, and I don't reuse one client's numbers or systems on another's account. Say so early and neither of us wastes an hour."
+   }
+  }
+ ]
 }
 </script>
 

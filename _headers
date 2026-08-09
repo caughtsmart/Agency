@@ -39,6 +39,12 @@
 /graham.jpg
   Cache-Control: public, max-age=604800
 
+/board-wash.jpg
+  Cache-Control: public, max-age=604800
+
+/warehouse-trays.jpg
+  Cache-Control: public, max-age=604800
+
 # Cloudflare Pages serves pages extensionless (/privacy, not /privacy.html) and
 # 308-redirects the .html form — so header rules must use the extensionless
 # paths or they match only the redirect, not the page.
