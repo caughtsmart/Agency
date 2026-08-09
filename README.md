@@ -37,7 +37,7 @@ keeps the privacy notice's "your browser talks to nobody else" claim literally t
 | D1 | Trading name | **Workings** |
 | D2 | Domain | **theworkings.uk** — bought, zone live in Cloudflare |
 | D3 | Business email | `graham@theworkings.uk` — needs Cloudflare Email Routing to receive (see launch steps) |
-| D4 | Limited company | Default: launch as sole trader, register later. Footer reads `[SOLE TRADER / COMPANY DETAILS]` until you fill it in |
+| D4 | Limited company | **Trades under Loaded Dice Ltd** (company no. 12429789, VAT GB 342132248) — footer, privacy and terms all carry the full details |
 | D5 | Prices | As placeholdered — free call / £1,200 audit / from £3,500 build / £750pm |
 | D6 | Audit refund guarantee | **Cut.** Not published anywhere |
 | D7 | Claim register | C1, C2, C3 confirmed and published. C7 cut |
@@ -48,15 +48,7 @@ confirmed or labelled illustrative.
 
 ### Things still open
 
-1. **"+ VAT" on the prices vs sole trader status.** The pricing panels say "+ VAT". If you
-   launch as an unregistered sole trader you can't charge it, and saying you will is a
-   problem. Either register, or delete the three "+ VAT" strings in `index.html` and the
-   line about VAT in `terms.html`. Five seconds either way, but do it before you launch.
-2. **The footer legal line.** `[SOLE TRADER / COMPANY DETAILS]` appears in `index.html`,
-   `privacy.html` and `terms.html`. A sole trader trading under a name other than their own
-   must show their own name and an address for service — "Workings — Graham Surname, Barry,
-   South Wales" does it.
-3. **A photograph.** The brief says "show one face — Graham's", and there isn't one yet.
+1. **A photograph.** The brief says "show one face — Graham's", and there isn't one yet.
    A real photo in the "Who you'd be dealing with" section — shop or warehouse, not a
    headshot against a wall — plus a surname is the single cheapest credibility gain left
    on the page. Add it above the `<dl>` in the operator card when you have one.
@@ -69,7 +61,6 @@ confirmed or labelled illustrative.
 
 ```bash
 ./setup.sh yourdomain.co.uk you@yourdomain.co.uk https://cal.com/you/look-45min
-grep -rn 'SOLE TRADER / COMPANY DETAILS' .     # then fill those in by hand
 git diff && git commit -am "Real details"
 ```
 

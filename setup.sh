@@ -22,10 +22,9 @@ Usage: ./setup.sh <domain> <email> <calendar-url>
   email         your business address            e.g. graham@theworkings.uk
   calendar-url  full Cal.com link                e.g. https://cal.com/you/look-45min
 
-Still to do by hand afterwards (there is no sensible default for these):
-  * "[SOLE TRADER / COMPANY DETAILS]" in the footer of index.html,
-    privacy.html and terms.html
-  * database_id in worker/wrangler.toml, after `wrangler d1 create`
+The legal details (Loaded Dice Ltd, company no., VAT no.) are already in the
+footer of index.html, privacy.html and terms.html — edit those by hand if the
+company ever changes.
 USAGE
   exit 1
 fi
@@ -66,6 +65,5 @@ fi
 
 echo
 echo "Done. Now:"
-echo "  1. grep -rn 'SOLE TRADER / COMPANY DETAILS' .   and fill those in"
-echo "  2. git diff   and read it"
-echo "  3. git commit"
+echo "  1. git diff   and read it"
+echo "  2. git commit"
