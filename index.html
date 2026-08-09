@@ -273,6 +273,16 @@ section{padding:74px 0;position:relative;z-index:1}
 .op{display:grid;grid-template-columns:1.15fr .85fr;gap:44px;align-items:start}
 .op p{font-size:17px}
 .card{border:1.5px solid var(--ink);background:var(--pad-2);padding:22px}
+/* Photo placeholder — swap the whole .photo-slot div for an <img> when the
+   real photograph exists. Same border treatment, zero radius, no shadow. */
+.photo-slot{
+  aspect-ratio:4/3;border:1.5px solid var(--ink);margin-bottom:18px;
+  background:repeating-linear-gradient(45deg,var(--pad) 0 10px,var(--pad-2) 10px 20px);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
+  text-align:center;padding:16px;
+}
+.photo-slot .stamp{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft)}
+.photo-slot .cap{font-family:var(--mono);font-size:11px;color:var(--ink-soft)}
 .card dl{margin:0;font-family:var(--mono);font-size:13px}
 .card dt{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);margin-top:14px}
 .card dt:first-child{margin-top:0}
@@ -561,6 +571,10 @@ footer nav a{display:inline-block;padding:4px 0}
       </p>
     </div>
     <div class="card">
+      <div class="photo-slot" aria-hidden="true">
+        <span class="stamp">Photograph to follow</span>
+        <span class="cap">Graham, at the shop or the warehouse. Not a headshot against a wall.</span>
+      </div>
       <dl>
         <dt>Based</dt><dd>Barry, South Wales</dd>
         <dt>Works with</dt><dd>UK firms, 5–20 staff</dd>
