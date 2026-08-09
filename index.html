@@ -302,7 +302,15 @@ details[open] summary::after{content:"−"}
 details p{margin-top:12px;margin-bottom:0;color:var(--ink-soft);max-width:68ch;font-size:16px}
 
 /* ---------- final cta + footer ---------- */
-.final{background:var(--ink);color:var(--pad);text-align:center}
+.final{background:var(--ink);color:var(--pad);text-align:center;position:relative;overflow:hidden}
+/* The planning board, washed to ink: blurred past legibility before it ever
+   reached the repo, so the texture of a business being run survives and the
+   contents don't. Strokes top out at #3E4234 - body text stays over 4.5:1. */
+.final::before{
+  content:"";position:absolute;inset:0;
+  background:url('/board-wash.jpg') center/cover no-repeat;
+}
+.final .wrap{position:relative;z-index:1}
 .final h2{color:var(--pad);margin:0 auto;font-size:clamp(26px,4.4vw,44px);max-width:18ch}
 .final p{color:#B4B7AB;max-width:50ch;margin:18px auto 28px}
 .final .btn{background:var(--pad);color:var(--ink);border-color:var(--pad)}
