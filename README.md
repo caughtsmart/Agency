@@ -40,7 +40,7 @@ worker/
 There are **no `CHECK` comments left in the source**. Everything on the page is either
 confirmed or labelled illustrative.
 
-### Two things still open
+### Things still open
 
 1. **"+ VAT" on the prices vs sole trader status.** The pricing panels say "+ VAT". If you
    launch as an unregistered sole trader you can't charge it, and saying you will is a
@@ -50,6 +50,10 @@ confirmed or labelled illustrative.
    `privacy.html` and `terms.html`. A sole trader trading under a name other than their own
    must show their own name and an address for service — "Workings — Graham Surname, Barry,
    South Wales" does it.
+3. **A photograph.** The brief says "show one face — Graham's", and there isn't one yet.
+   A real photo in the "Who you'd be dealing with" section — shop or warehouse, not a
+   headshot against a wall — plus a surname is the single cheapest credibility gain left
+   on the page. Add it above the `<dl>` in the operator card when you have one.
 
 ---
 
