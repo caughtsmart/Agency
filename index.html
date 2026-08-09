@@ -281,7 +281,9 @@ section{padding:74px 0;position:relative;z-index:1}
 /* ---------- faq ---------- */
 details{border-bottom:1px solid var(--rule);padding:18px 0}
 details summary{
-  cursor:pointer;font-family:var(--display);font-weight:600;font-size:18.5px;
+  /* 800, honestly: the self-hosted family ships one face, so declaring 600
+     here would just silently render as 800 anyway. */
+  cursor:pointer;font-family:var(--display);font-weight:800;font-size:18.5px;
   list-style:none;display:flex;justify-content:space-between;gap:16px;
 }
 details summary::-webkit-details-marker{display:none}
@@ -751,11 +753,23 @@ QUESTIONS.forEach(function(q){
     updateProgress();
     // A changed answer makes the calculated result a lie. Hide it and make
     // them press calculate again — the screen must never show a number that
-    // contradicts the answers next to it.
+    // contradicts the answers next to it. The send button comes back to life
+    // too, so a recalculated set of figures can be submitted afresh.
     if (LAST){
       LAST = null;
       el('result').classList.remove('show');
       el('err').textContent = 'Answers changed — press calculate again.';
+      var send = el('send');
+      send.disabled = false;
+      send.textContent = 'Send it to Graham';
+      var gm = el('gateMsg');
+      gm.classList.remove('bad');
+      gm.textContent = 'Goes straight to me, not a mailing list. One reply, from a person. No sequence, no newsletter. ';
+      var pl = document.createElement('a');
+      pl.href = '/privacy';
+      pl.textContent = 'What I do with it';
+      gm.appendChild(pl);
+      gm.appendChild(document.createTextNode('.'));
     }
   });
 });

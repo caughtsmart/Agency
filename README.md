@@ -153,9 +153,11 @@ the form, submit, and confirm both emails land.
 
 ## Reading your leads
 
-Open `https://yourdomain.co.uk/admin.html`, paste the `ADMIN_KEY`. It's `noindex`,
-`Disallow`ed in robots.txt, not linked from anywhere, and the key lives in memory only —
-refresh and you type it again. Nothing on this site writes to browser storage.
+Open `https://yourdomain.co.uk/admin`, paste the `ADMIN_KEY`. The page is kept out of
+search by a `noindex` meta tag and an `X-Robots-Tag` header (deliberately *not* by
+robots.txt, which would advertise the path), it isn't linked from anywhere, and the key
+lives in memory only — refresh and you type it again. Nothing on this site writes to
+browser storage.
 
 Or from the command line:
 
@@ -173,7 +175,7 @@ npx wrangler d1 execute workings-leads --remote --command \
 ```
 
 The privacy notice promises submissions are deleted after 24 months. The Worker enforces
-that itself: a weekly cron (see `[triggers]` in `wrangler.toml`) deletes anything older
+that itself: a daily cron (see `[triggers]` in `wrangler.toml`) deletes anything older
 and sweeps stale rate-limit rows. Nothing for you to remember.
 
 ---
