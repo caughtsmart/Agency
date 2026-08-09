@@ -297,6 +297,10 @@ footer nav{display:flex;gap:16px;flex-wrap:wrap}
   .ledger-head,.ledger-foot,table.led th,table.led td{padding-left:16px;padding-right:16px}
   .tool-body,.tool-head,.tool-foot,.result{padding-left:18px;padding-right:18px}
 }
+@media(max-width:480px){
+  /* the cost column is the punchline — the hours column gives way, not it */
+  table.led th:nth-child(2),table.led td:nth-child(2){display:none}
+}
 @media(max-width:420px){
   .wrap{padding:0 16px}
   body{font-size:16px}
@@ -347,7 +351,7 @@ footer nav{display:flex;gap:16px;flex-wrap:wrap}
       <span class="t">Leak ledger — typical 12-person firm</span>
       <span class="s">£22/hr loaded · 46 working weeks</span>
     </div>
-    <div class="led-scroll">
+    <div class="led-scroll" role="region" aria-label="Leak ledger" tabindex="0">
       <table class="led">
         <caption>Illustrative annual cost of manual admin in a typical twelve-person firm.</caption>
         <thead>
