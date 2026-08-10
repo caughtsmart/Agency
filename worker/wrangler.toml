@@ -31,6 +31,12 @@ binding = "DB"
 database_name = "workings-leads"
 database_id = "b1454ca0-d945-46ec-9599-42b31cd9eb54"
 
+# Email Routing send binding. Free on any plan, but only able to send to
+# addresses verified as Email Routing destinations - which is exactly the
+# threat model we want: this Worker can email Graham and nobody else.
+[[send_email]]
+name = "EMAIL"
+
 [observability]
 enabled = true
 
@@ -44,9 +50,8 @@ crons = ["17 4 * * *"]
 # ---------------------------------------------------------------------------
 # Secrets — set with `npx wrangler secret put NAME`. Never in this file.
 #
-#   NOTIFY_EMAIL     where the [LEAD] email lands
-#   FROM_EMAIL       the verified sending address (use Graham's own)
-#   RESEND_API_KEY   from resend.com
+#   NOTIFY_EMAIL     where the [LEAD] email lands (a verified destination)
+#   FROM_EMAIL       sending address on this domain, e.g. graham@theworkings.uk
 #   ADMIN_KEY        guards GET /api/leads — use `openssl rand -hex 32`
 #   RATE_SALT        salts the IP hash — use `openssl rand -hex 32`
 # ---------------------------------------------------------------------------
