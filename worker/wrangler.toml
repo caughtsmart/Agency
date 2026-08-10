@@ -1,5 +1,9 @@
 #:schema node_modules/wrangler/config-schema.json
-name = "workings-lead"
+# Must match the Worker this repo deploys to. Cloudflare's "Import a
+# repository" flow names the Worker after the repo, so this is "agency"
+# rather than anything prettier - the name is cosmetic, and renaming it
+# would mean deleting the Worker and re-entering every secret.
+name = "agency"
 main = "src/index.js"
 compatibility_date = "2026-01-15"
 workers_dev = false

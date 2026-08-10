@@ -153,6 +153,11 @@ the form, submit, and confirm the `[LEAD]` email lands.
 
 ## Reading your leads
 
+**A note on names.** The Worker is named `agency` — Cloudflare's "Import a
+repository" flow names Workers after the repo, and renaming one means deleting
+it and re-entering every secret, so it stays. The D1 database is `workings-leads`.
+Different things, similar names.
+
 Open `https://yourdomain.co.uk/admin`, paste the `ADMIN_KEY`. The page is kept out of
 search by a `noindex` meta tag and an `X-Robots-Tag` header (deliberately *not* by
 robots.txt, which would advertise the path), it isn't linked from anywhere, and the key
