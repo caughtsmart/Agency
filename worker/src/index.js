@@ -7,16 +7,19 @@
  *
  * Bindings (wrangler.toml)
  *   DB                D1 database. Schema in ../schema.sql
+ *   EMAIL             Cloudflare Email Routing send binding. Free, and only
+ *                     able to reach verified destinations — which is all this
+ *                     needs, because the only recipient is Graham.
  *
  * Secrets (`wrangler secret put NAME`) — never commit these
- *   NOTIFY_EMAIL      Where the [LEAD] notification goes. Graham's inbox.
- *   FROM_EMAIL        The verified sending address. Should be Graham's own address.
- *   RESEND_API_KEY    Resend API key. If unset, submissions still save; no email is sent.
+ *   NOTIFY_EMAIL      Where the [LEAD] notification goes. Must be a verified
+ *                     Email Routing destination.
+ *   FROM_EMAIL        Sending address on the site's own domain.
  *   ADMIN_KEY         Long random string guarding GET /api/leads.
  *   RATE_SALT         Long random string. Salts the IP hash used for rate limiting.
  *
  * Vars
- *   ALLOWED_ORIGIN    e.g. https://workings.co.uk — the only origin CORS is opened to.
+ *   ALLOWED_ORIGIN    e.g. https://theworkings.uk — the only origin CORS is opened to.
  */
 
 const RATE_LIMIT = 5;              // submissions
@@ -205,10 +208,12 @@ async function handleLead(request, env, ctx) {
     return json({ ok: false, error: 'storage_failed' }, 500, request, env);
   }
 
-  /* 8. Email Graham, then the submitter. Deliberately after the write: if the
-        mail provider is having a bad day the lead is already safe, and the
-        notified flag on the row shows up on the leads page. */
-  ctx.waitUntil(sendEmails(env, { leadId, email, company, source, audit, createdAt, ipTrunc }));
+  /* 8. Tell Graham. Deliberately after the write: if mail is having a bad day
+        the lead is already safe, and the notified flag on the row shows up on
+        the leads page. There is no auto-acknowledgement to the submitter —
+        Cloudflare only sends to verified destinations, and the page already
+        says he will reply personally. His reply is the acknowledgement. */
+  ctx.waitUntil(notify(env, { leadId, email, company, source, audit, createdAt, ipTrunc }));
 
   return json({ ok: true }, 200, request, env);
 }
@@ -428,11 +433,11 @@ async function keysMatch(supplied, actual) {
  * Email
  * ------------------------------------------------------------------ */
 
-async function sendEmails(env, lead) {
+async function notify(env, lead) {
   // Runs inside ctx.waitUntil — a throw here can't reach the user, but it
   // would count as an unhandled rejection, so the whole thing is guarded.
   try {
-    if (!env.RESEND_API_KEY || !env.FROM_EMAIL || !env.NOTIFY_EMAIL) {
+    if (!env.EMAIL || !env.FROM_EMAIL || !env.NOTIFY_EMAIL) {
       console.warn('email not configured — lead stored but nothing sent');
       return;
     }
@@ -441,28 +446,19 @@ async function sendEmails(env, lead) {
     const headline = lead.audit.total > 0
       ? `£${lead.audit.total.toLocaleString('en-GB')}/yr`
       : 'answered none to everything';
-    const subject = clean(`[LEAD] ${label} — ${headline}`, 200);
 
-    const notify = send(env, {
-      from: env.FROM_EMAIL,
+    // replyTo is the whole trick: hitting reply in the notification opens a
+    // message straight to the lead, so Graham can answer from his phone
+    // without copying an address anywhere.
+    await env.EMAIL.send({
       to: env.NOTIFY_EMAIL,
-      reply_to: lead.email,
-      subject,
+      from: env.FROM_EMAIL,
+      replyTo: lead.email,
+      subject: clean(`[LEAD] ${label} — ${headline}`, 200),
       text: notificationBody(lead)
     });
 
-    // No reply_to on the acknowledgement — a person's mail client wouldn't
-    // set one, and this email has to read like a person sent it.
-    const ack = send(env, {
-      from: env.FROM_EMAIL,
-      to: lead.email,
-      subject: "Your figures — I've got them",
-      text: acknowledgementBody()
-    });
-
-    const [notifyOk] = await Promise.all([notify, ack]);
-
-    if (notifyOk && lead.leadId != null) {
+    if (lead.leadId != null) {
       try {
         await env.DB.prepare(`UPDATE leads SET notified = 1 WHERE id = ?1`).bind(lead.leadId).run();
       } catch (err) {
@@ -470,30 +466,9 @@ async function sendEmails(env, lead) {
       }
     }
   } catch (err) {
-    console.error('sendEmails failed', err && err.stack ? err.stack : err);
-  }
-}
-
-async function send(env, message) {
-  try {
-    const res = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${env.RESEND_API_KEY}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(message)
-    });
-    if (!res.ok) {
-      // Status only — Resend's error bodies echo the recipient address, and
-      // console output persists in Cloudflare's logs. No PII in logs.
-      console.error('resend failed', res.status);
-      return false;
-    }
-    return true;
-  } catch (err) {
-    console.error('resend threw', err && err.message);
-    return false;
+    // Error objects from the binding carry a code but not the recipient, so
+    // this is safe to log. The lead is already saved either way.
+    console.error('notification failed', err && (err.code || err.message));
   }
 }
 
@@ -554,23 +529,6 @@ function notificationBody(lead) {
   lines.push(`Submitted from ${lead.ipTrunc || 'unknown'} (truncated).`);
 
   return lines.join('\n');
-}
-
-/** Must read like a person sent it. No HTML, no logo, no unsubscribe. */
-function acknowledgementBody() {
-  return [
-    'Thanks — your figures have come through.',
-    '',
-    "I'll go through them properly and come back to you within one working day",
-    "with what I'd actually do about it, in what order. If the honest answer is",
-    "that there's nothing worth building yet, I'll tell you that instead.",
-    '',
-    'If anything has changed in the meantime, or you want to add context the',
-    'form had no room for, just reply to this.',
-    '',
-    'Graham',
-    'Workings'
-  ].join('\n');
 }
 
 /* ------------------------------------------------------------------ *

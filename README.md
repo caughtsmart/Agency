@@ -85,12 +85,9 @@ no code.
 
 ```bash
 cd worker
-npx wrangler d1 create workings-leads          # paste the id into wrangler.toml
-npx wrangler d1 execute workings-leads --remote --file=./schema.sql
-
+# the database already exists and its id is in wrangler.toml
 npx wrangler secret put NOTIFY_EMAIL           # where [LEAD] emails land
-npx wrangler secret put FROM_EMAIL             # your verified sending address
-npx wrangler secret put RESEND_API_KEY         # resend.com, free tier
+npx wrangler secret put FROM_EMAIL             # graham@theworkings.uk
 npx wrangler secret put ADMIN_KEY              # openssl rand -hex 32
 npx wrangler secret put RATE_SALT              # openssl rand -hex 32
 
@@ -102,9 +99,21 @@ domain as the site. That is deliberate: `fetch('/api/lead')` stays same-origin, 
 is no CORS preflight to pay for. `ALLOWED_ORIGIN` is still set, so the endpoint stays
 locked to your domain if anything ever calls it cross-origin.
 
-**Resend needs the sending domain verified** (three DNS records: SPF, DKIM, DMARC). Do that
-before the first real submission or the acknowledgement silently won't send. The lead is
-still saved either way — `admin.html` flags any row where the notification didn't go out.
+**Email is pure Cloudflare — no third-party mail provider.** The Worker sends through the
+Email Routing `send_email` binding, which is free on any plan but can only reach addresses
+**verified as Email Routing destinations**. So before deploying: Cloudflare dashboard →
+theworkings.uk → Email → Email Routing, enable it, add your real inbox as a destination and
+click the confirmation link. `NOTIFY_EMAIL` must be that exact verified address, and
+`FROM_EMAIL` an address on this domain.
+
+That constraint is also why there is **no automatic acknowledgement to the person who
+submits** — Cloudflare cannot send to arbitrary strangers, and paying for a mail provider
+to send "we got your form" would contradict the whole promise. The page already tells them
+Graham will reply personally, and his reply is the acknowledgement. Hitting reply on the
+`[LEAD]` email opens a message straight to them.
+
+If a lead ever arrives while email is broken, the row is still saved and `admin.html` flags
+it as "email not sent".
 
 ### 4. Check it works
 
@@ -138,7 +147,7 @@ Two things about testing that will save you an hour of confusion:
   happy path last, or from a different network.
 
 Then run it properly from a phone: answer all eight, check the number appears **before**
-the form, submit, and confirm both emails land.
+the form, submit, and confirm the `[LEAD]` email lands.
 
 ---
 
