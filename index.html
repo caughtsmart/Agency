@@ -15,7 +15,7 @@
 
     domain     theworkings.uk
     email      graham@theworkings.uk
-    calendar   https://cal.com/workings/look-45min
+    calendar   https://cal.com/graham-u7vhke/a-look-at-your-workings
     legal      Loaded Dice Ltd, company no. 12429789, VAT GB 342132248
 
   To change the first three everywhere in one go:
@@ -26,7 +26,7 @@
 -->
 
 <link rel="canonical" href="https://theworkings.uk/">
-<meta name="theme-color" content="#E6E4DA">
+<meta name="theme-color" content="#F6F3E7">
 <meta name="robots" content="index,follow">
 
 <meta property="og:type" content="website">
@@ -61,16 +61,41 @@
 @font-face{font-family:'Courier Prime';font-style:normal;font-weight:400;font-display:swap;src:url('/fonts/courier-prime-400.woff2') format('woff2')}
 @font-face{font-family:'Courier Prime';font-style:normal;font-weight:700;font-display:swap;src:url('/fonts/courier-prime-700.woff2') format('woff2')}
 
+/* ---------------------------------------------------------------------------
+   COLOUR, AND WHAT EACH ONE IS ALLOWED TO MEAN
+
+   Four rules. Break them and the design stops arguing anything:
+
+     red     money leaking. Never decoration.
+     green   money recovered. Never decoration.
+     hi      the highlighter. "This is the bit that matters." Only ever a
+             background with ink on top — it is far too bright to be text.
+     drab    the old way of working. Reserved for the spreadsheet exhibit in
+             the hero and nothing else. It is deliberately the paper colour
+             this site used to be, so the exhibit reads as faded next to the
+             brighter page around it.
+
+   The pad is a warm off-white rather than a grey-green now. Same paper
+   metaphor, daylight instead of a stockroom bulb.
+   --------------------------------------------------------------------------- */
 :root{
-  --pad:#E6E4DA;
-  --pad-2:#DEDCD0;
-  --rule:#C0C4B6;
-  --rule-soft:#D2D5C9;
-  --ink:#14170F;
-  --ink-soft:#4E5347;
+  --pad:#F6F3E7;
+  --pad-2:#ECE8D8;
+  --rule:#C9C7B2;
+  --rule-soft:#DEDACA;
+  --ink:#12150D;
+  --ink-soft:#4A4F41;
   --red:#A32E22;
   --green:#1F5C3D;
-  --shadow:rgba(20,23,15,.10);
+  --hi:#FFD84D;
+  --hi-deep:#F0C420;
+  /* the old palette, kept alive for one element on purpose */
+  --drab:#E3E1D5;
+  --drab-2:#D9D7CA;
+  --drab-rule:#BEC2B4;
+  --drab-ink:#3F4438;
+  --drab-dim:#565B4E;
+  --shadow:rgba(18,21,13,.12);
   --mono:"Courier Prime",ui-monospace,"Cascadia Mono","Segoe UI Mono",Menlo,monospace;
   /* The fallbacks are deliberately grotesque-adjacent — if the webfont hasn't
      landed yet the page must not open in Times. */
@@ -145,15 +170,25 @@ img{max-width:100%;height:auto}
   cursor:pointer;transition:transform .12s ease, box-shadow .12s ease;
   line-height:1.3;text-align:center;
 }
-.btn:hover{transform:translate(-1px,-1px);box-shadow:3px 3px 0 var(--ink)}
+/* The offset shadow lands in highlighter on hover — the one moment where
+   "this is the bit that matters" is literally true. */
+.btn:hover{transform:translate(-1px,-1px);box-shadow:3px 3px 0 var(--hi-deep)}
 .btn-ghost{background:transparent;color:var(--ink)}
-.btn-ghost:hover{box-shadow:3px 3px 0 var(--rule)}
+.btn-ghost:hover{box-shadow:3px 3px 0 var(--hi-deep)}
 .btn[disabled]{opacity:.55;cursor:default;transform:none;box-shadow:none}
 :focus-visible{outline:2.5px solid var(--red);outline-offset:3px}
 
 /* ---------- hero ---------- */
 .hero{padding-top:74px;padding-bottom:56px}
 .hero h1{font-size:clamp(34px,6.1vw,70px);max-width:15ch}
+/* A marker swipe, not a filled box: the gradient stops short of the cap height
+   and of the baseline, so it reads as a pen dragged across the words.
+   box-decoration-break keeps it looking hand-drawn when the phrase wraps. */
+.hl{
+  background:linear-gradient(180deg,transparent 0 54%,var(--hi) 54% 96%,transparent 96%);
+  padding:0 .05em;
+  -webkit-box-decoration-break:clone;box-decoration-break:clone;
+}
 .hero .lede{font-size:clamp(17px,2vw,20px);max-width:56ch;margin-top:24px;color:var(--ink-soft)}
 .hero .lede strong{color:var(--ink);font-weight:600}
 .hero-cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px;align-items:center}
@@ -192,6 +227,72 @@ table.led tr.tot td{
 .ledger-foot{
   padding:12px 20px;border-top:1.5px solid var(--ink);
   font-family:var(--mono);font-size:11px;color:var(--ink-soft);
+}
+
+/* ---------- SIGNATURE: the repetition exhibit ----------
+   The problem, shown before it's costed. Drawn, not filmed: an SVG is a few KB
+   against a GIF's megabyte, stays sharp on a phone, and needs no new request or
+   CSP hole. Everything here is ink — red is saved for the ledger underneath,
+   where the money starts leaking. */
+.rt{margin:46px 0 0;max-width:720px}
+.rt-frame{
+  display:block;width:100%;height:auto;background:var(--drab-2);
+  border:1.5px solid var(--drab-ink);box-shadow:6px 6px 0 var(--shadow);
+}
+/* The descendant selector below sets fill for every glyph, so the modifier
+   classes have to be written as descendants too or they lose on specificity. */
+.rt-frame text{font-family:var(--mono);fill:var(--drab-ink)}
+.rt-frame .rt-lbl{font-size:11px;letter-spacing:.13em}
+.rt-frame .rt-hd{font-size:9.5px;letter-spacing:.14em;fill:var(--drab-dim)}
+.rt-frame .rt-cell{font-size:12.5px}
+.rt-frame .rt-dim{fill:var(--drab-dim)}
+.rt-rule{stroke:var(--drab-rule);stroke-width:1}
+.rt-hard{stroke:var(--drab-ink);stroke-width:1.5}
+.rt-cover{fill:var(--drab-2)}
+.rt-cur{fill:none;stroke:var(--drab-ink);stroke-width:2}
+.rt-cover{animation:rt-reveal 7.5s linear infinite}
+.rt-cur{animation:rt-cursor 7.5s linear infinite}
+.rt-roll{animation:rt-roll 7.5s linear infinite}
+@keyframes rt-reveal{
+  0%,6%{transform:translateY(0)}
+  20%,26%{transform:translateY(34px)}
+  40%,46%{transform:translateY(68px)}
+  60%,66%{transform:translateY(102px)}
+  80%,86%{transform:translateY(136px)}
+  100%{transform:translateY(170px)}
+}
+@keyframes rt-cursor{
+  0%,18%{transform:translateY(0)}
+  20%,38%{transform:translateY(34px)}
+  40%,58%{transform:translateY(68px)}
+  60%,78%{transform:translateY(102px)}
+  80%,100%{transform:translateY(136px)}
+}
+@keyframes rt-roll{
+  0%,18%{transform:translateY(0)}
+  20%,38%{transform:translateY(-15px)}
+  40%,58%{transform:translateY(-30px)}
+  60%,78%{transform:translateY(-45px)}
+  80%,100%{transform:translateY(-60px)}
+}
+/* Motion is the whole point here, so when it's unwelcome the exhibit parks on
+   the finished state rather than disappearing. */
+@media(prefers-reduced-motion:reduce){
+  .rt-cover{animation:none;transform:translateY(170px)}
+  .rt-cur{animation:none;transform:translateY(136px)}
+  .rt-roll{animation:none;transform:translateY(-60px)}
+}
+/* Two variants, same 34px row rhythm, so one set of keyframes drives both.
+   The narrow one drops the cost column and the long descriptions — at phone
+   width a faithful copy of the wide version is six-pixel type nobody reads. */
+.rt-narrow{display:none}
+@media(max-width:640px){
+  .rt-wide{display:none}
+  .rt-narrow{display:block}
+}
+.rt-cap{
+  font-family:var(--mono);font-size:11.5px;color:var(--ink-soft);
+  margin:14px 0 0;max-width:52ch;line-height:1.5;
 }
 
 /* ---------- generic section ---------- */
@@ -269,7 +370,7 @@ section{padding:74px 0;position:relative;z-index:1}
 .tier.pick .price,.tier.pick h3{color:var(--pad)}
 .tier.pick .lst li{border-color:#3A3E33;color:#CFCDC2}
 .tier .step{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--ink-soft)}
-.tier.pick .step{color:#9C9E92}
+.tier.pick .step{color:var(--hi)}
 .tier h3{font-size:23px;margin:10px 0 6px}
 .tier .price{font-family:var(--mono);font-size:15px;font-weight:700;margin-bottom:14px}
 .lst{list-style:none;padding:0;margin:0 0 20px;flex:1}
@@ -277,7 +378,7 @@ section{padding:74px 0;position:relative;z-index:1}
 .lst li:last-child{border-bottom:none}
 .tier .btn{align-self:flex-start}
 .tier.pick .btn{background:var(--pad);color:var(--ink);border-color:var(--pad)}
-.tier.pick .btn:hover{box-shadow:3px 3px 0 #4E5347}
+.tier.pick .btn:hover{box-shadow:3px 3px 0 var(--hi-deep)}
 .tier.pick :focus-visible{outline-color:var(--pad)}
 .vat-note{font-family:var(--mono);font-size:11.5px;color:var(--ink-soft);margin-top:20px}
 
@@ -319,7 +420,7 @@ details p{margin-top:12px;margin-bottom:0;color:var(--ink-soft);max-width:68ch;f
 .final h2{color:var(--pad);margin:0 auto;font-size:clamp(26px,4.4vw,44px);max-width:18ch}
 .final p{color:#B4B7AB;max-width:50ch;margin:18px auto 28px}
 .final .btn{background:var(--pad);color:var(--ink);border-color:var(--pad)}
-.final .btn:hover{box-shadow:3px 3px 0 #4E5347}
+.final .btn:hover{box-shadow:3px 3px 0 var(--hi-deep)}
 .final :focus-visible{outline-color:var(--pad)}
 
 footer{border-top:1.5px solid var(--ink);padding:26px 0;font-family:var(--mono);font-size:12px;color:var(--ink-soft)}
@@ -358,6 +459,53 @@ footer nav a{display:inline-block;padding:4px 0}
   .top,.final,.gate{display:none}
 }
 </style>
+
+<!--
+  ============================================================
+  GOOGLE ANALYTICS 4 — WITH CONSENT DENIED BY DEFAULT
+
+  Read this before changing anything here.
+
+  The `consent default` call below runs BEFORE gtag.js has a chance to
+  measure anything, which is the whole point. With analytics_storage and
+  ad_storage denied, GA4 sets no cookies at all — it sends a cookieless
+  ping instead. That is what keeps three things true at once:
+
+    · the privacy notice's "no cookies, no browser storage" promise
+    · no consent banner, because there is nothing being stored to consent to
+    · page views, sessions and traffic sources still land in GA4
+
+  What you give up: no cross-visit identity, so returning visitors look
+  like new ones, and Google models rather than counts some of the totals.
+  For a site whose only conversion is a form post you can count in D1
+  directly, that is a trade worth making.
+
+  If you ever add a consent banner, call
+  gtag('consent','update',{analytics_storage:'granted', ...}) when
+  someone accepts. Nothing else here needs to change.
+
+  Loaded last in the head on purpose: it is async and low priority, and
+  nothing on this page should queue ahead of the fonts and the audit tool.
+  ============================================================
+-->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-294TV3LSGP"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('consent','default',{
+    ad_storage:'denied',
+    ad_user_data:'denied',
+    ad_personalization:'denied',
+    analytics_storage:'denied',
+    functionality_storage:'denied',
+    personalization_storage:'denied',
+    security_storage:'granted'
+  });
+  /* strips ad click identifiers from the ping while consent is denied */
+  gtag('set','ads_data_redaction',true);
+  gtag('js', new Date());
+  gtag('config','G-294TV3LSGP');
+</script>
 </head>
 <body class="no-js">
 
@@ -375,7 +523,7 @@ footer nav a{display:inline-block;padding:4px 0}
 <!-- ============ HERO + LEAK LEDGER ============ -->
 <div class="wrap hero">
   <p class="eyebrow">AI &amp; automation · 5–20 staff · £1m–£3m turnover</p>
-  <h1>The most expensive person in your business is the one doing it by hand.</h1>
+  <h1>The most expensive person in your business is the one <span class="hl">doing it by hand</span>.</h1>
   <p class="lede">
     I run a retail and e-commerce business in South Wales. Over the last two years I handed the
     repetitive half of it to software — purchasing, stock, pricing, reporting, marketing.
@@ -387,6 +535,142 @@ footer nav a{display:inline-block;padding:4px 0}
     <a class="btn btn-ghost" href="#pricing">See what it costs</a>
     <span class="hero-note">No sales call to get your number. Three clients at a time, and I've still got a shop to run.</span>
   </div>
+
+  <!-- The problem, shown. Drawn in SVG rather than filmed: sharp at any size,
+       a few KB, no extra request, no third party. -->
+  <figure class="rt">
+    <svg class="rt-frame rt-wide" viewBox="0 0 720 262" role="img"
+         aria-label="A spreadsheet open at row 146 of 900. A retail price is being typed into column C one row at a time, over and over.">
+
+      <!-- title bar -->
+      <text class="rt-lbl" x="16" y="22">supplier-prices-FINAL-v4.xlsx</text>
+      <text class="rt-hd" x="598" y="21.5" text-anchor="end">ROW</text>
+      <svg x="604" y="10" width="100" height="15">
+        <g class="rt-roll">
+          <text class="rt-lbl" x="100" y="11.5" text-anchor="end">0146 / 900</text>
+          <text class="rt-lbl" x="100" y="26.5" text-anchor="end">0147 / 900</text>
+          <text class="rt-lbl" x="100" y="41.5" text-anchor="end">0148 / 900</text>
+          <text class="rt-lbl" x="100" y="56.5" text-anchor="end">0149 / 900</text>
+          <text class="rt-lbl" x="100" y="71.5" text-anchor="end">0150 / 900</text>
+        </g>
+      </svg>
+      <line class="rt-hard" x1="0" y1="34" x2="720" y2="34"/>
+
+      <!-- column headers -->
+      <text class="rt-hd" x="46" y="51">A · SKU</text>
+      <text class="rt-hd" x="340" y="51">B · COST EX VAT</text>
+      <text class="rt-hd" x="510" y="51">C · RETAIL</text>
+      <line class="rt-rule" x1="0" y1="58" x2="720" y2="58"/>
+
+      <!-- column and row grid -->
+      <line class="rt-rule" x1="36" y1="34" x2="36" y2="228"/>
+      <line class="rt-rule" x1="330" y1="34" x2="330" y2="228"/>
+      <line class="rt-rule" x1="500" y1="34" x2="500" y2="228"/>
+      <line class="rt-rule" x1="0" y1="92" x2="720" y2="92"/>
+      <line class="rt-rule" x1="0" y1="126" x2="720" y2="126"/>
+      <line class="rt-rule" x1="0" y1="160" x2="720" y2="160"/>
+      <line class="rt-rule" x1="0" y1="194" x2="720" y2="194"/>
+
+      <!-- gutter -->
+      <text class="rt-cell rt-dim" x="28" y="79.5" text-anchor="end">146</text>
+      <text class="rt-cell rt-dim" x="28" y="113.5" text-anchor="end">147</text>
+      <text class="rt-cell rt-dim" x="28" y="147.5" text-anchor="end">148</text>
+      <text class="rt-cell rt-dim" x="28" y="181.5" text-anchor="end">149</text>
+      <text class="rt-cell rt-dim" x="28" y="215.5" text-anchor="end">150</text>
+
+      <!-- column A -->
+      <text class="rt-cell" x="46" y="79.5">TR-1042  Dice tray, walnut</text>
+      <text class="rt-cell" x="46" y="113.5">TR-1043  Dice tray, oak</text>
+      <text class="rt-cell" x="46" y="147.5">PM-1051  Playmat, 24×14</text>
+      <text class="rt-cell" x="46" y="181.5">PM-1052  Playmat, 36×18</text>
+      <text class="rt-cell" x="46" y="215.5">SL-1060  Card sleeves ×100</text>
+
+      <!-- column B -->
+      <text class="rt-cell rt-dim" x="486" y="79.5" text-anchor="end">12.40</text>
+      <text class="rt-cell rt-dim" x="486" y="113.5" text-anchor="end">12.40</text>
+      <text class="rt-cell rt-dim" x="486" y="147.5" text-anchor="end">6.85</text>
+      <text class="rt-cell rt-dim" x="486" y="181.5" text-anchor="end">9.20</text>
+      <text class="rt-cell rt-dim" x="486" y="215.5" text-anchor="end">2.15</text>
+
+      <!-- column C. A nested svg clips its own contents, which is what lets the
+           cover slide off the bottom without smothering the footer strip. -->
+      <svg x="500" y="58" width="218" height="170">
+        <text class="rt-cell" x="200" y="21.5" text-anchor="end">24.95</text>
+        <text class="rt-cell" x="200" y="55.5" text-anchor="end">24.95</text>
+        <text class="rt-cell" x="200" y="89.5" text-anchor="end">16.50</text>
+        <text class="rt-cell" x="200" y="123.5" text-anchor="end">21.00</text>
+        <text class="rt-cell" x="200" y="157.5" text-anchor="end">5.95</text>
+        <rect class="rt-cover" x="-4" y="-4" width="226" height="178"/>
+        <line class="rt-rule" x1="0" y1="34" x2="218" y2="34"/>
+        <line class="rt-rule" x1="0" y1="68" x2="218" y2="68"/>
+        <line class="rt-rule" x1="0" y1="102" x2="218" y2="102"/>
+        <line class="rt-rule" x1="0" y1="136" x2="218" y2="136"/>
+      </svg>
+      <rect class="rt-cur" x="503" y="61" width="212" height="28"/>
+
+      <!-- footer strip -->
+      <line class="rt-hard" x1="0" y1="228" x2="720" y2="228"/>
+      <text class="rt-hd" x="16" y="249">COPY · SWITCH TAB · PASTE · TAB BACK · 900 ROWS · EVERY MONDAY</text>
+    </svg>
+
+    <svg class="rt-frame rt-narrow" viewBox="0 0 360 262" role="img"
+         aria-label="A spreadsheet open at row 146 of 900. A retail price is being typed into column C one row at a time, over and over.">
+
+      <text class="rt-lbl" x="12" y="22">supplier-prices.xlsx</text>
+      <svg x="258" y="10" width="90" height="15">
+        <g class="rt-roll">
+          <text class="rt-lbl" x="90" y="11.5" text-anchor="end">0146 / 900</text>
+          <text class="rt-lbl" x="90" y="26.5" text-anchor="end">0147 / 900</text>
+          <text class="rt-lbl" x="90" y="41.5" text-anchor="end">0148 / 900</text>
+          <text class="rt-lbl" x="90" y="56.5" text-anchor="end">0149 / 900</text>
+          <text class="rt-lbl" x="90" y="71.5" text-anchor="end">0150 / 900</text>
+        </g>
+      </svg>
+      <line class="rt-hard" x1="0" y1="34" x2="360" y2="34"/>
+
+      <text class="rt-hd" x="38" y="51">A · SKU</text>
+      <text class="rt-hd" x="238" y="51">C · RETAIL</text>
+      <line class="rt-rule" x1="0" y1="58" x2="360" y2="58"/>
+
+      <line class="rt-rule" x1="30" y1="34" x2="30" y2="228"/>
+      <line class="rt-rule" x1="230" y1="34" x2="230" y2="228"/>
+      <line class="rt-rule" x1="0" y1="92" x2="360" y2="92"/>
+      <line class="rt-rule" x1="0" y1="126" x2="360" y2="126"/>
+      <line class="rt-rule" x1="0" y1="160" x2="360" y2="160"/>
+      <line class="rt-rule" x1="0" y1="194" x2="360" y2="194"/>
+
+      <text class="rt-cell rt-dim" x="24" y="79.5" text-anchor="end">146</text>
+      <text class="rt-cell rt-dim" x="24" y="113.5" text-anchor="end">147</text>
+      <text class="rt-cell rt-dim" x="24" y="147.5" text-anchor="end">148</text>
+      <text class="rt-cell rt-dim" x="24" y="181.5" text-anchor="end">149</text>
+      <text class="rt-cell rt-dim" x="24" y="215.5" text-anchor="end">150</text>
+
+      <text class="rt-cell" x="38" y="79.5">TR-1042 tray</text>
+      <text class="rt-cell" x="38" y="113.5">TR-1043 tray</text>
+      <text class="rt-cell" x="38" y="147.5">PM-1051 mat</text>
+      <text class="rt-cell" x="38" y="181.5">PM-1052 mat</text>
+      <text class="rt-cell" x="38" y="215.5">SL-1060 sleeves</text>
+
+      <svg x="230" y="58" width="128" height="170">
+        <text class="rt-cell" x="112" y="21.5" text-anchor="end">24.95</text>
+        <text class="rt-cell" x="112" y="55.5" text-anchor="end">24.95</text>
+        <text class="rt-cell" x="112" y="89.5" text-anchor="end">16.50</text>
+        <text class="rt-cell" x="112" y="123.5" text-anchor="end">21.00</text>
+        <text class="rt-cell" x="112" y="157.5" text-anchor="end">5.95</text>
+        <rect class="rt-cover" x="-4" y="-4" width="136" height="178"/>
+        <line class="rt-rule" x1="0" y1="34" x2="128" y2="34"/>
+        <line class="rt-rule" x1="0" y1="68" x2="128" y2="68"/>
+        <line class="rt-rule" x1="0" y1="102" x2="128" y2="102"/>
+        <line class="rt-rule" x1="0" y1="136" x2="128" y2="136"/>
+      </svg>
+      <rect class="rt-cur" x="233" y="61" width="122" height="28"/>
+
+      <line class="rt-hard" x1="0" y1="228" x2="360" y2="228"/>
+      <text class="rt-hd" x="12" y="249">COPY · PASTE · TAB BACK · 900 ROWS · EVERY MONDAY</text>
+    </svg>
+
+    <figcaption class="rt-cap">Same keystrokes, same order, every week. That is precisely what makes it automatable — and precisely why nobody ever gets round to it.</figcaption>
+  </figure>
 
   <div class="ledger">
     <div class="ledger-head">
@@ -448,7 +732,7 @@ footer nav a{display:inline-block;padding:4px 0}
 <section class="rule-top" id="audit">
   <div class="wrap">
     <p class="eyebrow">Free · no call · 3 minutes</p>
-    <h2 class="sec-h">Work out what your admin is actually costing you.</h2>
+    <h2 class="sec-h">Work out what your admin is <span class="hl">actually costing you</span>.</h2>
     <p class="sec-sub">Eight questions. Best estimates are fine — you know your business better than any benchmark does. You'll get a number and the three jobs worth fixing first.</p>
 
     <div class="tool">
@@ -527,7 +811,7 @@ footer nav a{display:inline-block;padding:4px 0}
           <li>I tell you the two or three things I'd change</li>
           <li>If there's nothing worth doing, I'll say so</li>
         </ul>
-        <a class="btn btn-ghost" href="https://cal.com/workings/look-45min">Book a look</a>
+        <a class="btn btn-ghost" href="https://cal.com/graham-u7vhke/a-look-at-your-workings">Book a look</a>
       </div>
 
       <div class="tier pick">
@@ -541,7 +825,7 @@ footer nav a{display:inline-block;padding:4px 0}
           <li>One quick win built and live by the end of it</li>
           <li>Fee comes off the first build if you go ahead</li>
         </ul>
-        <a class="btn" href="https://cal.com/workings/look-45min">Book the audit</a>
+        <a class="btn" href="https://cal.com/graham-u7vhke/a-look-at-your-workings">Book the audit</a>
       </div>
 
       <div class="tier">
@@ -555,7 +839,7 @@ footer nav a{display:inline-block;padding:4px 0}
           <li>Written down so you're not hostage to me</li>
           <li>Ongoing support from £750/month if wanted</li>
         </ul>
-        <a class="btn btn-ghost" href="https://cal.com/workings/look-45min">Talk it through</a>
+        <a class="btn btn-ghost" href="https://cal.com/graham-u7vhke/a-look-at-your-workings">Talk it through</a>
       </div>
 
     </div>
@@ -1047,8 +1331,13 @@ el('gate').addEventListener('submit', function(ev){
       return data;
     });
   }).then(function(){
-    msg.textContent = "Got it. I'll read it and come back to you within a working day.";
+    /* Off to /thanks. The message and the disabled button below matter for the
+       half-second before the browser moves, and for the case where navigation
+       is blocked or slow — the send has already succeeded by this point, so the
+       page must never look like it failed. */
+    msg.textContent = "Got it. Taking you to what happens next…";
     btn.textContent = 'Sent';
+    window.location.assign('/thanks');
   })['catch'](function(e){
     btn.disabled = false;
     msg.classList.add('bad');

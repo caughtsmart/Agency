@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Privacy — Workings</title>
-<meta name="description" content="What Workings does with your data, in plain English. No trackers, no cookies, no mailing list.">
+<meta name="description" content="What Workings does with your data, in plain English. No cookies, no mailing list, and analytics that stores nothing on your device.">
 <link rel="canonical" href="https://theworkings.uk/privacy">
 <meta name="robots" content="index,follow">
-<meta name="theme-color" content="#E6E4DA">
+<meta name="theme-color" content="#F6F3E7">
 <meta name="color-scheme" content="light">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <style>
@@ -16,8 +16,8 @@
 @font-face{font-family:'Courier Prime';font-style:normal;font-weight:400;font-display:swap;src:url('/fonts/courier-prime-400.woff2') format('woff2')}
 @font-face{font-family:'Courier Prime';font-style:normal;font-weight:700;font-display:swap;src:url('/fonts/courier-prime-700.woff2') format('woff2')}
 :root{
-  --pad:#E6E4DA;--pad-2:#DEDCD0;--rule:#C0C4B6;--rule-soft:#D2D5C9;
-  --ink:#14170F;--ink-soft:#4E5347;--red:#A32E22;
+  --pad:#F6F3E7;--pad-2:#ECE8D8;--rule:#C9C7B2;--rule-soft:#DEDACA;
+  --ink:#12150D;--ink-soft:#4A4F41;--red:#A32E22;
   --mono:"Courier Prime",ui-monospace,Menlo,monospace;
   --display:"Bricolage Grotesque","Arial Black","Arial Narrow Bold",system-ui,sans-serif;
   --body:"Public Sans",system-ui,-apple-system,sans-serif;
@@ -52,6 +52,25 @@ footer nav{display:flex;gap:24px;flex-wrap:wrap}
 footer nav a{display:inline-block;padding:4px 0}
 @media(max-width:420px){body{font-size:16px}}
 </style>
+<!-- Google Analytics 4. Consent is denied by default, so no cookies are set —
+     see the long explanation in index.html before changing any of this. -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-294TV3LSGP"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('consent','default',{
+    ad_storage:'denied',
+    ad_user_data:'denied',
+    ad_personalization:'denied',
+    analytics_storage:'denied',
+    functionality_storage:'denied',
+    personalization_storage:'denied',
+    security_storage:'granted'
+  });
+  gtag('set','ads_data_redaction',true);
+  gtag('js', new Date());
+  gtag('config','G-294TV3LSGP');
+</script>
 </head>
 <body>
 
@@ -66,14 +85,14 @@ footer nav a{display:inline-block;padding:4px 0}
 <div class="wrap">
   <p class="eyebrow">Privacy</p>
   <h1>What I do with your data.</h1>
-  <p class="lede">Short version: I use it to reply to you, and that's it. No mailing list, no ad pixels, no cookies, nobody else gets it.</p>
-  <p class="updated">Last updated: 9 August 2026</p>
+  <p class="lede">Short version: I use it to reply to you, and that's it. No mailing list, no ad pixels, no cookies, and what you type goes to nobody but me.</p>
+  <p class="updated">Last updated: 11 August 2026</p>
 
   <h2>Who is responsible for your data</h2>
   <p>Workings is a trading name of Loaded Dice Ltd, registered in England and Wales, company no. 12429789, registered office Unit C4, Windmill Parc, Hayes Road, Sully, Vale of Glamorgan CF64 5AD. Loaded Dice Ltd is the data controller for anything you send through this site — in practice that means me, Graham, because I own the company and nobody else reads the inbox. You can reach me at <a href="mailto:graham@theworkings.uk">graham@theworkings.uk</a>.</p>
 
   <h2>What I collect, and when</h2>
-  <p>The audit tool on the front page runs entirely in your browser. Your answers are not sent anywhere and are not saved — close the tab and they are gone. The site does not use cookies or browser storage of any kind.</p>
+  <p>The audit tool on the front page runs entirely in your browser. Your answers are not sent anywhere and are not saved — close the tab and they are gone. The site does not use cookies or browser storage of any kind, including for analytics; see the analytics section below for how that is arranged.</p>
   <p>The only time anything leaves your device is if you choose to fill in the form <em>after</em> seeing your number. At that point I receive:</p>
   <ul>
     <li>Your email address.</li>
@@ -96,14 +115,17 @@ footer nav a{display:inline-block;padding:4px 0}
   </ul>
 
   <h2>Who else touches it</h2>
-  <p>I use a small number of suppliers to run the site. They process data on my instructions only. (The typefaces are hosted here, not fetched from a third party — your browser talks to nobody else just by reading the page.)</p>
+  <p>I use a small number of suppliers to run the site. They process data on my instructions only. (The typefaces are hosted here rather than fetched from a font service, so reading the page does not involve one.)</p>
   <ul>
     <li><strong>Cloudflare</strong> — hosting, the form endpoint, the database the submission is written to, and the email that tells me it arrived. Data is held in Cloudflare's network; some processing may occur outside the UK under Cloudflare's standard data protection terms and the UK International Data Transfer Addendum.</li>
+    <li><strong>Google</strong> — Google Analytics counts visits to the page. See the analytics section below for exactly what that does and does not involve. Google processes this outside the UK, under the UK International Data Transfer Addendum.</li>
     <li><strong>Cal.com</strong> — if you book a call, that booking is handled by Cal.com under their own privacy notice.</li>
   </ul>
 
   <h2>Analytics</h2>
-  <p>I use Cloudflare Web Analytics, which counts page views without cookies and without building a profile of you. That is why there is no cookie banner on this site — there is nothing to consent to.</p>
+  <p>I use Google Analytics to count visits, deliberately configured so that it stores nothing on your device. Storage consent is set to denied before the tool loads, which means <strong>no analytics cookies are set and no identifier is kept</strong>. Your visit is counted; you are not followed from one visit to the next, and there is no advertising profile built from it.</p>
+  <p>What Google receives is the page you looked at, roughly where in the world you are, and what kind of browser and device you used. Because nothing is stored, each visit is counted on its own — if you come back tomorrow, that is simply another visit, not you again.</p>
+  <p>That is why there is still no cookie banner on this site. A banner exists to ask permission to store things on your device, and this site does not store anything on your device. If I ever change that, the banner appears at the same moment, and it will ask before anything is stored rather than after.</p>
 
   <h2>How long I keep it</h2>
   <p>Audit submissions are deleted automatically after <strong>24 months</strong> — the system does it on a schedule, it doesn't wait for me to remember. If you have become a client, the normal business and tax retention rules apply instead (six years). Email correspondence lives in my mailbox for as long as it is useful and is cleared out periodically.</p>

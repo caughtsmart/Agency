@@ -8,6 +8,7 @@ site, a Cloudflare Worker plus D1 for submissions. No build step, no framework, 
 index.html          the entire site
 privacy.html        UK GDPR privacy notice
 terms.html          terms of use
+thanks.html         where the form lands. Not indexed, not in the sitemap.
 admin.html          leads list. Not linked, not indexed. Needs the admin key.
 robots.txt
 sitemap.xml
@@ -26,7 +27,7 @@ worker/
 
 The fonts are served from this repo rather than from Google. That keeps first paint fast
 on a bad connection, means the audit tool can't be delayed by a third-party outage, and
-keeps the privacy notice's "your browser talks to nobody else" claim literally true.
+means the privacy notice can say the page does not involve a font service.
 
 ---
 
@@ -41,7 +42,7 @@ keeps the privacy notice's "your browser talks to nobody else" claim literally t
 | D5 | Prices | As placeholdered — free call / £1,200 audit / from £3,500 build / £750pm |
 | D6 | Audit refund guarantee | **Cut.** Not published anywhere |
 | D7 | Claim register | C1, C2, C3 confirmed and published. C7 cut |
-| D8 | Calendar | Cal.com. **Link still a placeholder** — swap when the account exists |
+| D8 | Calendar | Cal.com — live. `graham-u7vhke/a-look-at-your-workings`, 45 minutes, free. The username deliberately carries no surname |
 
 There are **no `CHECK` comments left in the source**. Everything on the page is either
 confirmed or labelled illustrative.
@@ -70,10 +71,21 @@ Connect this repo in the Cloudflare dashboard → Workers & Pages → Create →
 to Git. There is no build command and no output directory — it's static. Add the custom
 domain, HTTPS is automatic. `_headers` is picked up on deploy.
 
-Turn on **Web Analytics** (Cloudflare dashboard → Analytics → Web Analytics → add the site).
-Use the automatic setup so Cloudflare injects the beacon — no cookies, so no consent banner.
-The CSP in `_headers` already allows `static.cloudflareinsights.com`. Do this before
-launch: the privacy notice mentions it, so it should be true on day one.
+Analytics is **Google Analytics 4**, property `G-294TV3LSGP`, and the tag is already in
+the head of `index.html`, `privacy.html`, `terms.html` and `thanks.html` — four copies, so
+changing the measurement ID means four edits. `admin.html` is deliberately untagged.
+
+It runs with **Consent Mode denied by default**, which is the whole reason there is still
+no cookie banner: with `analytics_storage` denied GA4 sets no cookies and stores nothing on
+the visitor's device, so there is nothing to ask permission for. You get page views,
+sessions and traffic sources; you don't get returning-visitor identity. Read the comment
+block above the tag in `index.html` before changing any of it — the ordering of those
+`gtag()` calls is load-bearing, and getting it wrong means cookies start being set without
+consent.
+
+The CSP in `_headers` has to allow the Google origins or the tag is blocked outright and
+reports nothing, with no error anywhere except the browser console. If analytics ever goes
+quiet, check there first.
 
 While you're in the dashboard, add a **WAF rate-limiting rule** on `/api/lead`
 (Security → WAF → Rate limiting rules; the free plan includes one). The Worker
@@ -153,6 +165,11 @@ the form, submit, and confirm the `[LEAD]` email lands.
 
 ## Reading your leads
 
+**A note on names.** The Worker is named `agency` — Cloudflare's "Import a
+repository" flow names Workers after the repo, and renaming one means deleting
+it and re-entering every secret, so it stays. The D1 database is `workings-leads`.
+Different things, similar names.
+
 Open `https://yourdomain.co.uk/admin`, paste the `ADMIN_KEY`. The page is kept out of
 search by a `noindex` meta tag and an `X-Robots-Tag` header (deliberately *not* by
 robots.txt, which would advertise the path), it isn't linked from anywhere, and the key
@@ -186,17 +203,24 @@ The four numbers worth watching weekly, in order:
 
 | Step | Where it comes from |
 |---|---|
-| Page views | Cloudflare Web Analytics |
+| Page views | Google Analytics 4 |
 | Audit started | first `select` change — see the note below |
 | Calculated | click on "Calculate my number" |
 | Email submitted | `SELECT COUNT(*) FROM leads WHERE created_at > date('now','-7 days')` |
 
-Steps 1 and 4 work today with no extra code. Steps 2 and 3 need three lines of event
-tracking, and I have deliberately **not** added them, because the only free way to do it
-without cookies is another `POST` to the Worker on every interaction — which means another
-table, another thing writing rows, and another thing to prune. Given you can already see
-views in and submissions out, the middle two only matter once the funnel is leaking and you
-don't know where. Add them then, not now.
+Steps 1 and 4 work today with no extra code. Steps 2 and 3 are now cheap to add — GA4 is
+already on the page, so each is one line at the right moment:
+
+```js
+gtag('event','audit_started');     // in the first select's change handler
+gtag('event','audit_calculated');  // in the Calculate my number handler
+```
+
+These still set no cookies: `gtag('event', …)` respects the denied consent default and
+sends a cookieless ping like everything else. I have deliberately **not** added them,
+because two events you never look at are worse than no events, and the middle of a funnel
+only matters once you know it is leaking. Add them the first week you see views going up
+and submissions staying flat — not before.
 
 ---
 
@@ -205,6 +229,12 @@ don't know where. Add them then, not now.
 It's one file. Open `index.html`, change the words, save, push. Cloudflare rebuilds in
 about twenty seconds. Things worth knowing:
 
+- **The form lands on `/thanks`.** The submit handler POSTs to the Worker and then
+  redirects on success, so the thank-you page is the signal that a lead actually
+  arrived — which is why it carries a `generate_lead` event and why `_headers`
+  keeps it out of search. Nothing is passed in the URL: putting the annual figure
+  in a query string would leak it into analytics paths and referrer headers, and
+  it is the one number on this site that belongs to the visitor.
 - **The audit questions** are the `QUESTIONS` array near the bottom of `index.html`. Adding
   a seventh task question means adding one entry with a `key` — the maths and the ranked
   list pick it up on their own. The Worker validates against `TASK_ORDER` in
@@ -212,11 +242,17 @@ about twenty seconds. Things worth knowing:
   to the bottom of the notification email.
 - **The 55% figure** appears in three places: the on-screen workings, `terms.html`, and
   `normaliseAudit()` in the Worker. Change all three or the email won't match the page.
-- **Colours** are the CSS variables at the top. Red only ever means money leaking, green
-  only ever means money recovered. Don't use either as an accent — the whole design argument
-  falls over if they become decoration.
-- **Don't add** a cookie banner, a chat widget or a pop-up. There are no cookies, so there
-  is nothing to consent to, and that is a feature worth protecting.
+- **Colours** are the CSS variables at the top, and each one is allowed to mean exactly one
+  thing. Red is money leaking. Green is money recovered. `--hi`, the highlighter yellow, is
+  "this is the bit that matters" — and only ever a background with ink on top, never text,
+  because it is far too bright to read. `--drab` is the old palette this site used to wear,
+  kept alive solely for the spreadsheet exhibit in the hero, so that the old way of working
+  literally looks older than the page around it. Don't use any of them as decoration; the
+  whole design argument falls over if they become pattern.
+- **Don't add** a cookie banner, a chat widget or a pop-up. There are still no cookies —
+  analytics runs with storage consent denied — so there is nothing to consent to, and that
+  is a feature worth protecting. If you ever grant `analytics_storage`, the banner becomes
+  compulsory the same day, and the privacy notice needs rewriting with it.
 
 ---
 

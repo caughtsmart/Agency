@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sent — Workings</title>
+<meta name="description" content="Your figures are with Graham. Here's what happens next.">
+<!-- Deliberately out of search. A thank-you page in the results is a bad first
+     impression, and it would pollute the analytics with visits that never sent
+     anything. There is an X-Robots-Tag header on /thanks in _headers as well,
+     because a meta tag only helps once the page has been fetched. -->
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#F6F3E7">
+<meta name="color-scheme" content="light">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<style>
+@font-face{font-family:'Bricolage Grotesque';font-style:normal;font-weight:800;font-stretch:100%;font-display:swap;src:url('/fonts/bricolage-800.woff2') format('woff2')}
+@font-face{font-family:'Public Sans';font-style:normal;font-weight:400 600;font-display:swap;src:url('/fonts/public-sans.woff2') format('woff2')}
+@font-face{font-family:'Courier Prime';font-style:normal;font-weight:400;font-display:swap;src:url('/fonts/courier-prime-400.woff2') format('woff2')}
+@font-face{font-family:'Courier Prime';font-style:normal;font-weight:700;font-display:swap;src:url('/fonts/courier-prime-700.woff2') format('woff2')}
+:root{
+  --pad:#F6F3E7;--pad-2:#ECE8D8;--rule:#C9C7B2;--rule-soft:#DEDACA;
+  --ink:#12150D;--ink-soft:#4A4F41;--red:#A32E22;--green:#1F5C3D;--hi:#FFD84D;--hi-deep:#F0C420;
+  --shadow:rgba(18,21,13,.12);
+  --mono:"Courier Prime",ui-monospace,Menlo,monospace;
+  --display:"Bricolage Grotesque","Arial Black","Arial Narrow Bold",system-ui,sans-serif;
+  --body:"Public Sans",system-ui,-apple-system,sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--pad);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-wrap:break-word}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;background:repeating-linear-gradient(to bottom,transparent 0 31px,var(--rule-soft) 31px 32px);opacity:.45}
+.wrap{position:relative;z-index:1;max-width:760px;margin:0 auto;padding:0 24px}
+h1,h2{font-family:var(--display);font-weight:800;letter-spacing:-.02em;line-height:1.06;margin:0}
+h1{font-size:clamp(34px,5.6vw,54px)}
+h2{font-size:clamp(19px,2.4vw,23px);margin:0 0 14px}
+p{margin:0 0 1em;color:var(--ink-soft)}
+a{color:var(--ink)}
+:focus-visible{outline:2.5px solid var(--red);outline-offset:3px}
+.top{border-bottom:1px solid var(--rule);background:var(--pad);position:relative;z-index:2}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;min-height:64px;gap:16px;max-width:1080px}
+.mark{font-family:var(--display);font-weight:800;font-size:21px;letter-spacing:-.03em;text-decoration:none;color:var(--ink)}
+.back{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft)}
+main{padding:74px 0 84px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 14px}
+.hl{background:linear-gradient(180deg,transparent 0 54%,var(--hi) 54% 96%,transparent 96%);padding:0 .05em;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.lede{font-size:19px;color:var(--ink);margin-top:22px;max-width:54ch}
+
+/* The receipt. Same furniture as the leak ledger on the front page, because
+   this is the same kind of object: a record of something that happened. */
+.rcpt{margin:38px 0 0;border:1.5px solid var(--ink);background:var(--pad-2);box-shadow:6px 6px 0 var(--shadow)}
+.rcpt-head{
+  display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;
+  padding:14px 22px;border-bottom:1.5px solid var(--ink);
+  font-family:var(--mono);font-size:12px;letter-spacing:.15em;text-transform:uppercase;
+}
+.rcpt-head .s{color:var(--ink-soft);letter-spacing:.1em}
+.steps{list-style:none;margin:0;padding:0;counter-reset:s}
+.steps li{
+  counter-increment:s;position:relative;
+  padding:18px 22px 18px 62px;border-bottom:1px solid var(--rule-soft);
+}
+.steps li:last-child{border-bottom:none}
+.steps li::before{
+  content:counter(s,decimal-leading-zero);
+  position:absolute;left:22px;top:18px;
+  font-family:var(--mono);font-size:12px;letter-spacing:.1em;color:var(--ink-soft);
+}
+.steps strong{display:block;color:var(--ink);font-weight:600;margin-bottom:3px}
+.steps span{color:var(--ink-soft);font-size:16px}
+.rcpt-foot{
+  padding:13px 22px;border-top:1.5px solid var(--ink);
+  font-family:var(--mono);font-size:11.5px;color:var(--ink-soft);
+}
+.after{margin-top:44px;border-top:1.5px solid var(--ink);padding-top:26px}
+.btn{
+  display:inline-block;font-family:var(--mono);font-size:13px;letter-spacing:.08em;
+  text-transform:uppercase;text-decoration:none;padding:11px 18px;
+  border:1.5px solid var(--ink);background:var(--ink);color:var(--pad);
+  transition:transform .12s ease, box-shadow .12s ease;line-height:1.3;
+}
+.btn:hover{transform:translate(-1px,-1px);box-shadow:3px 3px 0 var(--hi-deep)}
+.btn-ghost{background:transparent;color:var(--ink)}
+.cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px;align-items:center}
+.small{font-family:var(--mono);font-size:12px;color:var(--ink-soft);margin-top:18px}
+footer{border-top:1.5px solid var(--ink);padding:26px 0;font-family:var(--mono);font-size:12px;color:var(--ink-soft);position:relative;z-index:1}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;max-width:1080px}
+footer a{color:var(--ink-soft)}
+footer nav{display:flex;gap:24px;flex-wrap:wrap}
+footer nav a{display:inline-block;padding:4px 0}
+@media(max-width:420px){body{font-size:16px}.steps li{padding-left:56px}}
+</style>
+
+<!-- Google Analytics 4. Consent is denied by default, so no cookies are set —
+     see the long explanation in index.html before changing any of this. -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-294TV3LSGP"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('consent','default',{
+    ad_storage:'denied',
+    ad_user_data:'denied',
+    ad_personalization:'denied',
+    analytics_storage:'denied',
+    functionality_storage:'denied',
+    personalization_storage:'denied',
+    security_storage:'granted'
+  });
+  gtag('set','ads_data_redaction',true);
+  gtag('js', new Date());
+  gtag('config','G-294TV3LSGP');
+  /* The page view already counts this. The named event is here so the
+     conversion can be reported on directly rather than by filtering paths,
+     and so it survives anyone later renaming the page. It carries no figures
+     and no identifiers — a submission happened, that is all. */
+  gtag('event','generate_lead',{ method:'waste-audit' });
+</script>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="mark" href="/">Workings</a>
+    <a class="back" href="/">Back to the site</a>
+  </div>
+</header>
+
+<main>
+<div class="wrap">
+  <p class="eyebrow">Sent</p>
+  <h1>That's <span class="hl">landed</span>.</h1>
+  <p class="lede">Your figures are sat in my inbox. I read them myself — there is no team here to route them to, and nothing automated is about to start emailing you.</p>
+
+  <div class="rcpt">
+    <div class="rcpt-head">
+      <span>What happens next</span>
+      <span class="s">Three steps · no forms</span>
+    </div>
+    <ol class="steps">
+      <li>
+        <strong>I read it properly.</strong>
+        <span>Your answers arrive alongside the number the tool worked out, so I can see which jobs are doing the damage before I write back.</span>
+      </li>
+      <li>
+        <strong>You get a reply from a person, within one working day.</strong>
+        <span>It comes from graham@theworkings.uk. Usually the same day. If it is a weekend, Monday.</span>
+      </li>
+      <li>
+        <strong>That reply names the two or three jobs I would automate first.</strong>
+        <span>With what I would charge against each one, and an honest note if I think the answer is that you do not need me yet.</span>
+      </li>
+    </ol>
+    <div class="rcpt-foot">No sequence. No newsletter. No follow-up chasing you in a fortnight.</div>
+  </div>
+
+  <div class="after">
+    <h2>If you would rather just talk</h2>
+    <p>The reply is the useful bit, but if you would sooner say it out loud than read it, the call is free and takes forty-five minutes.</p>
+    <div class="cta">
+      <a class="btn" href="https://cal.com/graham-u7vhke/a-look-at-your-workings">Book a look</a>
+      <a class="btn btn-ghost" href="/">Back to the site</a>
+    </div>
+    <p class="small">Nothing arrived by tomorrow? It will be in spam, or I have your address a character out. Email me at <a href="mailto:graham@theworkings.uk">graham@theworkings.uk</a> and I will find it.</p>
+  </div>
+</div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Workings is a trading name of Loaded Dice Ltd · Company no. 12429789 · VAT GB 342132248</span>
+    <nav aria-label="Legal">
+      <a href="mailto:graham@theworkings.uk">graham@theworkings.uk</a>
+      <a href="/privacy">Privacy</a>
+      <a href="/terms">Terms</a>
+    </nav>
+  </div>
+</footer>
+
+</body>
+</html>
