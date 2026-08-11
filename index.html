@@ -61,16 +61,41 @@
 @font-face{font-family:'Courier Prime';font-style:normal;font-weight:400;font-display:swap;src:url('/fonts/courier-prime-400.woff2') format('woff2')}
 @font-face{font-family:'Courier Prime';font-style:normal;font-weight:700;font-display:swap;src:url('/fonts/courier-prime-700.woff2') format('woff2')}
 
+/* ---------------------------------------------------------------------------
+   COLOUR, AND WHAT EACH ONE IS ALLOWED TO MEAN
+
+   Four rules. Break them and the design stops arguing anything:
+
+     red     money leaking. Never decoration.
+     green   money recovered. Never decoration.
+     hi      the highlighter. "This is the bit that matters." Only ever a
+             background with ink on top — it is far too bright to be text.
+     drab    the old way of working. Reserved for the spreadsheet exhibit in
+             the hero and nothing else. It is deliberately the paper colour
+             this site used to be, so the exhibit reads as faded next to the
+             brighter page around it.
+
+   The pad is a warm off-white rather than a grey-green now. Same paper
+   metaphor, daylight instead of a stockroom bulb.
+   --------------------------------------------------------------------------- */
 :root{
-  --pad:#E6E4DA;
-  --pad-2:#DEDCD0;
-  --rule:#C0C4B6;
-  --rule-soft:#D2D5C9;
-  --ink:#14170F;
-  --ink-soft:#4E5347;
+  --pad:#F6F3E7;
+  --pad-2:#ECE8D8;
+  --rule:#C9C7B2;
+  --rule-soft:#DEDACA;
+  --ink:#12150D;
+  --ink-soft:#4A4F41;
   --red:#A32E22;
   --green:#1F5C3D;
-  --shadow:rgba(20,23,15,.10);
+  --hi:#FFD84D;
+  --hi-deep:#F0C420;
+  /* the old palette, kept alive for one element on purpose */
+  --drab:#E3E1D5;
+  --drab-2:#D9D7CA;
+  --drab-rule:#BEC2B4;
+  --drab-ink:#3F4438;
+  --drab-dim:#565B4E;
+  --shadow:rgba(18,21,13,.12);
   --mono:"Courier Prime",ui-monospace,"Cascadia Mono","Segoe UI Mono",Menlo,monospace;
   /* The fallbacks are deliberately grotesque-adjacent — if the webfont hasn't
      landed yet the page must not open in Times. */
@@ -145,15 +170,25 @@ img{max-width:100%;height:auto}
   cursor:pointer;transition:transform .12s ease, box-shadow .12s ease;
   line-height:1.3;text-align:center;
 }
-.btn:hover{transform:translate(-1px,-1px);box-shadow:3px 3px 0 var(--ink)}
+/* The offset shadow lands in highlighter on hover — the one moment where
+   "this is the bit that matters" is literally true. */
+.btn:hover{transform:translate(-1px,-1px);box-shadow:3px 3px 0 var(--hi-deep)}
 .btn-ghost{background:transparent;color:var(--ink)}
-.btn-ghost:hover{box-shadow:3px 3px 0 var(--rule)}
+.btn-ghost:hover{box-shadow:3px 3px 0 var(--hi-deep)}
 .btn[disabled]{opacity:.55;cursor:default;transform:none;box-shadow:none}
 :focus-visible{outline:2.5px solid var(--red);outline-offset:3px}
 
 /* ---------- hero ---------- */
 .hero{padding-top:74px;padding-bottom:56px}
 .hero h1{font-size:clamp(34px,6.1vw,70px);max-width:15ch}
+/* A marker swipe, not a filled box: the gradient stops short of the cap height
+   and of the baseline, so it reads as a pen dragged across the words.
+   box-decoration-break keeps it looking hand-drawn when the phrase wraps. */
+.hl{
+  background:linear-gradient(180deg,transparent 0 54%,var(--hi) 54% 96%,transparent 96%);
+  padding:0 .05em;
+  -webkit-box-decoration-break:clone;box-decoration-break:clone;
+}
 .hero .lede{font-size:clamp(17px,2vw,20px);max-width:56ch;margin-top:24px;color:var(--ink-soft)}
 .hero .lede strong{color:var(--ink);font-weight:600}
 .hero-cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px;align-items:center}
@@ -201,20 +236,20 @@ table.led tr.tot td{
    where the money starts leaking. */
 .rt{margin:46px 0 0;max-width:720px}
 .rt-frame{
-  display:block;width:100%;height:auto;background:var(--pad-2);
-  border:1.5px solid var(--ink);box-shadow:6px 6px 0 var(--shadow);
+  display:block;width:100%;height:auto;background:var(--drab-2);
+  border:1.5px solid var(--drab-ink);box-shadow:6px 6px 0 var(--shadow);
 }
 /* The descendant selector below sets fill for every glyph, so the modifier
    classes have to be written as descendants too or they lose on specificity. */
-.rt-frame text{font-family:var(--mono);fill:var(--ink)}
+.rt-frame text{font-family:var(--mono);fill:var(--drab-ink)}
 .rt-frame .rt-lbl{font-size:11px;letter-spacing:.13em}
-.rt-frame .rt-hd{font-size:9.5px;letter-spacing:.14em;fill:var(--ink-soft)}
+.rt-frame .rt-hd{font-size:9.5px;letter-spacing:.14em;fill:var(--drab-dim)}
 .rt-frame .rt-cell{font-size:12.5px}
-.rt-frame .rt-dim{fill:var(--ink-soft)}
-.rt-rule{stroke:var(--rule-soft);stroke-width:1}
-.rt-hard{stroke:var(--ink);stroke-width:1.5}
-.rt-cover{fill:var(--pad-2)}
-.rt-cur{fill:none;stroke:var(--ink);stroke-width:2}
+.rt-frame .rt-dim{fill:var(--drab-dim)}
+.rt-rule{stroke:var(--drab-rule);stroke-width:1}
+.rt-hard{stroke:var(--drab-ink);stroke-width:1.5}
+.rt-cover{fill:var(--drab-2)}
+.rt-cur{fill:none;stroke:var(--drab-ink);stroke-width:2}
 .rt-cover{animation:rt-reveal 7.5s linear infinite}
 .rt-cur{animation:rt-cursor 7.5s linear infinite}
 .rt-roll{animation:rt-roll 7.5s linear infinite}
@@ -335,7 +370,7 @@ section{padding:74px 0;position:relative;z-index:1}
 .tier.pick .price,.tier.pick h3{color:var(--pad)}
 .tier.pick .lst li{border-color:#3A3E33;color:#CFCDC2}
 .tier .step{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--ink-soft)}
-.tier.pick .step{color:#9C9E92}
+.tier.pick .step{color:var(--hi)}
 .tier h3{font-size:23px;margin:10px 0 6px}
 .tier .price{font-family:var(--mono);font-size:15px;font-weight:700;margin-bottom:14px}
 .lst{list-style:none;padding:0;margin:0 0 20px;flex:1}
@@ -441,7 +476,7 @@ footer nav a{display:inline-block;padding:4px 0}
 <!-- ============ HERO + LEAK LEDGER ============ -->
 <div class="wrap hero">
   <p class="eyebrow">AI &amp; automation · 5–20 staff · £1m–£3m turnover</p>
-  <h1>The most expensive person in your business is the one doing it by hand.</h1>
+  <h1>The most expensive person in your business is the one <span class="hl">doing it by hand</span>.</h1>
   <p class="lede">
     I run a retail and e-commerce business in South Wales. Over the last two years I handed the
     repetitive half of it to software — purchasing, stock, pricing, reporting, marketing.
@@ -650,7 +685,7 @@ footer nav a{display:inline-block;padding:4px 0}
 <section class="rule-top" id="audit">
   <div class="wrap">
     <p class="eyebrow">Free · no call · 3 minutes</p>
-    <h2 class="sec-h">Work out what your admin is actually costing you.</h2>
+    <h2 class="sec-h">Work out what your admin is <span class="hl">actually costing you</span>.</h2>
     <p class="sec-sub">Eight questions. Best estimates are fine — you know your business better than any benchmark does. You'll get a number and the three jobs worth fixing first.</p>
 
     <div class="tool">

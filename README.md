@@ -217,9 +217,13 @@ about twenty seconds. Things worth knowing:
   to the bottom of the notification email.
 - **The 55% figure** appears in three places: the on-screen workings, `terms.html`, and
   `normaliseAudit()` in the Worker. Change all three or the email won't match the page.
-- **Colours** are the CSS variables at the top. Red only ever means money leaking, green
-  only ever means money recovered. Don't use either as an accent — the whole design argument
-  falls over if they become decoration.
+- **Colours** are the CSS variables at the top, and each one is allowed to mean exactly one
+  thing. Red is money leaking. Green is money recovered. `--hi`, the highlighter yellow, is
+  "this is the bit that matters" — and only ever a background with ink on top, never text,
+  because it is far too bright to read. `--drab` is the old palette this site used to wear,
+  kept alive solely for the spreadsheet exhibit in the hero, so that the old way of working
+  literally looks older than the page around it. Don't use any of them as decoration; the
+  whole design argument falls over if they become pattern.
 - **Don't add** a cookie banner, a chat widget or a pop-up. There are no cookies, so there
   is nothing to consent to, and that is a feature worth protecting.
 
