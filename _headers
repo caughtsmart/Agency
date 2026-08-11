@@ -5,7 +5,7 @@
   Permissions-Policy: geolocation=(), microphone=(), camera=(), payment=(), usb=()
   Cross-Origin-Opener-Policy: same-origin
   Strict-Transport-Security: max-age=31536000; includeSubDomains
-  Content-Security-Policy: default-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com; connect-src 'self' https://cloudflareinsights.com https://static.cloudflareinsights.com; upgrade-insecure-requests
+  Content-Security-Policy: default-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; img-src 'self' data: https://*.google-analytics.com https://*.googletagmanager.com; style-src 'self' 'unsafe-inline'; font-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com https://*.googletagmanager.com; connect-src 'self' https://cloudflareinsights.com https://static.cloudflareinsights.com https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com; upgrade-insecure-requests
 
 # Notes on the CSP above:
 #
@@ -21,6 +21,13 @@
 #
 # script-src and connect-src allow Cloudflare Web Analytics (the beacon script
 # and its report endpoint). Remove them if you don't turn analytics on.
+#
+# The googletagmanager and google-analytics origins are for GA4. Without them
+# the tag in index.html is blocked by this header and reports nothing at all,
+# with no error anywhere except the browser console — so if analytics ever goes
+# quiet, check here first. The wildcards are the set Google documents; GA4
+# resolves to regional subdomains (region1.google-analytics.com and friends)
+# that can't be listed exhaustively.
 
 # Static assets can be cached hard. The fonts are immutable — replace the file
 # name if you ever change them.

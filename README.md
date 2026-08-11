@@ -26,7 +26,7 @@ worker/
 
 The fonts are served from this repo rather than from Google. That keeps first paint fast
 on a bad connection, means the audit tool can't be delayed by a third-party outage, and
-keeps the privacy notice's "your browser talks to nobody else" claim literally true.
+means the privacy notice can say the page does not involve a font service.
 
 ---
 
@@ -70,10 +70,21 @@ Connect this repo in the Cloudflare dashboard → Workers & Pages → Create →
 to Git. There is no build command and no output directory — it's static. Add the custom
 domain, HTTPS is automatic. `_headers` is picked up on deploy.
 
-Turn on **Web Analytics** (Cloudflare dashboard → Analytics → Web Analytics → add the site).
-Use the automatic setup so Cloudflare injects the beacon — no cookies, so no consent banner.
-The CSP in `_headers` already allows `static.cloudflareinsights.com`. Do this before
-launch: the privacy notice mentions it, so it should be true on day one.
+Analytics is **Google Analytics 4**, property `G-294TV3LSGP`, and the tag is already in
+the head of `index.html`, `privacy.html` and `terms.html` — three copies, so changing the
+measurement ID means three edits. `admin.html` is deliberately untagged.
+
+It runs with **Consent Mode denied by default**, which is the whole reason there is still
+no cookie banner: with `analytics_storage` denied GA4 sets no cookies and stores nothing on
+the visitor's device, so there is nothing to ask permission for. You get page views,
+sessions and traffic sources; you don't get returning-visitor identity. Read the comment
+block above the tag in `index.html` before changing any of it — the ordering of those
+`gtag()` calls is load-bearing, and getting it wrong means cookies start being set without
+consent.
+
+The CSP in `_headers` has to allow the Google origins or the tag is blocked outright and
+reports nothing, with no error anywhere except the browser console. If analytics ever goes
+quiet, check there first.
 
 While you're in the dashboard, add a **WAF rate-limiting rule** on `/api/lead`
 (Security → WAF → Rate limiting rules; the free plan includes one). The Worker
@@ -191,17 +202,24 @@ The four numbers worth watching weekly, in order:
 
 | Step | Where it comes from |
 |---|---|
-| Page views | Cloudflare Web Analytics |
+| Page views | Google Analytics 4 |
 | Audit started | first `select` change — see the note below |
 | Calculated | click on "Calculate my number" |
 | Email submitted | `SELECT COUNT(*) FROM leads WHERE created_at > date('now','-7 days')` |
 
-Steps 1 and 4 work today with no extra code. Steps 2 and 3 need three lines of event
-tracking, and I have deliberately **not** added them, because the only free way to do it
-without cookies is another `POST` to the Worker on every interaction — which means another
-table, another thing writing rows, and another thing to prune. Given you can already see
-views in and submissions out, the middle two only matter once the funnel is leaking and you
-don't know where. Add them then, not now.
+Steps 1 and 4 work today with no extra code. Steps 2 and 3 are now cheap to add — GA4 is
+already on the page, so each is one line at the right moment:
+
+```js
+gtag('event','audit_started');     // in the first select's change handler
+gtag('event','audit_calculated');  // in the Calculate my number handler
+```
+
+These still set no cookies: `gtag('event', …)` respects the denied consent default and
+sends a cookieless ping like everything else. I have deliberately **not** added them,
+because two events you never look at are worse than no events, and the middle of a funnel
+only matters once you know it is leaking. Add them the first week you see views going up
+and submissions staying flat — not before.
 
 ---
 
@@ -224,8 +242,10 @@ about twenty seconds. Things worth knowing:
   kept alive solely for the spreadsheet exhibit in the hero, so that the old way of working
   literally looks older than the page around it. Don't use any of them as decoration; the
   whole design argument falls over if they become pattern.
-- **Don't add** a cookie banner, a chat widget or a pop-up. There are no cookies, so there
-  is nothing to consent to, and that is a feature worth protecting.
+- **Don't add** a cookie banner, a chat widget or a pop-up. There are still no cookies —
+  analytics runs with storage consent denied — so there is nothing to consent to, and that
+  is a feature worth protecting. If you ever grant `analytics_storage`, the banner becomes
+  compulsory the same day, and the privacy notice needs rewriting with it.
 
 ---
 

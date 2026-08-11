@@ -26,7 +26,7 @@
 -->
 
 <link rel="canonical" href="https://theworkings.uk/">
-<meta name="theme-color" content="#E6E4DA">
+<meta name="theme-color" content="#F6F3E7">
 <meta name="robots" content="index,follow">
 
 <meta property="og:type" content="website">
@@ -378,7 +378,7 @@ section{padding:74px 0;position:relative;z-index:1}
 .lst li:last-child{border-bottom:none}
 .tier .btn{align-self:flex-start}
 .tier.pick .btn{background:var(--pad);color:var(--ink);border-color:var(--pad)}
-.tier.pick .btn:hover{box-shadow:3px 3px 0 #4E5347}
+.tier.pick .btn:hover{box-shadow:3px 3px 0 var(--hi-deep)}
 .tier.pick :focus-visible{outline-color:var(--pad)}
 .vat-note{font-family:var(--mono);font-size:11.5px;color:var(--ink-soft);margin-top:20px}
 
@@ -420,7 +420,7 @@ details p{margin-top:12px;margin-bottom:0;color:var(--ink-soft);max-width:68ch;f
 .final h2{color:var(--pad);margin:0 auto;font-size:clamp(26px,4.4vw,44px);max-width:18ch}
 .final p{color:#B4B7AB;max-width:50ch;margin:18px auto 28px}
 .final .btn{background:var(--pad);color:var(--ink);border-color:var(--pad)}
-.final .btn:hover{box-shadow:3px 3px 0 #4E5347}
+.final .btn:hover{box-shadow:3px 3px 0 var(--hi-deep)}
 .final :focus-visible{outline-color:var(--pad)}
 
 footer{border-top:1.5px solid var(--ink);padding:26px 0;font-family:var(--mono);font-size:12px;color:var(--ink-soft)}
@@ -459,6 +459,53 @@ footer nav a{display:inline-block;padding:4px 0}
   .top,.final,.gate{display:none}
 }
 </style>
+
+<!--
+  ============================================================
+  GOOGLE ANALYTICS 4 — WITH CONSENT DENIED BY DEFAULT
+
+  Read this before changing anything here.
+
+  The `consent default` call below runs BEFORE gtag.js has a chance to
+  measure anything, which is the whole point. With analytics_storage and
+  ad_storage denied, GA4 sets no cookies at all — it sends a cookieless
+  ping instead. That is what keeps three things true at once:
+
+    · the privacy notice's "no cookies, no browser storage" promise
+    · no consent banner, because there is nothing being stored to consent to
+    · page views, sessions and traffic sources still land in GA4
+
+  What you give up: no cross-visit identity, so returning visitors look
+  like new ones, and Google models rather than counts some of the totals.
+  For a site whose only conversion is a form post you can count in D1
+  directly, that is a trade worth making.
+
+  If you ever add a consent banner, call
+  gtag('consent','update',{analytics_storage:'granted', ...}) when
+  someone accepts. Nothing else here needs to change.
+
+  Loaded last in the head on purpose: it is async and low priority, and
+  nothing on this page should queue ahead of the fonts and the audit tool.
+  ============================================================
+-->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-294TV3LSGP"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('consent','default',{
+    ad_storage:'denied',
+    ad_user_data:'denied',
+    ad_personalization:'denied',
+    analytics_storage:'denied',
+    functionality_storage:'denied',
+    personalization_storage:'denied',
+    security_storage:'granted'
+  });
+  /* strips ad click identifiers from the ping while consent is denied */
+  gtag('set','ads_data_redaction',true);
+  gtag('js', new Date());
+  gtag('config','G-294TV3LSGP');
+</script>
 </head>
 <body class="no-js">
 
