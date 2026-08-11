@@ -58,3 +58,10 @@
 /admin
   X-Robots-Tag: noindex, nofollow
   Cache-Control: no-store
+
+# The thank-you page is kept out of search for two reasons: it reads as a
+# mistake in a results page, and any visit that arrives from search is a visit
+# that never submitted anything — which would quietly inflate the one number
+# on this site that is supposed to mean a real lead.
+/thanks
+  X-Robots-Tag: noindex, nofollow

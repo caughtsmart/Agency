@@ -8,6 +8,7 @@ site, a Cloudflare Worker plus D1 for submissions. No build step, no framework, 
 index.html          the entire site
 privacy.html        UK GDPR privacy notice
 terms.html          terms of use
+thanks.html         where the form lands. Not indexed, not in the sitemap.
 admin.html          leads list. Not linked, not indexed. Needs the admin key.
 robots.txt
 sitemap.xml
@@ -71,8 +72,8 @@ to Git. There is no build command and no output directory — it's static. Add t
 domain, HTTPS is automatic. `_headers` is picked up on deploy.
 
 Analytics is **Google Analytics 4**, property `G-294TV3LSGP`, and the tag is already in
-the head of `index.html`, `privacy.html` and `terms.html` — three copies, so changing the
-measurement ID means three edits. `admin.html` is deliberately untagged.
+the head of `index.html`, `privacy.html`, `terms.html` and `thanks.html` — four copies, so
+changing the measurement ID means four edits. `admin.html` is deliberately untagged.
 
 It runs with **Consent Mode denied by default**, which is the whole reason there is still
 no cookie banner: with `analytics_storage` denied GA4 sets no cookies and stores nothing on
@@ -228,6 +229,12 @@ and submissions staying flat — not before.
 It's one file. Open `index.html`, change the words, save, push. Cloudflare rebuilds in
 about twenty seconds. Things worth knowing:
 
+- **The form lands on `/thanks`.** The submit handler POSTs to the Worker and then
+  redirects on success, so the thank-you page is the signal that a lead actually
+  arrived — which is why it carries a `generate_lead` event and why `_headers`
+  keeps it out of search. Nothing is passed in the URL: putting the annual figure
+  in a query string would leak it into analytics paths and referrer headers, and
+  it is the one number on this site that belongs to the visitor.
 - **The audit questions** are the `QUESTIONS` array near the bottom of `index.html`. Adding
   a seventh task question means adding one entry with a `key` — the maths and the ranked
   list pick it up on their own. The Worker validates against `TASK_ORDER` in

@@ -1331,8 +1331,13 @@ el('gate').addEventListener('submit', function(ev){
       return data;
     });
   }).then(function(){
-    msg.textContent = "Got it. I'll read it and come back to you within a working day.";
+    /* Off to /thanks. The message and the disabled button below matter for the
+       half-second before the browser moves, and for the case where navigation
+       is blocked or slow — the send has already succeeded by this point, so the
+       page must never look like it failed. */
+    msg.textContent = "Got it. Taking you to what happens next…";
     btn.textContent = 'Sent';
+    window.location.assign('/thanks');
   })['catch'](function(e){
     btn.disabled = false;
     msg.classList.add('bad');
