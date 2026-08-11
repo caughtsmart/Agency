@@ -41,7 +41,7 @@ keeps the privacy notice's "your browser talks to nobody else" claim literally t
 | D5 | Prices | As placeholdered — free call / £1,200 audit / from £3,500 build / £750pm |
 | D6 | Audit refund guarantee | **Cut.** Not published anywhere |
 | D7 | Claim register | C1, C2, C3 confirmed and published. C7 cut |
-| D8 | Calendar | Cal.com. **Link still a placeholder** — swap when the account exists |
+| D8 | Calendar | Cal.com — live. `graham-u7vhke/a-look-at-your-workings`, 45 minutes, free. The username deliberately carries no surname |
 
 There are **no `CHECK` comments left in the source**. Everything on the page is either
 confirmed or labelled illustrative.
