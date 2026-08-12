@@ -46,6 +46,9 @@
 /graham.jpg
   Cache-Control: public, max-age=604800
 
+/graham-hero.jpg
+  Cache-Control: public, max-age=604800
+
 /board-wash.jpg
   Cache-Control: public, max-age=604800
 

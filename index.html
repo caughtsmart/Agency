@@ -169,12 +169,15 @@ img{max-width:100%;height:auto}
   padding:11px 18px;border:1.5px solid var(--ink);background:var(--ink);color:var(--pad);
   cursor:pointer;transition:transform .12s ease, box-shadow .12s ease;
   line-height:1.3;text-align:center;
+  /* Every primary action now carries the highlighter at rest, not only under
+     the cursor — "this is the bit that matters" made standing, so the page's
+     buttons read as buttons at a glance. Hover lifts it further. */
+  box-shadow:3px 3px 0 var(--hi);
 }
-/* The offset shadow lands in highlighter on hover — the one moment where
-   "this is the bit that matters" is literally true. */
-.btn:hover{transform:translate(-1px,-1px);box-shadow:3px 3px 0 var(--hi-deep)}
-.btn-ghost{background:transparent;color:var(--ink)}
-.btn-ghost:hover{box-shadow:3px 3px 0 var(--hi-deep)}
+.btn:hover{transform:translate(-2px,-2px);box-shadow:5px 5px 0 var(--hi-deep)}
+/* Secondary actions stay quiet until pointed at, so the primary one wins the eye. */
+.btn-ghost{background:transparent;color:var(--ink);box-shadow:none}
+.btn-ghost:hover{transform:translate(-2px,-2px);box-shadow:5px 5px 0 var(--hi-deep)}
 .btn[disabled]{opacity:.55;cursor:default;transform:none;box-shadow:none}
 :focus-visible{outline:2.5px solid var(--red);outline-offset:3px}
 
@@ -193,6 +196,26 @@ img{max-width:100%;height:auto}
 .hero .lede strong{color:var(--ink);font-weight:600}
 .hero-cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px;align-items:center}
 .hero-note{font-family:var(--mono);font-size:12px;color:var(--ink-soft)}
+
+/* The hero leads with a face: the copy on the left, a framed portrait top-right,
+   so a real person is the first human thing on the page. Same panel treatment as
+   every other framed thing here — hard ink border, zero radius, offset shadow. */
+.hero-top{display:grid;grid-template-columns:1.6fr .9fr;gap:40px;align-items:start}
+.hero-copy{min-width:0}
+.hero-portrait{
+  margin:6px 0 0;border:1.5px solid var(--ink);background:var(--pad-2);
+  box-shadow:6px 6px 0 var(--shadow);
+}
+.hero-portrait img{display:block;width:100%;height:auto;aspect-ratio:4/5;object-fit:cover;border-bottom:1.5px solid var(--ink)}
+.hero-portrait figcaption{
+  padding:11px 16px;font-family:var(--mono);font-size:11.5px;color:var(--ink-soft);line-height:1.45;
+}
+@media(max-width:860px){
+  .hero-top{grid-template-columns:1fr;gap:26px}
+  /* On a phone the face sits under the headline but above the exhibit, and
+     narrows so it doesn't eat the whole first screen. */
+  .hero-portrait{max-width:320px}
+}
 
 /* ---------- SIGNATURE: the leak ledger ---------- */
 .ledger{
@@ -305,7 +328,9 @@ section{padding:74px 0;position:relative;z-index:1}
 .receipts{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:40px}
 .receipt{border:1.5px solid var(--ink);background:var(--pad-2);padding:22px 20px 20px}
 .receipt .ref{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--ink-soft)}
-.receipt .fig{font-family:var(--display);font-weight:800;font-size:clamp(30px,4.4vw,38px);line-height:1;margin:12px 0 8px;letter-spacing:-.03em}
+/* The proof figures are all recovered value — time won back, work cleared,
+   engagement up — so they carry green, the site's "money recovered" colour. */
+.receipt .fig{font-family:var(--display);font-weight:800;font-size:clamp(30px,4.4vw,38px);line-height:1;margin:12px 0 8px;letter-spacing:-.03em;color:var(--green)}
 .receipt .cap{font-size:15px;color:var(--ink-soft);line-height:1.45;margin:0}
 
 /* ---------- evidence photo ---------- */
@@ -314,7 +339,10 @@ section{padding:74px 0;position:relative;z-index:1}
 .evidence figcaption{padding:10px 20px;border-top:1.5px solid var(--ink);font-family:var(--mono);font-size:11px;color:var(--ink-soft)}
 
 /* ---------- audit tool ---------- */
-.tool{border:1.5px solid var(--ink);background:var(--pad-2);box-shadow:6px 6px 0 var(--shadow);margin-top:40px}
+/* The audit is the whole point of the page, so it is the brightest object on
+   it: a highlighter strip capping the box and a highlighter drop-shadow, both
+   saying "start here" in the site's one action colour. */
+.tool{border:1.5px solid var(--ink);background:var(--pad-2);box-shadow:8px 8px 0 var(--hi),inset 0 6px 0 var(--hi-deep);margin-top:40px}
 .tool-head{padding:16px 24px;border-bottom:1.5px solid var(--ink);display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
 .tool-head .t{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase}
 .tool-body{padding:26px 24px}
@@ -378,7 +406,7 @@ section{padding:74px 0;position:relative;z-index:1}
 .lst li:last-child{border-bottom:none}
 .tier .btn{align-self:flex-start}
 .tier.pick .btn{background:var(--pad);color:var(--ink);border-color:var(--pad)}
-.tier.pick .btn:hover{box-shadow:3px 3px 0 var(--hi-deep)}
+.tier.pick .btn:hover{box-shadow:5px 5px 0 var(--hi-deep)}
 .tier.pick :focus-visible{outline-color:var(--pad)}
 .vat-note{font-family:var(--mono);font-size:11.5px;color:var(--ink-soft);margin-top:20px}
 
@@ -420,7 +448,7 @@ details p{margin-top:12px;margin-bottom:0;color:var(--ink-soft);max-width:68ch;f
 .final h2{color:var(--pad);margin:0 auto;font-size:clamp(26px,4.4vw,44px);max-width:18ch}
 .final p{color:#B4B7AB;max-width:50ch;margin:18px auto 28px}
 .final .btn{background:var(--pad);color:var(--ink);border-color:var(--pad)}
-.final .btn:hover{box-shadow:3px 3px 0 var(--hi-deep)}
+.final .btn:hover{box-shadow:5px 5px 0 var(--hi-deep)}
 .final :focus-visible{outline-color:var(--pad)}
 
 footer{border-top:1.5px solid var(--ink);padding:26px 0;font-family:var(--mono);font-size:12px;color:var(--ink-soft)}
@@ -514,7 +542,7 @@ footer nav a{display:inline-block;padding:4px 0}
 <header class="top">
   <div class="wrap">
     <div class="mark">Workings<sup>01</sup></div>
-    <a class="btn btn-ghost" href="#audit">Run the free audit</a>
+    <a class="btn" href="#audit">Run the free audit</a>
   </div>
 </header>
 
@@ -522,18 +550,31 @@ footer nav a{display:inline-block;padding:4px 0}
 
 <!-- ============ HERO + LEAK LEDGER ============ -->
 <div class="wrap hero">
-  <p class="eyebrow">AI &amp; automation · 5–20 staff · £1m–£3m turnover</p>
-  <h1>The most expensive person in your business is the one <span class="hl">doing it by hand</span>.</h1>
-  <p class="lede">
-    I run a retail and e-commerce business in South Wales. Over the last two years I handed the
-    repetitive half of it to software — purchasing, stock, pricing, reporting, marketing.
-    <strong>Same headcount. Considerably less faff.</strong>
-    Now I do the same for other owner-managed firms growing faster than their admin can cope with.
-  </p>
-  <div class="hero-cta">
-    <a class="btn" href="#audit">Run the free three-minute audit</a>
-    <a class="btn btn-ghost" href="#pricing">See what it costs</a>
-    <span class="hero-note">No sales call to get your number. Three clients at a time, and I've still got a shop to run.</span>
+  <div class="hero-top">
+    <div class="hero-copy">
+      <p class="eyebrow">AI &amp; automation · 5–20 staff · £1m–£3m turnover</p>
+      <h1>The most expensive person in your business is the one <span class="hl">doing it by hand</span>.</h1>
+      <p class="lede">
+        I run a retail and e-commerce business in South Wales. Over the last two years I handed the
+        repetitive half of it to software — purchasing, stock, pricing, reporting, marketing.
+        <strong>Same headcount. Considerably less faff.</strong>
+        Now I do the same for other owner-managed firms growing faster than their admin can cope with.
+      </p>
+      <div class="hero-cta">
+        <a class="btn" href="#audit">Run the free three-minute audit</a>
+        <a class="btn btn-ghost" href="#pricing">See what it costs</a>
+        <span class="hero-note">No sales call to get your number. Three clients at a time, and I've still got a shop to run.</span>
+      </div>
+    </div>
+
+    <!-- PLACEHOLDER PORTRAIT. graham-hero.jpg is a copy of the seafront shot for
+         now; drop the new photo in over it (a portrait/upright crop suits the
+         4:5 frame best) and it appears with no other change. -->
+    <figure class="hero-portrait">
+      <img src="/graham-hero.jpg" width="800" height="1000" fetchpriority="high" decoding="async"
+           alt="Graham, who runs the business this site is about.">
+      <figcaption>That's me. I <span class="hl">run the shop</span> I keep going on about — the automations here are the ones I use myself.</figcaption>
+    </figure>
   </div>
 
   <!-- The problem, shown. Drawn in SVG rather than filmed: sharp at any size,
