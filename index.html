@@ -219,10 +219,15 @@ img{max-width:100%;height:auto}
 }
 
 /* ---------- SIGNATURE: the leak ledger ---------- */
+/* A heading and a plain-English lead-in so the numbers arrive with a reason to
+   care, not cold. Sits close to the ledger it introduces. */
+.ledger-intro{margin-top:64px}
+.ledger-intro .sec-sub{max-width:64ch}
 .ledger{
   margin:56px 0 0;background:var(--pad-2);border:1.5px solid var(--ink);
   box-shadow:6px 6px 0 var(--shadow);
 }
+.ledger-intro + .ledger{margin-top:22px}
 .ledger-head{
   display:flex;justify-content:space-between;align-items:baseline;gap:12px;
   padding:14px 20px;border-bottom:1.5px solid var(--ink);flex-wrap:wrap;
@@ -751,6 +756,12 @@ footer nav a{display:inline-block;padding:4px 0}
 
     <figcaption class="exhibit-cap">The same job, drawn: same keystrokes, same order, every week — and each entry is <b>money leaving the business</b>. Which is exactly what makes it automatable, and exactly why nobody ever gets round to it.</figcaption>
   </figure>
+
+  <div class="ledger-intro">
+    <p class="eyebrow">Where it leaks</p>
+    <h2 class="sec-h">Repetition doesn't send an invoice. It just takes the hours.</h2>
+    <p class="sec-sub">Re-keying the same figures between two systems. Rebuilding a report that already exists on another screen. Answering the same question for the hundredth time. None of it lands as a cost — nothing's billed, nobody signs it off — so it never gets questioned. It's just paid, week after week, out of the time of the people you can least afford to lose to it. Here's what that quietly adds up to.</p>
+  </div>
 
   <div class="ledger">
     <div class="ledger-head">
