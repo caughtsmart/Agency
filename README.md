@@ -49,13 +49,17 @@ confirmed or labelled illustrative.
 
 ### Things still open
 
-1. **A better photograph, someday.** The operator card carries a real photo of
-   Graham (`graham.jpg` — seafront, arms folded). The hero now leads with a portrait too
-   (`graham-hero.jpg`), currently a **placeholder copy** of the seafront shot until a new
-   photo arrives — an upright/portrait crop suits its 4:5 frame best. When better shots
-   exist (the brief's ideal is still the shop or the warehouse), process them the same way
-   (metadata stripped, ~800–960px wide) and replace the files. The hero swaps by overwriting
-   `graham-hero.jpg` alone; nothing else needs touching.
+1. **The photographs.** Three real photos now carry the page, each processed the same way
+   (cropped, metadata stripped on re-encode, cached in `_headers`):
+   - `spreadsheet-view.jpg` — the hero exhibit, two monitors wall-to-wall with spreadsheets,
+     captioned "Is this your view for 10 hours each day?". Opens on the visitor's own reality.
+   - `graham.jpg` — the operator card (seafront, arms folded).
+   - `graham-worn.jpg` — the "before" shot at the foot of the page (Graham, worn out),
+     captioned "This was me a few years back", right ahead of the final call to action.
+
+   To swap any of them, replace the file and keep the same name — nothing else needs touching.
+   The brief's ideal operator shot is still one at the shop or the warehouse; when one exists,
+   process it the same way (metadata stripped, ~960px wide) and drop it in over `graham.jpg`.
 
 ---
 

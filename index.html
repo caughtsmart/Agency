@@ -197,24 +197,15 @@ img{max-width:100%;height:auto}
 .hero-cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px;align-items:center}
 .hero-note{font-family:var(--mono);font-size:12px;color:var(--ink-soft)}
 
-/* The hero leads with a face: the copy on the left, a framed portrait top-right,
-   so a real person is the first human thing on the page. Same panel treatment as
-   every other framed thing here — hard ink border, zero radius, offset shadow. */
-.hero-top{display:grid;grid-template-columns:1.6fr .9fr;gap:40px;align-items:start}
-.hero-copy{min-width:0}
-.hero-portrait{
-  margin:6px 0 0;border:1.5px solid var(--ink);background:var(--pad-2);
-  box-shadow:6px 6px 0 var(--shadow);
-}
-.hero-portrait img{display:block;width:100%;height:auto;aspect-ratio:4/5;object-fit:cover;border-bottom:1.5px solid var(--ink)}
-.hero-portrait figcaption{
-  padding:11px 16px;font-family:var(--mono);font-size:11.5px;color:var(--ink-soft);line-height:1.45;
-}
+/* The hero opens on the visitor's own reality: two monitors wall-to-wall with
+   spreadsheets, captioned as a question aimed straight at them. Same framed-panel
+   treatment as every other exhibit here — hard ink border, zero radius, offset
+   shadow. */
+.hero-shot{margin:44px 0 0;border:1.5px solid var(--ink);background:var(--pad-2);box-shadow:6px 6px 0 var(--shadow)}
+.hero-shot img{display:block;width:100%;height:auto;border-bottom:1.5px solid var(--ink)}
+.hero-shot figcaption{padding:12px 20px;font-family:var(--mono);font-size:13.5px;color:var(--ink);letter-spacing:.01em}
 @media(max-width:860px){
-  .hero-top{grid-template-columns:1fr;gap:26px}
-  /* On a phone the face sits under the headline but above the exhibit, and
-     narrows so it doesn't eat the whole first screen. */
-  .hero-portrait{max-width:320px}
+  .hero-shot figcaption{font-size:12.5px;padding:11px 16px}
 }
 
 /* ---------- SIGNATURE: the leak ledger ---------- */
@@ -556,32 +547,26 @@ footer nav a{display:inline-block;padding:4px 0}
 
 <!-- ============ HERO + LEAK LEDGER ============ -->
 <div class="wrap hero">
-  <div class="hero-top">
-    <div class="hero-copy">
-      <p class="eyebrow">AI &amp; automation · 5–20 staff · £1m–£3m turnover</p>
-      <h1>The most expensive person in your business is the one <span class="hl">doing it by hand</span>.</h1>
-      <p class="lede">
-        I run a retail and e-commerce business in South Wales. Over the last two years I handed the
-        repetitive half of it to software — purchasing, stock, pricing, reporting, marketing.
-        <strong>Same headcount. Considerably less faff.</strong>
-        Now I do the same for other owner-managed firms growing faster than their admin can cope with.
-      </p>
-      <div class="hero-cta">
-        <a class="btn" href="#audit">Run the free three-minute audit</a>
-        <a class="btn btn-ghost" href="#pricing">See what it costs</a>
-        <span class="hero-note">No sales call to get your number. Three clients at a time, and I've still got a shop to run.</span>
-      </div>
-    </div>
-
-    <!-- PLACEHOLDER PORTRAIT. graham-hero.jpg is a copy of the seafront shot for
-         now; drop the new photo in over it (a portrait/upright crop suits the
-         4:5 frame best) and it appears with no other change. -->
-    <figure class="hero-portrait">
-      <img src="/graham-hero.jpg" width="800" height="1000" fetchpriority="high" decoding="async"
-           alt="Graham, who runs the business this site is about.">
-      <figcaption>That's me. I <span class="hl">run the shop</span> I keep going on about — the automations here are the ones I use myself.</figcaption>
-    </figure>
+  <p class="eyebrow">AI &amp; automation · 5–20 staff · £1m–£3m turnover</p>
+  <h1>The most expensive person in your business is the one <span class="hl">doing it by hand</span>.</h1>
+  <p class="lede">
+    I run a retail and e-commerce business in South Wales. Over the last two years I handed the
+    repetitive half of it to software — purchasing, stock, pricing, reporting, marketing.
+    <strong>Same headcount. Considerably less faff.</strong>
+    Now I do the same for other owner-managed firms growing faster than their admin can cope with.
+  </p>
+  <div class="hero-cta">
+    <a class="btn" href="#audit">Run the free three-minute audit</a>
+    <a class="btn btn-ghost" href="#pricing">See what it costs</a>
+    <span class="hero-note">No sales call to get your number. Three clients at a time, and I've still got a shop to run.</span>
   </div>
+
+  <!-- Opens on the visitor's own reality: two screens of spreadsheets, all day. -->
+  <figure class="hero-shot">
+    <img src="/spreadsheet-view.jpg" width="1600" height="479" fetchpriority="high" decoding="async"
+         alt="Two monitors side by side, both filled with spreadsheets — a parts cross-reference chart on the left, a costings sheet on the right.">
+    <figcaption>Is this your view for <span class="hl">10 hours each day</span>?</figcaption>
+  </figure>
 
   <!-- The problem, shown. Drawn in SVG rather than filmed: sharp at any size,
        a few KB, no extra request, no third party. -->
