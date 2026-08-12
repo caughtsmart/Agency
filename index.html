@@ -162,6 +162,9 @@ img{max-width:100%;height:auto}
 .top .wrap{display:flex;align-items:center;justify-content:space-between;min-height:64px;gap:16px;padding-top:10px;padding-bottom:10px}
 .mark{font-family:var(--display);font-weight:800;font-size:21px;letter-spacing:-.03em}
 .mark sup{font-family:var(--mono);font-size:9px;font-weight:400;letter-spacing:.1em;color:var(--ink-soft);top:-.9em}
+.topnav{display:flex;align-items:center;gap:22px}
+.navlink{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);text-decoration:none;white-space:nowrap}
+.navlink:hover{color:var(--ink)}
 
 .btn{
   display:inline-block;font-family:var(--mono);font-size:13px;
@@ -505,6 +508,8 @@ footer nav a{display:inline-block;padding:4px 0}
 @media(max-width:420px){
   body{font-size:16px}
   .top .btn{padding:10px 12px;font-size:12px}
+  .topnav{gap:13px}
+  .navlink{font-size:11px;letter-spacing:.04em}
 }
 @media(prefers-reduced-motion:reduce){
   *{animation:none!important;transition:none!important}
@@ -571,7 +576,10 @@ footer nav a{display:inline-block;padding:4px 0}
 <header class="top">
   <div class="wrap">
     <div class="mark">Workings<sup>01</sup></div>
-    <a class="btn" href="#audit">Run the free audit</a>
+    <nav class="topnav" aria-label="Primary">
+      <a class="navlink" href="/case-studies">Case studies</a>
+      <a class="btn" href="#audit">Run the free audit</a>
+    </nav>
   </div>
 </header>
 
@@ -817,7 +825,7 @@ footer nav a{display:inline-block;padding:4px 0}
       <figcaption>The warehouse. Labelled by hand, reordered by software.</figcaption>
     </figure>
     <p style="margin-top:32px">
-      <a class="btn btn-ghost" href="/example">See one run end to end →</a>
+      <a class="btn btn-ghost" href="/case-studies">See one run end to end →</a>
       <span class="hero-note" style="margin-left:12px">A supplier email, turned into live, priced, pictured products — drawn out step by step.</span>
     </p>
   </div>
