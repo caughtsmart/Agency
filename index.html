@@ -361,51 +361,6 @@ section{padding:74px 0;position:relative;z-index:1}
 .evidence img{display:block;width:100%;height:auto}
 .evidence figcaption{padding:10px 20px;border-top:1.5px solid var(--ink);font-family:var(--mono);font-size:11px;color:var(--ink-soft)}
 
-/* ---------- worked example: the automation flow ----------
-   Drawn, not filmed, like everything else here: numbered steps down a spine with
-   two branches peeling off sideways. Colour stays disciplined — the highlighter
-   tags the two offshoots (the "there's more" moments) and the one place a human
-   stays in the loop. Nothing here is decoration. */
-.flow{margin-top:38px}
-.node{display:grid;grid-template-columns:56px 1fr;border:1.5px solid var(--ink);background:var(--pad-2)}
-.node-n{display:flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:800;font-size:22px;border-right:1.5px solid var(--ink);background:var(--pad);color:var(--ink)}
-.node-main{display:flex;gap:14px;align-items:flex-start;padding:15px 18px}
-.node-ico{flex:0 0 auto;width:26px;height:26px;color:var(--ink);margin-top:2px}
-.node-ico svg{width:100%;height:100%;display:block;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
-.node-h{font-size:18px;margin:0 0 3px}
-.node-p{margin:0;font-size:14.5px;color:var(--ink-soft);line-height:1.45}
-
-/* connector between consecutive steps: a short spine line with a chevron */
-.conn{height:28px;position:relative}
-.conn::before{content:"";position:absolute;left:28px;top:0;bottom:8px;width:2px;background:var(--ink);transform:translateX(-50%)}
-.conn::after{content:"";position:absolute;left:28px;bottom:5px;width:8px;height:8px;border-right:2px solid var(--ink);border-bottom:2px solid var(--ink);transform:translate(-50%,0) rotate(45deg)}
-
-/* an offshoot: peels off the spine, sits indented, and runs sideways */
-.branch{margin-left:28px;border-left:2px dashed var(--rule);padding:2px 0 16px 26px;position:relative}
-.branch::before{content:"";position:absolute;left:-2px;top:22px;width:24px;height:2px;background:var(--rule)}
-.branch-tag{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;background:var(--hi);color:var(--ink);padding:5px 11px;margin:10px 0 16px}
-.branch-flow{display:flex;flex-wrap:wrap;align-items:stretch;gap:10px}
-.bstep{flex:1 1 158px;border:1.5px solid var(--ink);background:var(--pad);padding:12px 14px;display:flex;flex-direction:column}
-.bs-n{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;color:var(--ink-soft);margin-bottom:5px}
-.bh{font-size:14.5px;margin:0}
-.bp{margin:3px 0 0;font-size:12.5px;color:var(--ink-soft);line-height:1.4}
-.barrow{flex:0 0 auto;align-self:center;font-family:var(--mono);font-size:16px;color:var(--ink-soft)}
-
-.flow-foot{margin-top:24px;font-family:var(--mono);font-size:13px;color:var(--ink-soft);line-height:1.6;max-width:66ch}
-.flow-foot a{color:var(--ink);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;white-space:nowrap}
-
-@media(max-width:640px){
-  .node{grid-template-columns:44px 1fr}
-  .node-n{font-size:18px}
-  .node-main{padding:13px 14px;gap:11px}
-  .conn::before,.conn::after{left:22px}
-  .branch{margin-left:22px;padding-left:18px}
-  .branch::before{top:20px;width:16px}
-  /* the sideways sub-flow becomes a stack; arrows turn to point down */
-  .branch-flow{flex-direction:column;align-items:stretch}
-  .barrow{transform:rotate(90deg);margin:-3px 0}
-}
-
 /* ---------- audit tool ---------- */
 /* The audit is the whole point of the page, so it is the brightest object on
    it: a highlighter strip capping the box and a highlighter drop-shadow, both
@@ -861,107 +816,10 @@ footer nav a{display:inline-block;padding:4px 0}
            alt="Rows of blue warehouse trays with handwritten labels, sorting paint and figure sets by range.">
       <figcaption>The warehouse. Labelled by hand, reordered by software.</figcaption>
     </figure>
-  </div>
-</section>
-
-<!-- ============ WORKED EXAMPLE / THE FLOW ============ -->
-<section class="rule-top" id="example">
-  <div class="wrap">
-    <p class="eyebrow">One of those receipts, in full</p>
-    <h2 class="sec-h">A supplier's email in. Live, priced, pictured products out.</h2>
-    <p class="sec-sub">The shape of a real one from my own shop, with the numbers filed off. A new-release email from a supplier becomes listed products — and the purchasing and the marketing fall out of the same run. Nobody re-keys a thing.</p>
-
-    <div class="flow">
-      <div class="node">
-        <div class="node-n">01</div>
-        <div class="node-main">
-          <span class="node-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="1.5"/><path d="M3 6l9 7 9-7"/></svg></span>
-          <div><h3 class="node-h">Grab the email</h3><p class="node-p">A supplier's new-release email lands in the inbox.</p></div>
-        </div>
-      </div>
-      <div class="conn"></div>
-
-      <div class="node">
-        <div class="node-n">02</div>
-        <div class="node-main">
-          <span class="node-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6"/><path d="M20 20l-5.2-5.2"/></svg></span>
-          <div><h3 class="node-h">Spot what's new</h3><p class="node-p">Read it and pick out the products you don't already stock.</p></div>
-        </div>
-      </div>
-      <div class="conn"></div>
-
-      <div class="node">
-        <div class="node-n">03</div>
-        <div class="node-main">
-          <span class="node-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="5.5" rx="7" ry="2.8"/><path d="M5 5.5v6c0 1.5 3.1 2.8 7 2.8s7-1.3 7-2.8v-6"/><path d="M5 11.5v6c0 1.5 3.1 2.8 7 2.8s7-1.3 7-2.8v-6"/></svg></span>
-          <div><h3 class="node-h">Gather the detail</h3><p class="node-p">Pull each product's information together from the web and your own databases.</p></div>
-        </div>
-      </div>
-
-      <!-- OFFSHOOT A — branches off step 3 -->
-      <div class="branch">
-        <span class="branch-tag">Offshoot · off step 03 · Purchasing</span>
-        <div class="branch-flow">
-          <div class="bstep"><span class="bs-n">A1</span><h4 class="bh">Forecast demand</h4><p class="bp">Read past sales to predict what each new line will actually sell.</p></div>
-          <span class="barrow" aria-hidden="true">→</span>
-          <div class="bstep"><span class="bs-n">A2</span><h4 class="bh">Build the PO</h4><p class="bp">Fold in cost prices and the purchasing budget to draft a purchase order.</p></div>
-          <span class="barrow" aria-hidden="true">→</span>
-          <div class="bstep"><span class="bs-n">A3</span><h4 class="bh">Review &amp; send</h4><p class="bp"><span class="hl">You check it</span>, then it goes to the supplier on its own.</p></div>
-        </div>
-      </div>
-      <div class="conn"></div>
-
-      <div class="node">
-        <div class="node-n">04</div>
-        <div class="node-main">
-          <span class="node-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12l9-9h8v8l-9 9z"/><circle cx="16.4" cy="7.6" r="1.4"/></svg></span>
-          <div><h3 class="node-h">Cost and price it</h3><p class="node-p">Apply your cost prices, margins and pricing rules automatically.</p></div>
-        </div>
-      </div>
-      <div class="conn"></div>
-
-      <div class="node">
-        <div class="node-n">05</div>
-        <div class="node-main">
-          <span class="node-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4"/><path d="M8 8l4-4 4 4"/><path d="M4 14v5h16v-5"/></svg></span>
-          <div><h3 class="node-h">Publish</h3><p class="node-p">Ingest the finished products into the platform and push them live.</p></div>
-        </div>
-      </div>
-      <div class="conn"></div>
-
-      <div class="node">
-        <div class="node-n">06</div>
-        <div class="node-main">
-          <span class="node-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="15" rx="1.5"/><circle cx="8.5" cy="9.5" r="1.8"/><path d="M4 17l5-4 4 3 3-2.5 4 3.5"/></svg></span>
-          <div><h3 class="node-h">Find the images</h3><p class="node-p">Locate the product shots on the supplier's website.</p></div>
-        </div>
-      </div>
-      <div class="conn"></div>
-
-      <div class="node">
-        <div class="node-n">07</div>
-        <div class="node-main">
-          <span class="node-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11l-8.5 8.5a4.5 4.5 0 01-6.4-6.4L14 4.7a3 3 0 014.3 4.3l-8.6 8.6a1.5 1.5 0 01-2.2-2.2l7.8-7.8"/></svg></span>
-          <div><h3 class="node-h">Attach the images</h3><p class="node-p">Drop them onto the listings the moment they become available.</p></div>
-        </div>
-      </div>
-
-      <!-- OFFSHOOT B — branches off step 7 -->
-      <div class="branch">
-        <span class="branch-tag">Offshoot · off step 07 · Marketing</span>
-        <div class="branch-flow">
-          <div class="bstep"><span class="bs-n">B1</span><h4 class="bh">Read the signals</h4><p class="bp">Product and image data point to what's worth pushing.</p></div>
-          <span class="barrow" aria-hidden="true">→</span>
-          <div class="bstep"><span class="bs-n">B2</span><h4 class="bh">Pick the channels</h4><p class="bp">Line the new products up across the right marketing channels.</p></div>
-          <span class="barrow" aria-hidden="true">→</span>
-          <div class="bstep"><span class="bs-n">B3</span><h4 class="bh">Build the assets</h4><p class="bp">Pull image and copy together into finished creative.</p></div>
-          <span class="barrow" aria-hidden="true">→</span>
-          <div class="bstep"><span class="bs-n">B4</span><h4 class="bh">Publish</h4><p class="bp">Send it out across the channels.</p></div>
-        </div>
-      </div>
-    </div>
-
-    <p class="flow-foot">Every arrow is a job nobody has to do by hand any more — and each one began as a line on a leak ledger like the one up the page. The audit is how we work out which of yours is worth drawing first. <a href="#audit">Run the free audit →</a></p>
+    <p style="margin-top:32px">
+      <a class="btn btn-ghost" href="/example">See one run end to end →</a>
+      <span class="hero-note" style="margin-left:12px">A supplier email, turned into live, priced, pictured products — drawn out step by step.</span>
+    </p>
   </div>
 </section>
 
