@@ -49,10 +49,17 @@ confirmed or labelled illustrative.
 
 ### Things still open
 
-1. **A better photograph, someday.** The operator card now carries a real photo of
-   Graham (`graham.jpg` — seafront, arms folded). The brief's ideal is still a shot at
-   the shop or the warehouse; when one exists, process it the same way (crop 4:3,
-   ~960px wide, metadata stripped) and replace the file. Nothing else needs touching.
+1. **The photographs.** Three real photos now carry the page, each processed the same way
+   (cropped, metadata stripped on re-encode, cached in `_headers`):
+   - `spreadsheet-view.jpg` — the hero exhibit, two monitors wall-to-wall with spreadsheets,
+     captioned "Is this your view for 10 hours each day?". Opens on the visitor's own reality.
+   - `graham.jpg` — the operator card (seafront, arms folded).
+   - `graham-worn.jpg` — the "before" shot at the foot of the page (Graham, worn out),
+     captioned "This was me a few years back", right ahead of the final call to action.
+
+   To swap any of them, replace the file and keep the same name — nothing else needs touching.
+   The brief's ideal operator shot is still one at the shop or the warehouse; when one exists,
+   process it the same way (metadata stripped, ~960px wide) and drop it in over `graham.jpg`.
 
 ---
 
@@ -243,12 +250,16 @@ about twenty seconds. Things worth knowing:
 - **The 55% figure** appears in three places: the on-screen workings, `terms.html`, and
   `normaliseAudit()` in the Worker. Change all three or the email won't match the page.
 - **Colours** are the CSS variables at the top, and each one is allowed to mean exactly one
-  thing. Red is money leaking. Green is money recovered. `--hi`, the highlighter yellow, is
-  "this is the bit that matters" — and only ever a background with ink on top, never text,
-  because it is far too bright to read. `--drab` is the old palette this site used to wear,
-  kept alive solely for the spreadsheet exhibit in the hero, so that the old way of working
-  literally looks older than the page around it. Don't use any of them as decoration; the
-  whole design argument falls over if they become pattern.
+  thing. Red is money leaking. Green is money recovered — which is why the three proof
+  figures in the receipts row carry it: each one is recovered time or lift. `--hi`, the
+  highlighter yellow, is "this is the bit that matters / act here" — and only ever a
+  background or a shadow, never text, because it is far too bright to read. That is why it
+  now sits as a standing drop-shadow under every primary button and caps the audit tool: the
+  eye should land on the thing to click. Secondary (ghost) buttons stay unshadowed so the
+  primary action still wins. `--drab` is the old palette this site used to wear, kept alive
+  solely for the spreadsheet exhibit in the hero, so that the old way of working literally
+  looks older than the page around it. Don't use any of them as decoration; the whole design
+  argument falls over if they become pattern.
 - **Don't add** a cookie banner, a chat widget or a pop-up. There are still no cookies —
   analytics runs with storage consent denied — so there is nothing to consent to, and that
   is a feature worth protecting. If you ever grant `analytics_storage`, the banner becomes

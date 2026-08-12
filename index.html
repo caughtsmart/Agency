@@ -162,6 +162,9 @@ img{max-width:100%;height:auto}
 .top .wrap{display:flex;align-items:center;justify-content:space-between;min-height:64px;gap:16px;padding-top:10px;padding-bottom:10px}
 .mark{font-family:var(--display);font-weight:800;font-size:21px;letter-spacing:-.03em}
 .mark sup{font-family:var(--mono);font-size:9px;font-weight:400;letter-spacing:.1em;color:var(--ink-soft);top:-.9em}
+.topnav{display:flex;align-items:center;gap:22px}
+.navlink{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);text-decoration:none;white-space:nowrap}
+.navlink:hover{color:var(--ink)}
 
 .btn{
   display:inline-block;font-family:var(--mono);font-size:13px;
@@ -169,12 +172,15 @@ img{max-width:100%;height:auto}
   padding:11px 18px;border:1.5px solid var(--ink);background:var(--ink);color:var(--pad);
   cursor:pointer;transition:transform .12s ease, box-shadow .12s ease;
   line-height:1.3;text-align:center;
+  /* Every primary action now carries the highlighter at rest, not only under
+     the cursor — "this is the bit that matters" made standing, so the page's
+     buttons read as buttons at a glance. Hover lifts it further. */
+  box-shadow:3px 3px 0 var(--hi);
 }
-/* The offset shadow lands in highlighter on hover — the one moment where
-   "this is the bit that matters" is literally true. */
-.btn:hover{transform:translate(-1px,-1px);box-shadow:3px 3px 0 var(--hi-deep)}
-.btn-ghost{background:transparent;color:var(--ink)}
-.btn-ghost:hover{box-shadow:3px 3px 0 var(--hi-deep)}
+.btn:hover{transform:translate(-2px,-2px);box-shadow:5px 5px 0 var(--hi-deep)}
+/* Secondary actions stay quiet until pointed at, so the primary one wins the eye. */
+.btn-ghost{background:transparent;color:var(--ink);box-shadow:none}
+.btn-ghost:hover{transform:translate(-2px,-2px);box-shadow:5px 5px 0 var(--hi-deep)}
 .btn[disabled]{opacity:.55;cursor:default;transform:none;box-shadow:none}
 :focus-visible{outline:2.5px solid var(--red);outline-offset:3px}
 
@@ -194,11 +200,37 @@ img{max-width:100%;height:auto}
 .hero-cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px;align-items:center}
 .hero-note{font-family:var(--mono);font-size:12px;color:var(--ink-soft)}
 
+/* THE EXHIBIT — one frame, the same job shown twice.
+   Top: a real photo of the visitor's two screens. Bottom: the same job drawn,
+   one keystroke at a time. Housing both in a single panel — with a strip between
+   them that names the connection — is what makes it obvious they are the same
+   thing: the photograph is the reality, the drawing is the mechanism inside it. */
+.exhibit{margin:44px 0 0;border:1.5px solid var(--ink);background:var(--pad-2);box-shadow:6px 6px 0 var(--shadow)}
+.exhibit-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:14px 20px;border-bottom:1.5px solid var(--ink);flex-wrap:wrap}
+.exhibit-head .t{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase}
+.exhibit-head .s{font-family:var(--mono);font-size:11px;color:var(--ink-soft)}
+.exhibit-photo{display:block;width:100%;height:auto;border-bottom:1.5px solid var(--ink)}
+/* the strip that ties the two halves together and hands off to the drawing */
+.exhibit-bridge{padding:12px 20px;border-bottom:1.5px solid var(--ink);background:var(--pad);text-align:center;font-family:var(--mono);font-size:13px;color:var(--ink);letter-spacing:.01em}
+.exhibit-screen{padding:20px}
+.exhibit-cap{padding:13px 20px;border-top:1.5px solid var(--ink);font-family:var(--mono);font-size:11.5px;color:var(--ink-soft);line-height:1.55}
+.exhibit-cap b{color:var(--red);font-weight:700}
+@media(max-width:860px){
+  .exhibit-screen{padding:14px}
+  .exhibit-head,.exhibit-bridge,.exhibit-cap{padding-left:16px;padding-right:16px}
+  .exhibit-bridge{font-size:12px}
+}
+
 /* ---------- SIGNATURE: the leak ledger ---------- */
+/* A heading and a plain-English lead-in so the numbers arrive with a reason to
+   care, not cold. Sits close to the ledger it introduces. */
+.ledger-intro{margin-top:64px}
+.ledger-intro .sec-sub{max-width:64ch}
 .ledger{
   margin:56px 0 0;background:var(--pad-2);border:1.5px solid var(--ink);
   box-shadow:6px 6px 0 var(--shadow);
 }
+.ledger-intro + .ledger{margin-top:22px}
 .ledger-head{
   display:flex;justify-content:space-between;align-items:baseline;gap:12px;
   padding:14px 20px;border-bottom:1.5px solid var(--ink);flex-wrap:wrap;
@@ -232,13 +264,17 @@ table.led tr.tot td{
 /* ---------- SIGNATURE: the repetition exhibit ----------
    The problem, shown before it's costed. Drawn, not filmed: an SVG is a few KB
    against a GIF's megabyte, stays sharp on a phone, and needs no new request or
-   CSP hole. Everything here is ink — red is saved for the ledger underneath,
-   where the money starts leaking. */
-.rt{margin:46px 0 0;max-width:720px}
+   CSP hole. It lives inside .exhibit, directly under the photograph of the real
+   thing, so the two read as one job shown twice. The screen stays in the faded
+   old palette — except the red £ that lands on each entry, where the leak the
+   ledger totals up actually starts, one keystroke at a time. */
+/* The drawn screen now lives inside .exhibit, so it drops its own shadow and
+   keeps just the bezel border. */
 .rt-frame{
   display:block;width:100%;height:auto;background:var(--drab-2);
-  border:1.5px solid var(--drab-ink);box-shadow:6px 6px 0 var(--shadow);
+  border:1.5px solid var(--drab-ink);
 }
+.rt-frame + .rt-frame{margin-top:0}
 /* The descendant selector below sets fill for every glyph, so the modifier
    classes have to be written as descendants too or they lose on specificity. */
 .rt-frame text{font-family:var(--mono);fill:var(--drab-ink)}
@@ -275,12 +311,29 @@ table.led tr.tot td{
   60%,78%{transform:translateY(-45px)}
   80%,100%{transform:translateY(-60px)}
 }
+/* The red £: the cost of one manual entry, stamped in the moment it's typed and
+   left on the screen so it piles up down the column. Red is the site's "money
+   leaking" colour, and here it leaks one keystroke at a time. The two-class
+   selector is needed to beat `.rt-frame text`'s fill. Translate-only pop (no
+   scale) so it behaves in the SVG user space without a transform-box. */
+.rt-frame .rt-coin{fill:var(--red);font-weight:700;font-size:15px;opacity:0}
+.rt-c1{animation:rt-coin1 7.5s linear infinite}
+.rt-c2{animation:rt-coin2 7.5s linear infinite}
+.rt-c3{animation:rt-coin3 7.5s linear infinite}
+.rt-c4{animation:rt-coin4 7.5s linear infinite}
+.rt-c5{animation:rt-coin5 7.5s linear infinite}
+@keyframes rt-coin1{0%,16%{opacity:0;transform:translateY(-5px)}20%{opacity:1;transform:translateY(1px)}24%,100%{opacity:1;transform:translateY(0)}}
+@keyframes rt-coin2{0%,36%{opacity:0;transform:translateY(-5px)}40%{opacity:1;transform:translateY(1px)}44%,100%{opacity:1;transform:translateY(0)}}
+@keyframes rt-coin3{0%,56%{opacity:0;transform:translateY(-5px)}60%{opacity:1;transform:translateY(1px)}64%,100%{opacity:1;transform:translateY(0)}}
+@keyframes rt-coin4{0%,76%{opacity:0;transform:translateY(-5px)}80%{opacity:1;transform:translateY(1px)}84%,100%{opacity:1;transform:translateY(0)}}
+@keyframes rt-coin5{0%,92%{opacity:0;transform:translateY(-5px)}96%{opacity:1;transform:translateY(1px)}100%{opacity:1;transform:translateY(0)}}
 /* Motion is the whole point here, so when it's unwelcome the exhibit parks on
-   the finished state rather than disappearing. */
+   the finished state rather than disappearing — all entries in, all £ stamped. */
 @media(prefers-reduced-motion:reduce){
   .rt-cover{animation:none;transform:translateY(170px)}
   .rt-cur{animation:none;transform:translateY(136px)}
   .rt-roll{animation:none;transform:translateY(-60px)}
+  .rt-frame .rt-coin{animation:none;opacity:1;transform:none}
 }
 /* Two variants, same 34px row rhythm, so one set of keyframes drives both.
    The narrow one drops the cost column and the long descriptions — at phone
@@ -289,10 +342,6 @@ table.led tr.tot td{
 @media(max-width:640px){
   .rt-wide{display:none}
   .rt-narrow{display:block}
-}
-.rt-cap{
-  font-family:var(--mono);font-size:11.5px;color:var(--ink-soft);
-  margin:14px 0 0;max-width:52ch;line-height:1.5;
 }
 
 /* ---------- generic section ---------- */
@@ -305,7 +354,9 @@ section{padding:74px 0;position:relative;z-index:1}
 .receipts{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:40px}
 .receipt{border:1.5px solid var(--ink);background:var(--pad-2);padding:22px 20px 20px}
 .receipt .ref{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--ink-soft)}
-.receipt .fig{font-family:var(--display);font-weight:800;font-size:clamp(30px,4.4vw,38px);line-height:1;margin:12px 0 8px;letter-spacing:-.03em}
+/* The proof figures are all recovered value — time won back, work cleared,
+   engagement up — so they carry green, the site's "money recovered" colour. */
+.receipt .fig{font-family:var(--display);font-weight:800;font-size:clamp(30px,4.4vw,38px);line-height:1;margin:12px 0 8px;letter-spacing:-.03em;color:var(--green)}
 .receipt .cap{font-size:15px;color:var(--ink-soft);line-height:1.45;margin:0}
 
 /* ---------- evidence photo ---------- */
@@ -314,7 +365,10 @@ section{padding:74px 0;position:relative;z-index:1}
 .evidence figcaption{padding:10px 20px;border-top:1.5px solid var(--ink);font-family:var(--mono);font-size:11px;color:var(--ink-soft)}
 
 /* ---------- audit tool ---------- */
-.tool{border:1.5px solid var(--ink);background:var(--pad-2);box-shadow:6px 6px 0 var(--shadow);margin-top:40px}
+/* The audit is the whole point of the page, so it is the brightest object on
+   it: a highlighter strip capping the box and a highlighter drop-shadow, both
+   saying "start here" in the site's one action colour. */
+.tool{border:1.5px solid var(--ink);background:var(--pad-2);box-shadow:8px 8px 0 var(--hi),inset 0 6px 0 var(--hi-deep);margin-top:40px}
 .tool-head{padding:16px 24px;border-bottom:1.5px solid var(--ink);display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
 .tool-head .t{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase}
 .tool-body{padding:26px 24px}
@@ -378,7 +432,7 @@ section{padding:74px 0;position:relative;z-index:1}
 .lst li:last-child{border-bottom:none}
 .tier .btn{align-self:flex-start}
 .tier.pick .btn{background:var(--pad);color:var(--ink);border-color:var(--pad)}
-.tier.pick .btn:hover{box-shadow:3px 3px 0 var(--hi-deep)}
+.tier.pick .btn:hover{box-shadow:5px 5px 0 var(--hi-deep)}
 .tier.pick :focus-visible{outline-color:var(--pad)}
 .vat-note{font-family:var(--mono);font-size:11.5px;color:var(--ink-soft);margin-top:20px}
 
@@ -417,10 +471,16 @@ details p{margin-top:12px;margin-bottom:0;color:var(--ink-soft);max-width:68ch;f
   background:url('/board-wash.jpg') center/cover no-repeat;
 }
 .final .wrap{position:relative;z-index:1}
+/* The "before" photo: Graham, visibly worn out, right before the last ask.
+   The whole page argues manual admin grinds you down — here's the face of it.
+   Framed in pad so it lifts off the dark board behind it. */
+.worn{margin:0 auto 30px;max-width:300px}
+.worn img{display:block;width:100%;height:auto;border:1.5px solid var(--pad)}
+.worn figcaption{font-family:var(--mono);font-size:12.5px;color:#B4B7AB;margin:13px 0 0;letter-spacing:.02em}
 .final h2{color:var(--pad);margin:0 auto;font-size:clamp(26px,4.4vw,44px);max-width:18ch}
 .final p{color:#B4B7AB;max-width:50ch;margin:18px auto 28px}
 .final .btn{background:var(--pad);color:var(--ink);border-color:var(--pad)}
-.final .btn:hover{box-shadow:3px 3px 0 var(--hi-deep)}
+.final .btn:hover{box-shadow:5px 5px 0 var(--hi-deep)}
 .final :focus-visible{outline-color:var(--pad)}
 
 footer{border-top:1.5px solid var(--ink);padding:26px 0;font-family:var(--mono);font-size:12px;color:var(--ink-soft)}
@@ -448,6 +508,8 @@ footer nav a{display:inline-block;padding:4px 0}
 @media(max-width:420px){
   body{font-size:16px}
   .top .btn{padding:10px 12px;font-size:12px}
+  .topnav{gap:13px}
+  .navlink{font-size:11px;letter-spacing:.04em}
 }
 @media(prefers-reduced-motion:reduce){
   *{animation:none!important;transition:none!important}
@@ -514,7 +576,10 @@ footer nav a{display:inline-block;padding:4px 0}
 <header class="top">
   <div class="wrap">
     <div class="mark">Workings<sup>01</sup></div>
-    <a class="btn btn-ghost" href="#audit">Run the free audit</a>
+    <nav class="topnav" aria-label="Primary">
+      <a class="navlink" href="/case-studies">Case studies</a>
+      <a class="btn" href="#audit">Run the free audit</a>
+    </nav>
   </div>
 </header>
 
@@ -536,9 +601,22 @@ footer nav a{display:inline-block;padding:4px 0}
     <span class="hero-note">No sales call to get your number. Three clients at a time, and I've still got a shop to run.</span>
   </div>
 
-  <!-- The problem, shown. Drawn in SVG rather than filmed: sharp at any size,
-       a few KB, no extra request, no third party. -->
-  <figure class="rt">
+  <!-- THE EXHIBIT: the real thing (photo) and the same job drawn (SVG animation)
+       in one frame, so it reads as one thing shown twice — the reality, then the
+       mechanism inside it, with a red £ stamped at every entry. -->
+  <figure class="exhibit">
+    <div class="exhibit-head">
+      <span class="t">The Monday job</span>
+      <span class="s">the real thing, then the same thing drawn</span>
+    </div>
+
+    <img class="exhibit-photo" src="/spreadsheet-view.jpg" width="1600" height="479" fetchpriority="high" decoding="async"
+         alt="Two monitors side by side, both filled with spreadsheets — a parts cross-reference chart on the left, a costings sheet on the right.">
+
+    <div class="exhibit-bridge">Is this your view for <span class="hl">10 hours each day</span>?</div>
+
+    <!-- The same job, drawn. Sharp at any size, a few KB, no third party. -->
+    <div class="exhibit-screen">
     <svg class="rt-frame rt-wide" viewBox="0 0 720 262" role="img"
          aria-label="A spreadsheet open at row 146 of 900. A retail price is being typed into column C one row at a time, over and over.">
 
@@ -608,6 +686,13 @@ footer nav a{display:inline-block;padding:4px 0}
       </svg>
       <rect class="rt-cur" x="503" y="61" width="212" height="28"/>
 
+      <!-- the cost of each entry, stamped red as it lands and left to pile up -->
+      <text class="rt-coin rt-c1" x="650" y="79.5" text-anchor="end">£</text>
+      <text class="rt-coin rt-c2" x="650" y="113.5" text-anchor="end">£</text>
+      <text class="rt-coin rt-c3" x="650" y="147.5" text-anchor="end">£</text>
+      <text class="rt-coin rt-c4" x="650" y="181.5" text-anchor="end">£</text>
+      <text class="rt-coin rt-c5" x="650" y="215.5" text-anchor="end">£</text>
+
       <!-- footer strip -->
       <line class="rt-hard" x1="0" y1="228" x2="720" y2="228"/>
       <text class="rt-hd" x="16" y="249">COPY · SWITCH TAB · PASTE · TAB BACK · 900 ROWS · EVERY MONDAY</text>
@@ -665,12 +750,26 @@ footer nav a{display:inline-block;padding:4px 0}
       </svg>
       <rect class="rt-cur" x="233" y="61" width="122" height="28"/>
 
+      <!-- the cost of each entry, stamped red as it lands and left to pile up -->
+      <text class="rt-coin rt-c1" x="300" y="79.5" text-anchor="end">£</text>
+      <text class="rt-coin rt-c2" x="300" y="113.5" text-anchor="end">£</text>
+      <text class="rt-coin rt-c3" x="300" y="147.5" text-anchor="end">£</text>
+      <text class="rt-coin rt-c4" x="300" y="181.5" text-anchor="end">£</text>
+      <text class="rt-coin rt-c5" x="300" y="215.5" text-anchor="end">£</text>
+
       <line class="rt-hard" x1="0" y1="228" x2="360" y2="228"/>
       <text class="rt-hd" x="12" y="249">COPY · PASTE · TAB BACK · 900 ROWS · EVERY MONDAY</text>
     </svg>
+    </div>
 
-    <figcaption class="rt-cap">Same keystrokes, same order, every week. That is precisely what makes it automatable — and precisely why nobody ever gets round to it.</figcaption>
+    <figcaption class="exhibit-cap">The same job, drawn: same keystrokes, same order, every week — and each entry is <b>money leaving the business</b>. Which is exactly what makes it automatable, and exactly why nobody ever gets round to it.</figcaption>
   </figure>
+
+  <div class="ledger-intro">
+    <p class="eyebrow">Where it leaks</p>
+    <h2 class="sec-h">Repetition doesn't send an invoice. It just takes the hours.</h2>
+    <p class="sec-sub">Re-keying the same figures between two systems. Rebuilding a report that already exists on another screen. Answering the same question for the hundredth time. None of it lands as a cost — nothing's billed, nobody signs it off — so it never gets questioned. It's just paid, week after week, out of the time of the people you can least afford to lose to it. Here's what that quietly adds up to.</p>
+  </div>
 
   <div class="ledger">
     <div class="ledger-head">
@@ -725,6 +824,10 @@ footer nav a{display:inline-block;padding:4px 0}
            alt="Rows of blue warehouse trays with handwritten labels, sorting paint and figure sets by range.">
       <figcaption>The warehouse. Labelled by hand, reordered by software.</figcaption>
     </figure>
+    <p style="margin-top:32px">
+      <a class="btn btn-ghost" href="/case-studies">See one run end to end →</a>
+      <span class="hero-note" style="margin-left:12px">A supplier email, turned into live, priced, pictured products — drawn out step by step.</span>
+    </p>
   </div>
 </section>
 
@@ -923,6 +1026,11 @@ footer nav a{display:inline-block;padding:4px 0}
 <!-- ============ FINAL ============ -->
 <section class="final rule-top">
   <div class="wrap">
+    <figure class="worn">
+      <img src="/graham-worn.jpg" width="900" height="843" loading="lazy" decoding="async"
+           alt="Graham, eyes shut and worn out at the kitchen counter.">
+      <figcaption>This was me a few years back.</figcaption>
+    </figure>
     <h2>You already know which job it is. Find out what it costs.</h2>
     <p>Three minutes, no call, no email needed to see your number.</p>
     <a class="btn" href="#audit">Run the audit</a>
