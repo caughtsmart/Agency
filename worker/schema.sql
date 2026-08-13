@@ -24,6 +24,25 @@ CREATE TABLE IF NOT EXISTS leads (
 CREATE INDEX IF NOT EXISTS idx_leads_created ON leads (created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_leads_email   ON leads (email);
 
+-- Contact-form messages. The simpler sibling of `leads`: someone who'd rather
+-- just say what they want than run the audit. Same store-then-email flow, so
+-- `notified` means the same thing here as it does on a lead. Swept on the same
+-- 24-month schedule by the Worker's cron.
+CREATE TABLE IF NOT EXISTS messages (
+  id          INTEGER PRIMARY KEY AUTOINCREMENT,
+  created_at  TEXT    NOT NULL,          -- ISO 8601, UTC
+  name        TEXT,                      -- optional; the sender's name
+  email       TEXT    NOT NULL,
+  message     TEXT    NOT NULL,          -- free text, newlines preserved
+  source      TEXT,                      -- e.g. contact-page
+  ip_trunc    TEXT,                      -- last octet zeroed. Never the full IP.
+  user_agent  TEXT,
+  notified    INTEGER NOT NULL DEFAULT 0 -- 1 once the [CONTACT] email actually sent
+);
+
+CREATE INDEX IF NOT EXISTS idx_messages_created ON messages (created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_messages_email   ON messages (email);
+
 -- Rate limiting. One row per accepted request, counted over a rolling hour and
 -- pruned on write. ip_key is a salted SHA-256 of the IP — it is not reversible
 -- and it is not the IP.

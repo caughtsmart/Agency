@@ -36,7 +36,7 @@ if [[ -d .git ]] && ! git diff --quiet 2>/dev/null; then
   exit 1
 fi
 
-FILES=(index.html privacy.html terms.html robots.txt sitemap.xml worker/wrangler.toml README.md)
+FILES=(index.html contact.html privacy.html terms.html robots.txt sitemap.xml worker/wrangler.toml README.md)
 
 # The values travel to Perl through the environment, never through the pattern
 # or replacement text — so an email's @, a URL's ?/&/$, or any other character
@@ -56,10 +56,10 @@ done
 # A silent half-swap is worse than a loud failure — refuse to report success
 # if any placeholder survived. (Skipped if the real domain IS theworkings.uk,
 # where the check couldn't tell success from failure.)
-if [[ "$DOMAIN" != *theworkings.uk* ]] && grep -rqF 'theworkings.uk' index.html privacy.html terms.html robots.txt sitemap.xml worker/wrangler.toml; then
+if [[ "$DOMAIN" != *theworkings.uk* ]] && grep -rqF 'theworkings.uk' index.html contact.html privacy.html terms.html robots.txt sitemap.xml worker/wrangler.toml; then
   echo >&2
   echo "Something did not get replaced — these placeholders survived:" >&2
-  grep -rnF 'theworkings.uk' index.html privacy.html terms.html robots.txt sitemap.xml worker/wrangler.toml >&2 | head -10
+  grep -rnF 'theworkings.uk' index.html contact.html privacy.html terms.html robots.txt sitemap.xml worker/wrangler.toml >&2 | head -10
   exit 1
 fi
 

@@ -3,6 +3,7 @@
  *
  * Routes
  *   POST /api/lead    Accepts an audit submission from the site.
+ *   POST /api/contact Accepts a plain contact-form message (name/email/message).
  *   GET  /api/leads   Returns recent submissions as JSON. Requires ?key=<ADMIN_KEY>.
  *
  * Bindings (wrangler.toml)
@@ -64,6 +65,7 @@ export default {
     ctx.waitUntil(
       env.DB.batch([
         env.DB.prepare(`DELETE FROM leads WHERE created_at < ?1`).bind(cutoffLeads),
+        env.DB.prepare(`DELETE FROM messages WHERE created_at < ?1`).bind(cutoffLeads),
         env.DB.prepare(`DELETE FROM rate_hits WHERE ts < ?1`).bind(cutoffHits)
       ]).catch(err => console.error('retention sweep failed', err && err.message))
     );
@@ -85,6 +87,15 @@ export default {
       }
     }
 
+    if (url.pathname === '/api/contact' && request.method === 'POST') {
+      try {
+        return await handleContact(request, env, ctx);
+      } catch (err) {
+        console.error('contact handler failed', err && err.stack ? err.stack : err);
+        return json({ ok: false, error: 'server_error' }, 500, request, env);
+      }
+    }
+
     if (url.pathname === '/api/leads' && request.method === 'GET') {
       try {
         return await handleList(request, env, url);
@@ -94,7 +105,7 @@ export default {
       }
     }
 
-    if (url.pathname === '/api/lead' || url.pathname === '/api/leads') {
+    if (url.pathname === '/api/lead' || url.pathname === '/api/contact' || url.pathname === '/api/leads') {
       return json({ ok: false, error: 'method_not_allowed' }, 405, request, env);
     }
 
@@ -219,6 +230,107 @@ async function handleLead(request, env, ctx) {
 }
 
 /* ------------------------------------------------------------------ *
+ * POST /api/contact
+ *
+ * The plain-message twin of /api/lead, for people who'd rather just say what
+ * they want than run the audit first. Same guards, same store-then-email
+ * pattern, same reply-to trick — only the payload is simpler: a name, an email
+ * and a free-text message. There is no audit to recompute and nothing derived,
+ * so the message is stored close to verbatim (newlines kept).
+ * ------------------------------------------------------------------ */
+
+async function handleContact(request, env, ctx) {
+  /* 0. Same-origin gate — identical reasoning to handleLead. */
+  const origin = request.headers.get('Origin');
+  if (origin && !allowedOrigins(env).includes(origin)) {
+    return json({ ok: false, error: 'forbidden' }, 403, request, env);
+  }
+
+  /* 1. Body size guard, in bytes, before parsing. */
+  const declared = Number(request.headers.get('content-length') || 0);
+  if (declared > MAX_BODY_BYTES) {
+    return json({ ok: false, error: 'payload_too_large' }, 413, request, env);
+  }
+  const buf = await request.arrayBuffer();
+  if (buf.byteLength > MAX_BODY_BYTES) {
+    return json({ ok: false, error: 'payload_too_large' }, 413, request, env);
+  }
+  const raw = new TextDecoder().decode(buf);
+
+  let body;
+  try {
+    body = JSON.parse(raw);
+  } catch {
+    return json({ ok: false, error: 'bad_json' }, 400, request, env);
+  }
+  if (!body || typeof body !== 'object' || Array.isArray(body)) {
+    return json({ ok: false, error: 'bad_json' }, 400, request, env);
+  }
+
+  /* 2. Rate limit by IP — the same rolling-hour window and the same rate_hits
+        table as /api/lead, so a bot that hammers either endpoint is throttled
+        across both. */
+  const ip = request.headers.get('CF-Connecting-IP') || '';
+  const ipKey = await hashIp(rateKeyFor(ip), env.RATE_SALT || warnDefaultSalt());
+  const attempts = await recordAndCount(env, ipKey);
+  if (attempts > RATE_LIMIT) {
+    return json({ ok: false, error: 'rate_limited' }, 429, request, env);
+  }
+
+  /* 3. Honeypot + "filled in impossibly fast" check. A bot gets a cheerful 200
+        and learns nothing; see the long note in handleLead. */
+  const honeypot = typeof body.website === 'string' ? body.website.trim() : '';
+  const tooFast = typeof body.elapsed === 'number' &&
+    Number.isFinite(body.elapsed) && body.elapsed >= 0 && body.elapsed < 1500;
+  if (honeypot !== '' || tooFast) {
+    return json({ ok: true }, 200, request, env);
+  }
+
+  /* 4. Email — same validation and disposable-domain block as a lead. */
+  const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : '';
+  if (!isValidEmail(email)) {
+    return json({ ok: false, error: 'invalid_email' }, 400, request, env);
+  }
+  const domain = email.slice(email.lastIndexOf('@') + 1);
+  if (DISPOSABLE_DOMAINS.has(domain)) {
+    return json({ ok: false, error: 'disposable_email' }, 400, request, env);
+  }
+
+  /* 5. Name (optional), source, and the message itself. */
+  const name = clean(body.name, 80) || '';
+  const source = clean(body.source, 60) || 'contact';
+  const message = cleanMessage(body.message, 4000);
+  if (message.length < 2) {
+    return json({ ok: false, error: 'invalid_message' }, 400, request, env);
+  }
+
+  /* 6. Store first, exactly like a lead: if mail is having a bad day the
+        message is already safe in the messages table, with notified = 0 to
+        show it never got out. (admin.html lists leads only, not messages.) */
+  const ipTrunc = truncateIp(ip);
+  const ua = clean(request.headers.get('user-agent'), 200) || '';
+  const createdAt = new Date().toISOString();
+
+  let msgId = null;
+  try {
+    const res = await env.DB.prepare(
+      `INSERT INTO messages
+         (created_at, name, email, message, source, ip_trunc, user_agent, notified)
+       VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, 0)`
+    ).bind(createdAt, name, email, message, source, ipTrunc, ua).run();
+    msgId = res && res.meta ? res.meta.last_row_id : null;
+  } catch (err) {
+    console.error('D1 insert failed (message)', err && err.message);
+    return json({ ok: false, error: 'storage_failed' }, 500, request, env);
+  }
+
+  /* 7. Tell Graham. replyTo is the sender, so hitting reply answers them. */
+  ctx.waitUntil(notifyContact(env, { msgId, name, email, message, source, createdAt, ipTrunc }));
+
+  return json({ ok: true }, 200, request, env);
+}
+
+/* ------------------------------------------------------------------ *
  * GET /api/leads?key=…
  * ------------------------------------------------------------------ */
 
@@ -274,6 +386,23 @@ function clean(value, max) {
   return value
     .replace(/[\u0000-\u001F\u007F]/g, ' ')
     .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, max);
+}
+
+/** Like clean(), but for a free-text message where paragraph breaks carry
+ *  meaning. Normalises line endings, strips control characters except tab and
+ *  newline, collapses runs of blank lines and horizontal spaces, then caps the
+ *  length. Newlines survive — that is the whole difference from clean(). */
+function cleanMessage(value, max) {
+  if (typeof value !== 'string') return '';
+  return value
+    .replace(/\r\n?/g, '\n')
+    .replace(/\t/g, ' ')
+    .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, '')
+    .replace(/[ \u00A0]{2,}/g, ' ')
+    .replace(/ *\n/g, '\n')
+    .replace(/\n{3,}/g, '\n\n')
     .trim()
     .slice(0, max);
 }
@@ -469,6 +598,53 @@ async function notify(env, lead) {
     // Error objects from the binding carry a code but not the recipient, so
     // this is safe to log. The lead is already saved either way.
     console.error('notification failed', err && (err.code || err.message));
+  }
+}
+
+/** The contact-form twin of notify(). Same guard, same reply-to trick; the body
+ *  is just the message and who sent it. Runs inside ctx.waitUntil. */
+async function notifyContact(env, m) {
+  try {
+    if (!env.EMAIL || !env.FROM_EMAIL || !env.NOTIFY_EMAIL) {
+      console.warn('email not configured — message stored but nothing sent');
+      return;
+    }
+
+    const label = m.name || m.email.slice(m.email.indexOf('@') + 1);
+    const when = new Date(m.createdAt).toLocaleString('en-GB', {
+      timeZone: 'Europe/London', day: 'numeric', month: 'short', year: 'numeric',
+      hour: '2-digit', minute: '2-digit'
+    });
+
+    const lines = [];
+    lines.push(m.name ? `${m.name}` : '(no name given)');
+    lines.push(`${m.email}`);
+    lines.push(`${when} · ${m.source}`);
+    lines.push('');
+    lines.push('MESSAGE');
+    lines.push(m.message);
+    lines.push('');
+    lines.push('---');
+    lines.push('Reply to this email and it goes straight to them.');
+    lines.push(`Submitted from ${m.ipTrunc || 'unknown'} (truncated).`);
+
+    await env.EMAIL.send({
+      to: env.NOTIFY_EMAIL,
+      from: env.FROM_EMAIL,
+      replyTo: m.email,
+      subject: clean(`[CONTACT] ${label}`, 200),
+      text: lines.join('\n')
+    });
+
+    if (m.msgId != null) {
+      try {
+        await env.DB.prepare(`UPDATE messages SET notified = 1 WHERE id = ?1`).bind(m.msgId).run();
+      } catch (err) {
+        console.error('could not set notified flag (message)', err && err.message);
+      }
+    }
+  } catch (err) {
+    console.error('contact notification failed', err && (err.code || err.message));
   }
 }
 

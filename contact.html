@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contact — Workings</title>
+<meta name="description" content="Email Workings directly, or send a short message. One inbox, read by a person, replied to within a working day. No mailing list, no bots.">
+<link rel="canonical" href="https://theworkings.uk/contact">
+<meta name="robots" content="index,follow">
+<meta name="theme-color" content="#F6F3E7">
+<meta name="color-scheme" content="light">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<style>
+@font-face{font-family:'Bricolage Grotesque';font-style:normal;font-weight:800;font-stretch:100%;font-display:swap;src:url('/fonts/bricolage-800.woff2') format('woff2')}
+@font-face{font-family:'Public Sans';font-style:normal;font-weight:400 600;font-display:swap;src:url('/fonts/public-sans.woff2') format('woff2')}
+@font-face{font-family:'Courier Prime';font-style:normal;font-weight:400;font-display:swap;src:url('/fonts/courier-prime-400.woff2') format('woff2')}
+@font-face{font-family:'Courier Prime';font-style:normal;font-weight:700;font-display:swap;src:url('/fonts/courier-prime-700.woff2') format('woff2')}
+:root{
+  --pad:#F6F3E7;--pad-2:#ECE8D8;--rule:#C9C7B2;--rule-soft:#DEDACA;
+  --ink:#12150D;--ink-soft:#4A4F41;--red:#A32E22;--green:#1F5C3D;--hi:#FFD84D;--hi-deep:#F0C420;
+  --shadow:rgba(18,21,13,.12);
+  --mono:"Courier Prime",ui-monospace,Menlo,monospace;
+  --display:"Bricolage Grotesque","Arial Black","Arial Narrow Bold",system-ui,sans-serif;
+  --body:"Public Sans",system-ui,-apple-system,sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--pad);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-wrap:break-word}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;background:repeating-linear-gradient(to bottom,transparent 0 31px,var(--rule-soft) 31px 32px);opacity:.45}
+.wrap{position:relative;z-index:1;max-width:760px;margin:0 auto;padding:0 24px}
+h1,h2{font-family:var(--display);font-weight:800;letter-spacing:-.02em;line-height:1.08;margin:0}
+h1{font-size:clamp(30px,5vw,46px)}
+h2{font-size:clamp(20px,2.6vw,25px);margin:44px 0 12px}
+p{margin:0 0 1em;color:var(--ink-soft)}
+a{color:var(--ink)}
+:focus-visible{outline:2.5px solid var(--red);outline-offset:3px}
+.top{border-bottom:1px solid var(--rule);background:var(--pad);position:relative;z-index:2}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;min-height:64px;gap:16px;max-width:1080px}
+.mark{font-family:var(--display);font-weight:800;font-size:21px;letter-spacing:-.03em;text-decoration:none;color:var(--ink)}
+.back{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft)}
+main{padding:64px 0 74px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 14px}
+.hl{background:linear-gradient(180deg,transparent 0 54%,var(--hi) 54% 96%,transparent 96%);padding:0 .05em;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.lede{font-size:19px;color:var(--ink);margin-top:20px;max-width:56ch}
+
+/* The direct address, front and centre — the whole point of this page is that
+   you don't have to fill anything in unless you want to. */
+.direct{margin:34px 0 0;border:1.5px solid var(--ink);background:var(--pad-2);box-shadow:6px 6px 0 var(--shadow);padding:24px 26px}
+.direct .lbl{font-family:var(--mono);font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 10px}
+.email-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.email-big{font-family:var(--display);font-weight:800;font-size:clamp(20px,4vw,30px);letter-spacing:-.02em;text-decoration:none;color:var(--ink);word-break:break-all}
+.email-big:hover{text-decoration:underline;text-decoration-thickness:3px;text-underline-offset:3px}
+.copy{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:7px 12px;border:1.5px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer;line-height:1.2;transition:box-shadow .12s ease, transform .12s ease}
+.copy:hover{transform:translate(-1px,-1px);box-shadow:3px 3px 0 var(--hi-deep)}
+.direct p{font-size:15px;margin:16px 0 0}
+
+.btn{
+  display:inline-block;font-family:var(--mono);font-size:13px;letter-spacing:.08em;
+  text-transform:uppercase;text-decoration:none;padding:11px 18px;
+  border:1.5px solid var(--ink);background:var(--ink);color:var(--pad);
+  cursor:pointer;transition:transform .12s ease, box-shadow .12s ease;line-height:1.3;text-align:center;
+}
+.btn:hover{transform:translate(-1px,-1px);box-shadow:3px 3px 0 var(--hi-deep)}
+.btn-ghost{background:transparent;color:var(--ink)}
+.btn[disabled]{opacity:.55;cursor:default;transform:none;box-shadow:none}
+
+/* The form, for people who'd rather type into a box than open their mail app. */
+.formwrap{margin-top:16px;border:1.5px solid var(--ink);padding:22px;background:var(--pad-2)}
+.formwrap .fld{display:flex;flex-direction:column;gap:5px;margin-bottom:16px}
+.formwrap .fld label{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft)}
+.formwrap .opt{text-transform:none;letter-spacing:0;color:var(--ink-soft)}
+.formwrap input,.formwrap textarea{
+  font-family:var(--mono);font-size:16px;padding:12px;width:100%;
+  border:1.5px solid var(--ink);background:var(--pad);border-radius:0;color:var(--ink);
+}
+.formwrap textarea{resize:vertical;min-height:140px;line-height:1.5}
+.formwrap input[aria-invalid="true"],.formwrap textarea[aria-invalid="true"]{border-color:var(--red);border-width:2.5px}
+.formwrap input::placeholder,.formwrap textarea::placeholder{color:var(--ink-soft);opacity:1}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+.formfoot{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-top:4px}
+.small{font-family:var(--mono);font-size:11.5px;margin:14px 0 0;color:var(--ink-soft)}
+.small.bad{color:var(--red)}
+.sent{border:1.5px solid var(--ink);background:var(--pad-2);padding:24px 26px}
+.sent h3{font-family:var(--display);font-weight:800;font-size:24px;letter-spacing:-.02em;margin:0 0 10px}
+.sent p{margin:0;font-size:16px}
+
+.ways{margin-top:20px;border-top:1.5px solid var(--ink);padding-top:8px}
+.way{display:flex;gap:16px;align-items:baseline;padding:16px 0;border-bottom:1px solid var(--rule-soft)}
+.way:last-child{border-bottom:none}
+.way .n{font-family:var(--mono);font-size:12px;letter-spacing:.1em;color:var(--ink-soft);flex:0 0 auto}
+.way p{margin:0;font-size:15px}
+.way strong{color:var(--ink);font-weight:600}
+.cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px}
+
+footer{border-top:1.5px solid var(--ink);padding:26px 0;font-family:var(--mono);font-size:12px;color:var(--ink-soft);position:relative;z-index:1}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;max-width:1080px}
+footer a{color:var(--ink-soft)}
+footer nav{display:flex;gap:24px;flex-wrap:wrap}
+footer nav a{display:inline-block;padding:4px 0}
+@media(max-width:420px){body{font-size:16px}}
+</style>
+<!-- Google Analytics 4. Consent is denied by default, so no cookies are set —
+     see the long explanation in index.html before changing any of this. -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-294TV3LSGP"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('consent','default',{
+    ad_storage:'denied',
+    ad_user_data:'denied',
+    ad_personalization:'denied',
+    analytics_storage:'denied',
+    functionality_storage:'denied',
+    personalization_storage:'denied',
+    security_storage:'granted'
+  });
+  gtag('set','ads_data_redaction',true);
+  gtag('js', new Date());
+  gtag('config','G-294TV3LSGP');
+</script>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="mark" href="/">Workings</a>
+    <a class="back" href="/">Back to the site</a>
+  </div>
+</header>
+
+<main>
+<div class="wrap">
+  <p class="eyebrow">Contact</p>
+  <h1>Just <span class="hl">email me</span>.</h1>
+  <p class="lede">No audit to run first, no chat bot, no ticket number. One inbox, and I'm the only one who reads it. I reply personally, usually within a working day.</p>
+
+  <div class="direct">
+    <p class="lbl">The direct line</p>
+    <div class="email-row">
+      <a class="email-big" href="mailto:graham@theworkings.uk">graham@theworkings.uk</a>
+      <button class="copy" type="button" id="copy" hidden>Copy</button>
+    </div>
+    <p>Tell me what you're stuck on in a line or two — the job that keeps eating your week, or just whether this is a thing I could help with. That's plenty to reply to.</p>
+  </div>
+
+  <h2>Prefer a box to type in?</h2>
+  <p>Same inbox, fewer taps. Your name is optional; the message is the bit I need.</p>
+
+  <div id="formwrap" class="formwrap">
+    <noscript>
+      <p style="margin:0;font-size:15px">This form needs JavaScript to send. If you'd rather not turn it on, use the email address above — it goes to exactly the same place.</p>
+    </noscript>
+    <form id="contact" novalidate>
+      <div class="fld">
+        <label for="name">Your name <span class="opt">(optional)</span></label>
+        <input type="text" id="name" name="name" autocomplete="name" placeholder="Jamie Smith" maxlength="80">
+      </div>
+      <div class="fld">
+        <label for="email">Your email</label>
+        <input type="email" id="email" name="email" autocomplete="email" inputmode="email" placeholder="you@yourcompany.co.uk" maxlength="254" required>
+      </div>
+      <div class="fld">
+        <label for="message">Your message</label>
+        <textarea id="message" name="message" placeholder="What's the job that keeps eating your week?" maxlength="4000" required></textarea>
+      </div>
+      <!-- Honeypot. tabindex="-1" and aria-hidden must stay paired:
+           aria-hidden on a tabbable control is an instant accessibility failure. -->
+      <input class="hp" type="text" id="website" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <div class="formfoot">
+        <button class="btn" id="send" type="submit">Send it to Graham</button>
+      </div>
+      <p class="small" id="msg" role="status" aria-live="polite">Goes straight to me, not a mailing list. One reply, from a person. No sequence, no newsletter. <a href="/privacy">What I do with it</a>.</p>
+    </form>
+  </div>
+
+  <h2>Other ways in</h2>
+  <div class="ways">
+    <div class="way">
+      <span class="n">01</span>
+      <p><strong>Rather talk it out?</strong> The call is free, on video, and takes forty-five minutes. <a href="https://cal.com/graham-u7vhke/a-look-at-your-workings">Book a look</a>.</p>
+    </div>
+    <div class="way">
+      <span class="n">02</span>
+      <p><strong>Want a number before you say hello?</strong> The free three-minute audit works out what your admin is costing you — no email needed to see it. <a href="/#audit">Run the audit</a>.</p>
+    </div>
+  </div>
+</div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Workings is a trading name of Loaded Dice Ltd · Company no. 12429789 · VAT GB 342132248</span>
+    <nav aria-label="Site">
+      <a href="mailto:graham@theworkings.uk">graham@theworkings.uk</a>
+      <a href="/contact">Contact</a>
+      <a href="/privacy">Privacy</a>
+      <a href="/terms">Terms</a>
+    </nav>
+  </div>
+</footer>
+
+<script>
+(function(){
+  'use strict';
+  function el(id){ return document.getElementById(id); }
+
+  /* Timestamp for the "filled in impossibly fast" bot check on the Worker. */
+  var RENDERED_AT = Date.now();
+
+  /* Copy-to-clipboard on the address. Progressive enhancement only: the button
+     starts hidden and only appears if the browser actually has the API, so a
+     browser without it never shows a button that does nothing. */
+  var copyBtn = el('copy');
+  if (copyBtn && navigator.clipboard && navigator.clipboard.writeText){
+    copyBtn.hidden = false;
+    copyBtn.addEventListener('click', function(){
+      navigator.clipboard.writeText('graham@theworkings.uk').then(function(){
+        var was = copyBtn.textContent;
+        copyBtn.textContent = 'Copied';
+        setTimeout(function(){ copyBtn.textContent = was; }, 1600);
+      })['catch'](function(){ /* clipboard blocked — the mailto link still works */ });
+    });
+  }
+
+  /* ---------- contact form ----------
+     POSTs to the Cloudflare Worker at /api/contact (see worker/src/index.js).
+     The Worker is routed on this domain, so this stays a same-origin request. */
+  var form = el('contact');
+  if (!form) return;
+
+  form.addEventListener('submit', function(ev){
+    ev.preventDefault();
+
+    var emailEl = el('email');
+    var msgEl = el('message');
+    var email = emailEl.value.trim();
+    var message = msgEl.value.trim();
+    var name = el('name').value.trim();
+    var note = el('msg');
+    var btn = el('send');
+
+    emailEl.removeAttribute('aria-invalid');
+    msgEl.removeAttribute('aria-invalid');
+    note.classList.remove('bad');
+
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(email) || email.length > 254){
+      note.textContent = "That email doesn't look right — I need a good one to reply to.";
+      note.classList.add('bad');
+      emailEl.setAttribute('aria-invalid','true');
+      emailEl.focus();
+      return;
+    }
+    if (message.length < 2){
+      note.textContent = "Add a line about what you're after and I'll have something to reply to.";
+      note.classList.add('bad');
+      msgEl.setAttribute('aria-invalid','true');
+      msgEl.focus();
+      return;
+    }
+
+    note.textContent = 'Sending…';
+    btn.disabled = true;
+
+    var payload = {
+      name: name,
+      email: email,
+      message: message,
+      website: el('website').value,
+      elapsed: Date.now() - RENDERED_AT,
+      source: 'contact-page'
+    };
+
+    fetch('/api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    }).then(function(res){
+      return res.json()['catch'](function(){ return {}; }).then(function(data){
+        if (res.status === 429) throw new Error('rate');
+        if (res.status === 400 && (data.error === 'invalid_email' || data.error === 'disposable_email')) throw new Error('email');
+        if (!res.ok || data.ok !== true) throw new Error('http');
+        return data;
+      });
+    }).then(function(){
+      /* Swap the form for a plain confirmation. No redirect — the thank-you
+         page is written for the audit, and this is a different thing. */
+      gtag('event','generate_lead',{ method:'contact-form' });
+      el('formwrap').innerHTML =
+        '<div class="sent" tabindex="-1">' +
+        '<h3>That’s landed.</h3>' +
+        '<p>Your message is sat in my inbox. I read it myself — there’s no team here to route it to — and you’ll get a reply from a person, usually within a working day, from graham@theworkings.uk.</p>' +
+        '</div>';
+      /* Move focus to the confirmation so a screen reader announces it. */
+      var sent = document.querySelector('.sent');
+      if (sent){ sent.focus(); }
+    })['catch'](function(e){
+      btn.disabled = false;
+      note.classList.add('bad');
+      var why = e && e.message;
+      if (why === 'rate'){
+        note.textContent = "That's a few goes now. Email me directly at graham@theworkings.uk.";
+      } else if (why === 'email'){
+        note.textContent = "That address didn't get past the checks — a work email usually does. Or just email me: graham@theworkings.uk.";
+        emailEl.setAttribute('aria-invalid','true');
+        emailEl.focus();
+      } else {
+        note.textContent = "That didn't send. Email me directly at graham@theworkings.uk and I'll pick it up by hand.";
+      }
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
