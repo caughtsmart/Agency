@@ -159,7 +159,7 @@ img{max-width:100%;height:auto}
   position:relative;z-index:2;border-bottom:1px solid var(--rule);
   background:var(--pad);
 }
-.top .wrap{display:flex;align-items:center;justify-content:space-between;min-height:64px;gap:16px;padding-top:10px;padding-bottom:10px}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;min-height:64px;gap:16px 18px;flex-wrap:wrap;padding-top:10px;padding-bottom:10px}
 .mark{font-family:var(--display);font-weight:800;font-size:21px;letter-spacing:-.03em}
 .mark sup{font-family:var(--mono);font-size:9px;font-weight:400;letter-spacing:.1em;color:var(--ink-soft);top:-.9em}
 .topnav{display:flex;align-items:center;gap:22px}
@@ -578,6 +578,7 @@ footer nav a{display:inline-block;padding:4px 0}
     <div class="mark">Workings<sup>01</sup></div>
     <nav class="topnav" aria-label="Primary">
       <a class="navlink" href="/case-studies">Case studies</a>
+      <a class="navlink" href="/contact">Contact</a>
       <a class="btn" href="#audit">Run the free audit</a>
     </nav>
   </div>
