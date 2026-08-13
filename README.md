@@ -6,9 +6,10 @@ site, a Cloudflare Worker plus D1 for submissions. No build step, no framework, 
 
 ```
 index.html          the entire site
+contact.html        direct email address plus a simple name/email/message form
 privacy.html        UK GDPR privacy notice
 terms.html          terms of use
-thanks.html         where the form lands. Not indexed, not in the sitemap.
+thanks.html         where the audit form lands. Not indexed, not in the sitemap.
 admin.html          leads list. Not linked, not indexed. Needs the admin key.
 robots.txt
 sitemap.xml
@@ -20,10 +21,19 @@ _headers            security headers for Cloudflare Pages
 setup.sh            swaps the placeholders for your real details
 reply-template.md   how to answer a submission
 worker/
-  src/index.js      lead capture Worker
+  src/index.js      lead capture + contact Worker
   wrangler.toml
   schema.sql        D1 tables
 ```
+
+The contact page is the low-friction way in for people who'd rather just email than
+run the audit. It leads with the plain address (`graham@theworkings.uk`) and offers a
+short name/email/message form underneath. The form posts to `/api/contact` on the same
+Worker as the audit, reusing the same rate limiting, honeypot, origin gate and
+disposable-email block — so nothing new needs securing. A message is written to the
+`messages` table and then a `[CONTACT]` email is sent with reply-to set to the sender,
+exactly like a lead. There is deliberately still no auto-acknowledgement: Cloudflare
+Email Routing can only send to Graham, and his reply is the acknowledgement.
 
 The fonts are served from this repo rather than from Google. That keeps first paint fast
 on a bad connection, means the audit tool can't be delayed by a third-party outage, and
@@ -79,8 +89,9 @@ to Git. There is no build command and no output directory — it's static. Add t
 domain, HTTPS is automatic. `_headers` is picked up on deploy.
 
 Analytics is **Google Analytics 4**, property `G-294TV3LSGP`, and the tag is already in
-the head of `index.html`, `privacy.html`, `terms.html` and `thanks.html` — four copies, so
-changing the measurement ID means four edits. `admin.html` is deliberately untagged.
+the head of `index.html`, `contact.html`, `privacy.html`, `terms.html` and `thanks.html`
+— five copies, so changing the measurement ID means five edits. `admin.html` is
+deliberately untagged.
 
 It runs with **Consent Mode denied by default**, which is the whole reason there is still
 no cookie banner: with `analytics_storage` denied GA4 sets no cookies and stores nothing on
@@ -94,21 +105,25 @@ The CSP in `_headers` has to allow the Google origins or the tag is blocked outr
 reports nothing, with no error anywhere except the browser console. If analytics ever goes
 quiet, check there first.
 
-While you're in the dashboard, add a **WAF rate-limiting rule** on `/api/lead`
-(Security → WAF → Rate limiting rules; the free plan includes one). The Worker
-has its own limiter, but the WAF rule runs at the edge before the Worker, so a
-flood costs you nothing in Worker invocations or database reads. Five minutes,
-no code.
+While you're in the dashboard, add a **WAF rate-limiting rule** on `/api/*`
+(Security → WAF → Rate limiting rules; the free plan includes one) so it covers
+both `/api/lead` and `/api/contact`. The Worker has its own limiter, but the WAF
+rule runs at the edge before the Worker, so a flood costs you nothing in Worker
+invocations or database reads. Five minutes, no code.
 
 ### 3. Worker and database
 
 ```bash
 cd worker
 # the database already exists and its id is in wrangler.toml
-npx wrangler secret put NOTIFY_EMAIL           # where [LEAD] emails land
+npx wrangler secret put NOTIFY_EMAIL           # where [LEAD] / [CONTACT] emails land
 npx wrangler secret put FROM_EMAIL             # graham@theworkings.uk
 npx wrangler secret put ADMIN_KEY              # openssl rand -hex 32
 npx wrangler secret put RATE_SALT              # openssl rand -hex 32
+
+# schema.sql is safe to re-run and only creates what's missing. Run it after
+# pulling the contact form so the `messages` table exists before you deploy.
+npx wrangler d1 execute workings-leads --remote --file=./schema.sql
 
 npx wrangler deploy
 ```
@@ -191,16 +206,27 @@ npx wrangler d1 execute workings-leads --remote --command \
   "SELECT created_at, company, email, total, recoverable, notified FROM leads ORDER BY id DESC LIMIT 20"
 ```
 
-A deletion request (someone exercising their UK GDPR right to erasure):
+**Contact-form messages** live in a separate `messages` table and are *not* shown on
+`admin.html` (which only lists audit leads). Every message also arrives as a `[CONTACT]`
+email — that is the day-to-day way you read them — but if you ever need the table:
 
 ```bash
 npx wrangler d1 execute workings-leads --remote --command \
-  "DELETE FROM leads WHERE email = 'them@example.co.uk'"
+  "SELECT created_at, name, email, message, notified FROM messages ORDER BY id DESC LIMIT 20"
+```
+
+A deletion request (someone exercising their UK GDPR right to erasure) — clear them from
+both tables:
+
+```bash
+npx wrangler d1 execute workings-leads --remote --command \
+  "DELETE FROM leads WHERE email = 'them@example.co.uk'; DELETE FROM messages WHERE email = 'them@example.co.uk'"
 ```
 
 The privacy notice promises submissions are deleted after 24 months. The Worker enforces
 that itself: a daily cron (see `[triggers]` in `wrangler.toml`) deletes anything older
-and sweeps stale rate-limit rows. Nothing for you to remember.
+from both `leads` and `messages`, and sweeps stale rate-limit rows. Nothing for you to
+remember.
 
 ---
 
